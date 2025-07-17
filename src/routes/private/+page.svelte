@@ -15,14 +15,18 @@
 		if (!note) return;
 
 		const { error } = await supabase.from('notes').insert({ note });
-		if (error) console.error(error);
+		if (error) {
+			console.error(error);
+		} else {
+			console.debug('Note created!');
+		}
 
 		invalidate('supabase:db:notes');
 		form.reset();
 	};
 </script>
 
-<h1>Private page for user: {user?.email}</h1>
+<h1>Private page for: {user?.email}</h1>
 <h2>Notes</h2>
 <ul>
 	{#each notes as note}

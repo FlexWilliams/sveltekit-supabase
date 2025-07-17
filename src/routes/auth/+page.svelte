@@ -1,3 +1,10 @@
+<script>
+	let { form } = $props();
+</script>
+
+{#if form?.error}
+	<p>{form?.error}</p>
+{/if}
 <form method="POST" action="?/login">
 	<label>
 		Email

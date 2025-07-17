@@ -24,9 +24,9 @@ export const actions: Actions = {
 		const { error } = await supabase.auth.signInWithPassword({ email, password });
 		if (error) {
 			console.error(error);
-			redirect(303, '/auth/error');
+			return { error: error.message }; // TODO: suppress messages/wrap them
 		} else {
-			redirect(303, '/private');
+			redirect(303, '/');
 		}
 	}
 };
