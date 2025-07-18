@@ -26,6 +26,7 @@
 		align-items: center;
 		padding: 1rem;
 		background-color: gray;
+		width: 100%;
 		height: 100%;
 		border: none;
 		@include variables.border-radius-panel;
@@ -44,8 +45,8 @@
 
 	button.edit-item {
 		position: absolute;
-		bottom: 0.5rem;
-		right: 0.5rem;
+		bottom: 1rem;
+		right: 1rem;
 		width: 3rem;
 		height: 3rem;
 		border-radius: 3rem;
@@ -62,9 +63,14 @@
 			}
 
 			img {
-				max-width: 90%;
+				max-width: 70%;
 				@include variables.border-radius-panel;
 			}
+		}
+
+		button.edit-item {
+			bottom: 0.5rem;
+			right: 0.5rem;
 		}
 	}
 </style>

@@ -29,7 +29,9 @@
 
 <style lang="scss">
 	main {
-		height: 70%;
+		height: calc(70% - 2rem);
+		max-height: calc(70% - 2rem);
+		overflow: hidden;
 		width: calc(100% - 4rem);
 		padding: 1rem;
 		margin: 0 1rem;

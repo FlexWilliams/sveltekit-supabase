@@ -29,12 +29,7 @@ const fetchItem = async (
 	return stuff;
 };
 
-export const load: PageServerLoad = async ({
-	depends,
-	params,
-	locals: { supabase, safeGetSession }
-}) => {
-	// depends('supabase:db:stuff');
+export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 	const itemId = params.id;
 

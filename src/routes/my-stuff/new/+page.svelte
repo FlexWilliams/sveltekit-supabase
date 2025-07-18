@@ -1,13 +1,8 @@
 <script lang="ts">
-	import type { Stuff } from '$lib/stuff/components/model/stuff.js';
-
-	let { data } = $props();
-
-	let stuff = $derived.by(() => (data.stuff.length > 0 ? data.stuff[0] : ({} as Stuff)));
 </script>
 
 <section>
-	<h2>{stuff?.name}</h2>
+	<h2>Add Stuff</h2>
 
 	<button
 		type="button"
@@ -19,7 +14,6 @@
 
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
-
 	section {
 		position: absolute;
 		top: 0;

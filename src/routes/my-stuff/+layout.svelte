@@ -1,11 +1,30 @@
 <script>
+	import { afterNavigate, goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+
 	let { children } = $props();
+
+	let onDetailPage = $state(true);
+
+	onMount(() => {
+		afterNavigate((e) => {
+			const route = e.to?.route?.id;
+			onDetailPage = route === '/my-stuff/new' || route === '/my-stuff/[id]';
+		});
+	});
 </script>
 
 <section>
 	{@render children()}
 
-	<button type="button" aria-label="Add item to your Stuff" class="add-item">+</button>
+	{#if !onDetailPage}
+		<button
+			type="button"
+			aria-label="Add item to your Stuff"
+			class="add-item"
+			onclick={() => goto('/my-stuff/new')}>+</button
+		>
+	{/if}
 </section>
 
 <style lang="scss">
