@@ -5,13 +5,13 @@
 	flex-direction: column;
 	justify-content: space-between;
 	width: calc(100% - 2rem);
-	height: calc(90% - 2rem);
+	height: calc(85% - 2rem);
 	padding: 1rem;
 }
 
 @mixin form_header {
 	@include panel.panel_header;
-	height: calc(10% - 1rem);
+	height: calc(15% - 1rem);
 	margin: 0;
 	margin-top: 1rem;
 }
@@ -44,4 +44,28 @@
 	height: 1.75rem;
 	border-radius: 0.25rem;
 	border: 1px solid black;
+	width: 100%;
+}
+
+@mixin form_actions {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 1rem;
+
+	button {
+		min-width: 4rem;
+		padding: 0.5rem 1rem;
+	}
+}
+@mixin form_errors {
+	padding: 0 1rem;
+	color: red;
+	min-height: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+
+	p {
+		margin: 0;
+	}
 }

@@ -1,5 +1,20 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import advertisement from '$lib/assets/videos/advertisement.mp4';
+	import { ToastrService } from '$lib/toastr/services/ToastrService';
+	import { onMount } from 'svelte';
+
+	let { data } = $props();
+	let { user } = $derived(data);
+
+	onMount(() => {
+		afterNavigate((e) => {
+			const route = e.from?.route?.id;
+			if ((!route || route === '/auth') && user) {
+				ToastrService.alert(`Welcome back ${user?.email}!`);
+			}
+		});
+	});
 </script>
 
 <section>

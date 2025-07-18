@@ -2,10 +2,14 @@
 	let { children } = $props();
 </script>
 
-<header>
-	<nav>
-		<a href="/">Home</a>
-	</nav>
-</header>
+<section>
+	{@render children()}
+</section>
 
-{@render children()}
+<style lang="scss">
+	@use '../../lib/styles/layout/panel.scss';
+
+	section {
+		@include panel.panel;
+	}
+</style>

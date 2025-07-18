@@ -41,7 +41,7 @@
 	});
 </script>
 
-<h1>My Profile</h1>
+<h2>My Profile</h2>
 <form
 	name="user-profile"
 	method="POST"
@@ -86,7 +86,7 @@
 	@use '../../lib/styles/forms/forms.scss';
 	@use '../../lib/styles/animations/spin.scss';
 
-	h1 {
+	h2 {
 		@include forms.form_header;
 	}
 
@@ -118,6 +118,7 @@
 				@include forms.form_field_label_button;
 			}
 		}
+
 		input {
 			@include forms.form_field_text_input;
 		}

@@ -1,10 +1,21 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
+	import { onMount } from 'svelte';
 
 	interface HeaderProps {
 		user: User | null;
 	}
 	let { user }: HeaderProps = $props();
+
+	let onLoginPage = $state(true);
+
+	onMount(() => {
+		afterNavigate((e) => {
+			const route = e.to?.route?.id;
+			onLoginPage = route === '/auth';
+		});
+	});
 </script>
 
 <header>
@@ -14,9 +25,11 @@
 	<nav>
 		<ul>
 			{#if !user || !user.id}
-				<li>
-					<a href="/auth">Login</a>
-				</li>
+				{#if !onLoginPage}
+					<li>
+						<a href="/auth">Login</a>
+					</li>
+				{/if}
 			{:else}
 				<li class="avatar">
 					<a href="/profile" aria-labelledby="avatar">
