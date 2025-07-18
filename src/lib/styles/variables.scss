@@ -1,0 +1,5 @@
+$border-radius-panel: 0.5rem;
+
+@mixin border-radius-panel() {
+	border-radius: $border-radius-panel;
+}

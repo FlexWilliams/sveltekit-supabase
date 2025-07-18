@@ -1,0 +1,47 @@
+@use '../layout/panel.scss';
+
+@mixin form {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: calc(100% - 2rem);
+	height: calc(90% - 2rem);
+	padding: 1rem;
+}
+
+@mixin form_header {
+	@include panel.panel_header;
+	height: calc(10% - 1rem);
+	margin: 0;
+	margin-top: 1rem;
+}
+
+@mixin form_field {
+	display: flex;
+	flex-direction: column;
+	margin: 1rem;
+}
+
+@mixin form_field_row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+@mixin form_field_label {
+	font-size: 1.25rem;
+}
+
+@mixin form_field_label_button {
+	background-color: white;
+	padding: 0.5rem 1rem;
+	border-radius: 0.25rem;
+	border: 1px solid black;
+}
+
+@mixin form_field_text_input {
+	height: 1.75rem;
+	border-radius: 0.25rem;
+	border: 1px solid black;
+}

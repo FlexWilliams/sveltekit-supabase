@@ -1,0 +1,23 @@
+@use '../variables.scss';
+
+@mixin panel {
+	height: 100%;
+	background-color: white;
+	overflow: hidden;
+	padding: 0.5rem;
+	width: calc(100% - 1rem);
+	@include variables.border-radius-panel;
+
+	h1 {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+}
+
+@mixin panel_header {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-align: center;
+}

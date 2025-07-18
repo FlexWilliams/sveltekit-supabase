@@ -1,47 +1,28 @@
-<script>
-	let { data } = $props();
+<script lang="ts">
+	import advertisement from '$lib/assets/videos/advertisement.mp4';
 </script>
 
-<h1>Vouch for Me</h1>
-<nav>
-	<ul>
-		{#if !data?.user || !data.user.id}
-			<li>
-				<a href="/auth">Login</a>
-			</li>
-		{:else}
-			<li>
-				<a href="/private">Private</a>
-			</li>
-			<li>
-				<a href="/auth/logout">Logout</a>
-			</li>
-		{/if}
-	</ul>
-</nav>
+<section>
+	<video src={advertisement} muted autoplay loop>
+		<!-- TODO: generate vtt files per ad -->
+		<track default kind="captions" srclang="en" />
+	</video>
+</section>
 
-<style>
-	h1 {
-		text-align: center;
-	}
+<style lang="scss">
+	@use '../lib/styles/layout/panel.scss';
+	@use '../lib/styles/variables.scss';
 
-	nav {
-		display: flex;
-		justify-content: flex-start;
-		padding: 0 1rem;
-	}
-	nav ul {
-		list-style: none;
-		margin: 0;
+	section {
+		@include panel.panel;
 		padding: 0;
-		display: flex;
-		gap: 1rem;
-		justify-content: flex-end;
 		width: 100%;
+		background-color: transparent;
 	}
 
-	nav ul li {
-		margin: 0;
-		padding: 0;
+	video {
+		width: 100%;
+		margin: 1rem 0;
+		@include variables.border-radius-panel;
 	}
 </style>

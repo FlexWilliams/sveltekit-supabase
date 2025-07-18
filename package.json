@@ -29,6 +29,7 @@
 		"globals": "^16.0.0",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
+		"sass": "^1.89.2",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -43,6 +44,7 @@
 	},
 	"dependencies": {
 		"@supabase/ssr": "^0.6.1",
-		"@supabase/supabase-js": "^2.51.0"
+		"@supabase/supabase-js": "^2.51.0",
+		"rxjs": "^7.8.2"
 	}
 }
