@@ -37,7 +37,7 @@
 					</a>
 				</li>
 				<li><a href="/search">Search</a></li>
-				<li><a href="/my-inventory">My Inventory</a></li>
+				<li><a href="/my-stuff">My Stuff</a></li>
 				<li>
 					<a href="/auth/logout">Logout</a>
 				</li>

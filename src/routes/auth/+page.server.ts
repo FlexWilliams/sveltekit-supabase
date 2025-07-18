@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
+import { Logger } from '$lib/logging/logger';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -10,7 +11,7 @@ export const actions: Actions = {
 
 		const { error } = await supabase.auth.signUp({ email, password });
 		if (error) {
-			console.error(error);
+			Logger.error(error);
 			redirect(303, '/auth/error');
 		} else {
 			redirect(303, '/');
@@ -23,7 +24,7 @@ export const actions: Actions = {
 
 		const { error } = await supabase.auth.signInWithPassword({ email, password });
 		if (error) {
-			console.error(error);
+			Logger.error(error);
 			return { error: error.message }; // TODO: suppress messages/wrap them
 		} else {
 			redirect(303, '/');
