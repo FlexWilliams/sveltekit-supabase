@@ -41,20 +41,6 @@
 
 	form {
 		@include forms.form;
-
-		button.save {
-			align-self: flex-end;
-			margin-right: 1rem;
-			padding: 0.5rem 1rem;
-			border-radius: 0.25rem;
-			background-color: rebeccapurple;
-			color: white;
-			border: none;
-
-			&:disabled {
-				background-color: gray;
-			}
-		}
 	}
 
 	.form-errors {

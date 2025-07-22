@@ -1,14 +1,33 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
+	import { Logger } from '$lib/logging/logger';
 	import type { User } from '@supabase/supabase-js';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 
 	interface HeaderProps {
 		user: User | null;
+		profilePic: Blob | null;
 	}
-	let { user }: HeaderProps = $props();
+
+	let { user, profilePic }: HeaderProps = $props();
+
+	let profilePicUrl: string | null = $derived.by(() =>
+		profilePic ? URL.createObjectURL(new Blob([profilePic])) : null
+	);
 
 	let onLoginPage = $state(true);
+
+	$effect(() => {
+		if (profilePicUrl) {
+			Logger.debug(profilePicUrl);
+			untrack(() => {
+				const avatarButton = document.getElementById('avatar');
+				if (avatarButton) {
+					avatarButton.style.backgroundImage = `url(${profilePicUrl})`;
+				}
+			});
+		}
+	});
 
 	onMount(() => {
 		afterNavigate((e) => {
