@@ -1,5 +1,5 @@
 import { Logger } from '$lib/logging/logger';
-import { fromDbList, type Stuff, type StuffFromDb } from '$lib/stuff/components/model/stuff';
+import { stuffFromDbList, type Stuff, type StuffFromDb } from '$lib/stuff/components/model/stuff';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PageServerLoad } from './$types';
 
@@ -13,7 +13,7 @@ const fetchItem = async (
 	const columns = 'id,user_id,created_on,name,trust_rating,description,available';
 
 	const { data, error } = await supabase
-		.from('user_inventory')
+		.from('user_stuff')
 		.select(columns)
 		.eq('id', itemId)
 		.eq('user_id', userId)
@@ -22,7 +22,7 @@ const fetchItem = async (
 	if (error) {
 		Logger.debug(error?.message ? error?.message : 'Error fetching user inventory items!');
 	} else {
-		stuff = fromDbList(data as StuffFromDb[]);
+		stuff = stuffFromDbList(data as StuffFromDb[]);
 		Logger.debug(`Fetched ${stuff?.length} items.`);
 	}
 

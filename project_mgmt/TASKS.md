@@ -237,7 +237,7 @@ Verified By <> on:
 - photo(s)\* (also, new gallery component)
 - required trust level
 - description?
-- availabile?: true by default
+- available?: true by default
 
 ### Acceptance Criteria:
 

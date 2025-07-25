@@ -1,8 +1,40 @@
 <script lang="ts">
+	import { Logger } from '$lib/logging/logger';
+	import type { Stuff } from '$lib/stuff/components/model/stuff';
+	import { ToastrService } from '$lib/toastr/services/ToastrService';
+
+	async function handleAddSomethingResponse(this: XMLHttpRequest): Promise<void> {
+		if (this.status === 201 && this.response) {
+			const newItem = JSON.parse(this.response) as Stuff;
+			Logger.debug(`${JSON.stringify(newItem)}`);
+
+			ToastrService.alert(`New Item Saved!`);
+		} else {
+			Logger.error(JSON.parse(this.response)?.message);
+		}
+	}
+
+	async function handleAddSomethingRandom(): Promise<void> {
+		const formData = new FormData();
+		formData.append('name', 'new item');
+		formData.append('photo', '');
+		formData.append('trust_rating', '4');
+		formData.append('description', 'New item description');
+		formData.append('available', 'true');
+
+		// TODO: Convert to fetch PUT /api/profile
+		// See https://github.com/vercel/next.js/issues/73220
+		const req = new XMLHttpRequest();
+		req.addEventListener('load', handleAddSomethingResponse);
+		req.open('POST', '/api/my-stuff');
+		req.send(formData);
+	}
 </script>
 
 <section>
 	<h2>Add Stuff</h2>
+
+	<button onclick={handleAddSomethingRandom}>Add something random</button>
 
 	<button
 		type="button"
