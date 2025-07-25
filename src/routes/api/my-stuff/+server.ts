@@ -5,7 +5,7 @@ import {
 	type NewStuff,
 	type Stuff,
 	type StuffFromDb
-} from '$lib/stuff/components/model/stuff';
+} from '$lib/stuff/model/stuff';
 import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -20,18 +20,18 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	const formData = await request.formData();
 	const name = formData.get('name') as string;
 	const photo = formData.get('photo') as File;
-	const trustRating = parseInt(formData.get('trust_rating') as string);
+	const trustLevel = parseInt(formData.get('trust_level') as string);
 	const description = formData.get('description') as string;
 	const available = formData.get('available') as string;
 
 	// if (!name || !photo || !trustRating) {
-	if (!name || !trustRating) {
+	if (!name || !trustLevel) {
 		return requiredFieldsMissing(`${API_NAME} [POST]: Unable to add to My Stuff`);
 	}
 
 	const newStuff: NewStuff = {
 		name,
-		trustRating,
+		trustLevel: trustLevel,
 		available: available == 'true' ? true : false,
 		description
 	};

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger.js';
-	import type { Stuff } from '$lib/stuff/components/model/stuff.js';
+	import type { Stuff } from '$lib/stuff/model/stuff.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 
 	let { data } = $props();

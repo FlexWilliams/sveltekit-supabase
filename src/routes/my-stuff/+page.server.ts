@@ -1,5 +1,5 @@
 import { Logger } from '$lib/logging/logger';
-import { stuffFromDbList, type Stuff, type StuffFromDb } from '$lib/stuff/components/model/stuff';
+import { stuffFromDbList, type Stuff, type StuffFromDb } from '$lib/stuff/model/stuff';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -10,7 +10,7 @@ const fetchItems = async (
 ): Promise<Stuff[]> => {
 	let stuff: Stuff[] = [];
 
-	const columns = 'id,user_id,created_on,name,trust_rating,description,available';
+	const columns = 'id,user_id,created_on,name,trust_level,description,available';
 
 	const { data, error } = await supabase
 		.from('user_stuff')
@@ -29,8 +29,6 @@ const fetchItems = async (
 };
 
 export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGetSession } }) => {
-	// depends('supabase:db:stuff');
-
 	const { user } = await safeGetSession();
 
 	const stuff = await fetchItems(user?.id, supabase);

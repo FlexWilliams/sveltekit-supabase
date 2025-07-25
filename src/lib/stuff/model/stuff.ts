@@ -1,6 +1,6 @@
 export interface NewStuff {
 	name: string;
-	trustRating: number;
+	trustLevel: number;
 	available: boolean;
 	description?: string;
 }
@@ -17,7 +17,7 @@ export interface StuffFromDb {
 	user_id: string;
 	created_on: string;
 	name: string;
-	trust_rating: number;
+	trust_level: number;
 	available: boolean;
 	description?: string;
 	image_url?: string;
@@ -29,7 +29,7 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		userId: s.user_id,
 		createdOn: s.created_on,
 		name: s.name,
-		trustRating: s.trust_rating,
+		trustLevel: s.trust_level,
 		available: s.available,
 		description: s.description,
 		imageUrl: s.image_url
@@ -46,7 +46,7 @@ export function stuffToDb(s: Stuff): StuffFromDb {
 		user_id: s.userId,
 		created_on: s.createdOn,
 		name: s.name,
-		trust_rating: s.trustRating,
+		trust_level: s.trustLevel,
 		available: s.available,
 		description: s.description,
 		image_url: s.imageUrl
