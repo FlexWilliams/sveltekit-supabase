@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger.js';
-	import type { Stuff } from '$lib/stuff/components/model/stuff.ts';
 	import StuffCard from '$lib/stuff/components/StuffCard.svelte';
+	import type { Stuff } from '$lib/stuff/model/stuff.js';
 	import { debounceTime, Subject, tap, type Subscription } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 
