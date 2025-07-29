@@ -5,7 +5,11 @@ export interface NewStuff {
 	description?: string;
 }
 
-export interface Stuff extends NewStuff {
+export interface StuffEdit extends NewStuff {
+	updatedOn: string;
+}
+
+export interface Stuff extends StuffEdit {
 	id: string;
 	userId: string;
 	createdOn: string;
@@ -16,6 +20,7 @@ export interface StuffFromDb {
 	id: string;
 	user_id: string;
 	created_on: string;
+	updated_on: string;
 	name: string;
 	trust_level: number;
 	available: boolean;
@@ -28,6 +33,7 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		id: s.id,
 		userId: s.user_id,
 		createdOn: s.created_on,
+		updatedOn: s.updated_on,
 		name: s.name,
 		trustLevel: s.trust_level,
 		available: s.available,
@@ -45,6 +51,7 @@ export function stuffToDb(s: Stuff): StuffFromDb {
 		id: s.id,
 		user_id: s.userId,
 		created_on: s.createdOn,
+		updated_on: s.updatedOn,
 		name: s.name,
 		trust_level: s.trustLevel,
 		available: s.available,

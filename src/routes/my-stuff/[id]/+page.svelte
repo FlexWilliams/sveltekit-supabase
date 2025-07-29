@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger.js';
+	import StuffForm from '$lib/stuff/components/StuffForm.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 
 	let { data } = $props();
 
 	let stuff = $derived.by(() => (data.stuff.length > 0 ? data.stuff[0] : ({} as Stuff)));
+
+	function showPopover(): void {
+		document.getElementById(`remove-stuff-confirmation`)?.showPopover();
+	}
 
 	function closePopover(): void {
 		document.getElementById(`remove-stuff-confirmation`)?.hidePopover();
@@ -39,6 +44,8 @@
 <section>
 	<h2>{stuff?.name}</h2>
 
+	<StuffForm {stuff} handleRemove={showPopover} />
+
 	<dialog id="remove-stuff-confirmation" popover="auto">
 		<h3>Are you sure you want to delete this item?</h3>
 		<button onclick={handleRemoveStuffNo}>Cancel</button>
@@ -56,7 +63,8 @@
 </section>
 
 <style lang="scss">
-	@use '../../../lib/styles/overlay/shadows.scss';
+	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/layout/panel.scss';
 
 	section {
 		position: absolute;
@@ -66,23 +74,11 @@
 		height: 100%;
 
 		h2 {
-			text-align: center;
+			@include forms.form_header;
 		}
 
 		button.close {
-			position: absolute;
-			top: 0.5rem;
-			right: 0.5rem;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: 3rem;
-			height: 3rem;
-			border-radius: 3rem;
-			border: none;
-			background-color: #ffeb3b;
-			font-weight: bold;
-			@include shadows.boxShadow;
+			@include panel.panel_close_button;
 		}
 	}
 </style>

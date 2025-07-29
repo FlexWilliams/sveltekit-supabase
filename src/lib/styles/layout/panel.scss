@@ -1,4 +1,5 @@
 @use '../variables.scss';
+@use '../../../lib/styles/overlay/shadows.scss';
 
 @mixin panel {
 	background-color: white;
@@ -14,4 +15,20 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	text-align: center;
+}
+
+@mixin panel_close_button {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 3rem;
+	border: none;
+	background-color: #ffeb3b;
+	font-weight: bold;
+	@include shadows.boxShadow;
 }

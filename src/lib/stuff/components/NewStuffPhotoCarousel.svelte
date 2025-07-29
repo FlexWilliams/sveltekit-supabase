@@ -36,7 +36,7 @@
 
 		li {
 			height: 100%;
-			min-width: 90%;
+			min-width: 100%;
 			margin-right: 1rem;
 			border-radius: 0.25rem;
 			position: relative;
