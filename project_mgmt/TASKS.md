@@ -258,3 +258,17 @@ Verified By <> on:
 Verified By <> on:
 
 <br>
+
+## VOUCH-016 - Resize images before upload
+
+### Description:
+
+^^
+
+- Similar to play dead app.
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>

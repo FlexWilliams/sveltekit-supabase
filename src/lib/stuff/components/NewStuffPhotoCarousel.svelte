@@ -1,19 +1,24 @@
 <script lang="ts">
 	interface Props {
 		photos: File[];
+		handlePhotoRemove: (photoName: string) => void;
 	}
 
-	let { photos }: Props = $props();
+	let { photos, handlePhotoRemove }: Props = $props();
 	let photoUrls: string[] = $derived.by(() =>
 		photos ? photos.map((p) => URL.createObjectURL(p)) : []
 	);
 </script>
 
 <ul>
-	{#each photoUrls as photo}
+	{#each photoUrls as photo, idx}
 		<li>
 			<img src={photo} alt={`Photo`} />
-			<button aria-label="Remove Photo?" class="close">X</button>
+			<button
+				aria-label="Remove Photo?"
+				class="close"
+				onclick={() => handlePhotoRemove(photos[idx]?.name)}>X</button
+			>
 		</li>
 	{:else}
 		<li class="no-photos">

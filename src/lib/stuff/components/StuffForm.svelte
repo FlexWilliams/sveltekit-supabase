@@ -7,14 +7,29 @@
 
 	interface StuffFormProps {
 		stuff?: Stuff;
+		photos?: File[];
 		handleRemove?: () => void;
+		handleUpdate?: () => void;
+		handleSaveStart?: () => void;
+		handleSaveFinish?: () => void;
+		removePhoto?: (photoName: string) => void;
 	}
 
-	let { stuff, handleRemove }: StuffFormProps = $props();
+	let {
+		stuff,
+		photos,
+		handleRemove,
+		handleUpdate,
+		handleSaveStart,
+		handleSaveFinish,
+		removePhoto
+	}: StuffFormProps = $props();
 
 	let saving = $state(false);
 
-	let photos: File[] = $state([]);
+	let photosList: File[] = $state(photos || []);
+
+	let newPhotos: File[] = $state([]);
 
 	let name: string | null = $state(stuff?.name || null);
 
@@ -22,8 +37,14 @@
 
 	let description: string | null = $state(stuff?.description || null);
 
-	let buttonDisabled: boolean = $derived.by(() => {
-		return !name || !photos || photos.length === 0 || trustLevel < 1 || trustLevel > 10 || saving;
+	let saveButtonDisabled: boolean = $derived.by(() => {
+		return (
+			!name ||
+			((!photos || photos.length === 0) && newPhotos.length === 0) ||
+			trustLevel < 1 ||
+			trustLevel > 10 ||
+			saving
+		);
 	});
 
 	async function handleAddResponse(this: XMLHttpRequest): Promise<void> {
@@ -34,6 +55,10 @@
 			ToastrService.alert(`New Item Saved!`);
 
 			saving = false;
+
+			if (handleSaveFinish) {
+				handleSaveFinish();
+			}
 
 			goto(`/my-stuff/${newItem.id}`);
 		} else {
@@ -46,6 +71,20 @@
 			ToastrService.alert(`Item Updated!`);
 
 			saving = false;
+
+			newPhotos.length = 0;
+			const photoInput = document.getElementsByName('photos')[0] as HTMLInputElement;
+			if (photoInput) {
+				photoInput.value = '';
+			}
+
+			if (handleSaveFinish) {
+				handleSaveFinish();
+			}
+
+			if (handleUpdate) {
+				handleUpdate();
+			}
 		} else {
 			Logger.error(JSON.parse(this.response)?.message);
 		}
@@ -61,7 +100,11 @@
 
 		formData.append('name', name);
 
-		photos.forEach((p, idx) => formData.append(`photo_${idx}`, p));
+		formData.append('photo_count', `${$state.snapshot(photosList).length}`);
+
+		formData.append('new_photo_count', `${$state.snapshot(newPhotos).length}`);
+
+		newPhotos.forEach((p, idx) => formData.append(`new_photo_${idx}`, p));
 
 		formData.append('available', 'true');
 
@@ -81,14 +124,20 @@
 			return;
 		}
 
-		photos = []; // TODO: push/selectively remove instead of recreate each time!
+		newPhotos = []; // TODO: push/selectively remove instead of recreate each time!
 
 		for (let i = 0; i < files.length; i++) {
 			const photo = files.item(i);
 
 			if (photo) {
-				photos.push(photo);
+				newPhotos.push(photo);
 			}
+		}
+	}
+
+	async function handlePhotoRemove(photoName: string): Promise<void> {
+		if (removePhoto) {
+			removePhoto(photoName);
 		}
 	}
 
@@ -97,11 +146,15 @@
 
 		saving = true;
 
-		if (!name || !photos || !trustLevel) {
+		if (handleSaveStart) {
+			handleSaveStart();
+		}
+
+		if (!name || (!photos && !newPhotos) || !trustLevel) {
 			return;
 		}
 
-		const formData = getFormData(name, $state.snapshot(photos), trustLevel, description);
+		const formData = getFormData(name, $state.snapshot(newPhotos), trustLevel, description);
 
 		// TODO: Convert to fetch PUT /api/profile
 		// See https://github.com/vercel/next.js/issues/73220
@@ -127,7 +180,7 @@
 		</label>
 	</div>
 
-	<NewStuffPhotoCarousel {photos} />
+	<NewStuffPhotoCarousel photos={photosList} {handlePhotoRemove} />
 
 	<div class="form-field">
 		<label>
@@ -157,9 +210,9 @@
 	</div>
 
 	{#if stuff?.id}
-		<button type="button" class="remove" onclick={handleRemove}>Remove?</button>
+		<button type="button" class="remove" onclick={handleRemove} disabled={saving}>Remove?</button>
 	{/if}
-	<button type="submit" onclick={handleFormSubmission} disabled={buttonDisabled}>Save</button>
+	<button type="submit" onclick={handleFormSubmission} disabled={saveButtonDisabled}>Save</button>
 </form>
 
 <style lang="scss">
@@ -212,6 +265,11 @@
 		button.remove {
 			color: black;
 			background-color: #ffeb3b;
+
+			&:disabled {
+				// TODO: standardize save buttons
+				background-color: gray;
+			}
 		}
 	}
 </style>

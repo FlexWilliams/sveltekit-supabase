@@ -7,9 +7,37 @@ import {
 	type StuffFromDb
 } from '$lib/stuff/model/stuff';
 import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/error-response';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Stuff API';
+
+// TODO: consolidate, duped from src\routes\api\my-stuff\[id]\+server.ts
+const uploadMyStuffPhotos = async (
+	userId: string,
+	stuffId: string,
+	files: File[],
+	supabase: SupabaseClient
+): Promise<boolean> => {
+	let success = true;
+
+	for (let i = 0; i < files.length; i++) {
+		let file = files[i];
+		let fileName = file?.name || `${stuffId}_${new Date().getTime()}`;
+
+		const filePath = `${userId}/${stuffId}/images/${fileName}`;
+		Logger.debug(`Bucket Path: ${filePath}`);
+		const { error } = await supabase.storage
+			.from(`user-stuff`)
+			.upload(filePath, file, { upsert: true });
+
+		if (error) {
+			success = false;
+		}
+	}
+
+	return success;
+};
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -19,13 +47,13 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 	const formData = await request.formData();
 	const name = formData.get('name') as string;
-	const photo = formData.get('photo') as File;
+	const photosCount = parseInt(formData.get('photo_count') as string);
+	const newPhotosCount = parseInt(formData.get('new_photo_count') as string);
 	const trustLevel = parseInt(formData.get('trust_level') as string);
 	const description = formData.get('description') as string;
 	const available = formData.get('available') as string;
 
-	// if (!name || !photo || !trustRating) {
-	if (!name || !trustLevel) {
+	if (!name || !trustLevel || (photosCount <= 0 && newPhotosCount <= 0)) {
 		return requiredFieldsMissing(`${API_NAME} [POST]: Unable to add to My Stuff`);
 	}
 
@@ -35,9 +63,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		available: available == 'true' ? true : false,
 		description
 	};
-
-	Logger.debug(JSON.stringify(newStuff));
-	Logger.debug(JSON.stringify(stuffToDb(newStuff as Stuff)));
 
 	const { data } = await supabase
 		.from('user_stuff')
@@ -55,11 +80,29 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 	Logger.debug(JSON.stringify(newStuffFromDb));
 
-	// 	const fileName = `profile_pic.img`; // Using .img as extension to allow upserting diff file types to same file name
+	if (newPhotosCount > 0) {
+		const photos: File[] = [];
 
-	// const { data, error } = await supabase.storage
-	// 	.from(`user-meta`)
-	// 	.upload(`${user?.id}/${fileName}`, profilePic, { upsert: true });
+		for (let i = 0; i < newPhotosCount; i++) {
+			const photo = formData.get(`new_photo_${i}`) as File;
+			if (photo) {
+				photos.push(photo);
+			}
+		}
+
+		Logger.debug(`Photos to upload: ${photos.length}`);
+
+		const id = newStuffFromDb.id;
+
+		const filesUploaded = await uploadMyStuffPhotos(user?.id, id, photos, supabase);
+
+		if (!filesUploaded) {
+			Logger.debug(`${API_NAME} [POST]: Error uploading images to stuff with id: ${id}`);
+			return unknown();
+		} else {
+			Logger.debug(`${API_NAME} [POST]: Success uploading images to stuff with id: ${id}`);
+		}
+	}
 
 	Logger.debug(`${API_NAME} [POST]: Successfully added New Stuff to the user's inventory!`);
 
