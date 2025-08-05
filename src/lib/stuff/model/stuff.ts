@@ -1,6 +1,6 @@
 export interface NewStuff {
 	name: string;
-	trustLevel: number;
+	trustLevel: number; // REVIEW: how to only expose this for the user's items.
 	available: boolean;
 	description?: string;
 }
@@ -26,6 +26,14 @@ export interface StuffFromDb {
 	available: boolean;
 	description?: string;
 	image_url?: string;
+}
+
+export interface StuffSocial {
+	renterName: string;
+	renteeName: string;
+	itemName: string;
+	currentlyRenting: boolean;
+	returnDate?: string;
 }
 
 export function stuffFromDb(s: StuffFromDb): Stuff {
