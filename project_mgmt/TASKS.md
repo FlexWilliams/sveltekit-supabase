@@ -169,7 +169,7 @@ Verified By cube on: 7/15/25
 
 <br>
 
-## (Complete) VOUCH-010 - invite someone
+## VOUCH-010 - invite someone
 
 ### Description:
 
@@ -181,7 +181,7 @@ Verified By cube on: 7/15/25
 
 ### Acceptance Criteria:
 
-Verified By cube on: 7/15/25
+Verified By cube on:
 
 <br>
 
@@ -227,7 +227,7 @@ Verified By <> on:
 
 <br>
 
-## VOUCH-014 - Add Stuff page impl (my inventory - add)
+## (Complete) VOUCH-014 - Add Stuff page impl (my inventory - add)
 
 ### Description:
 
@@ -241,21 +241,19 @@ Verified By <> on:
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 7/29/25
 
 <br>
 
-## VOUCH-015 - Edit Stuff page impl (my inventory - edit)
+## (Complete) VOUCH-015 - Edit Stuff page impl (my inventory - edit)
 
 ### Description:
 
 ^^
 
-- 'Preview Post' button, a la github text editor preview, but for a Stuff post
-
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 7/29/25
 
 <br>
 
@@ -266,6 +264,20 @@ Verified By <> on:
 ^^
 
 - Similar to play dead app.
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-017 - 'Preview Post' button (My Stuff - Edit page)
+
+### Description:
+
+^^
+
+- a la github text editor preview, but for a Stuff post
 
 ### Acceptance Criteria:
 
