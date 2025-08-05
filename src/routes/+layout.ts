@@ -1,4 +1,5 @@
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { fromDbList, type UserMeta, type UserMetaFromDb } from '$lib/user/model/user-meta';
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import type { LayoutLoad } from './$types';
 
@@ -39,5 +40,16 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		data: { user }
 	} = await supabase.auth.getUser();
 
-	return { session, supabase, user, profilePic: data.profilePic };
+	let userMeta: UserMeta | null = null;
+
+	if (user?.id) {
+		const { data: userMetaFromDb } = await supabase
+			.from('user_meta')
+			.select('id,user_name,profile_pic_url')
+			.eq('id', user?.id);
+
+		userMeta = fromDbList(userMetaFromDb as UserMetaFromDb[])[0];
+	}
+
+	return { session, supabase, user, userMeta };
 };

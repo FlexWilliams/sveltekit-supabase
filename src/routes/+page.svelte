@@ -5,13 +5,13 @@
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	let { user } = $derived(data);
+	let { user, userMeta } = $derived(data);
 
 	onMount(() => {
 		afterNavigate((e) => {
 			const route = e.from?.route?.id;
 			if ((!route || route === '/auth') && user) {
-				ToastrService.alert(`Welcome back ${user?.email}!`);
+				ToastrService.alert(`Welcome back\n${userMeta?.userName || user?.email}!`);
 			}
 		});
 	});

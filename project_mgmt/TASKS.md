@@ -284,3 +284,30 @@ Verified By <> on:
 Verified By <> on:
 
 <br>
+
+## VOUCH-018 - Search Page Mock
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-019 - Search Page Impl
+
+### Description:
+
+^^
+
+- View items only by direct friends
+- have
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>

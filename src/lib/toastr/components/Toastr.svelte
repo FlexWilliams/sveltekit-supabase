@@ -44,7 +44,9 @@
 
 {#if toast && toastr}
 	<dialog id="notification-toastr" in:fly={{ y: -200 }} out:fade>
-		<p>{toastr?.message}</p>
+		{#each toastr?.message?.split('\n') as message}
+			<p>{message}</p>
+		{/each}
 	</dialog>
 {/if}
 
@@ -55,6 +57,7 @@
 		position: absolute;
 		z-index: z-index.$toastr-z-index;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		top: 1.5rem;
@@ -77,6 +80,11 @@
 			font-weight: bold;
 			margin: 0;
 			padding: 0;
+
+			&:last-of-type {
+				// TODO: configure via js object (i.e., conditional css, not hardcoded to last message)
+				text-decoration: underline;
+			}
 		}
 	}
 </style>
