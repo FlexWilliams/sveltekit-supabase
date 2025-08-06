@@ -293,18 +293,59 @@ Verified By <> on:
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/5/25
 
 <br>
 
-## VOUCH-019 - Search Page Impl
+## (Complete) VOUCH-019 - Search Page Impl
 
 ### Description:
 
 ^^
 
-- View items only by direct friends
-- have
+### Acceptance Criteria:
+
+Verified By cube on: 8/5/25
+
+<br>
+
+## VOUCH-020 - View items only by direct friends
+
+### Description:
+
+^^
+
+- View items only by direct friends, currently app allows all items searchable
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-021 - My rentals page
+
+### Description:
+
+^^
+
+- need to create new db table `my_rentals`
+  (
+  id,
+  created_on,
+  renterId,
+  renterName,
+  renteeId,
+  renteeName,
+  rentStartDate,
+  rentEndDate,
+  itemName,
+  pickupMethod,
+  returnMethod,
+  status
+  )
+- For now just a card list with button to cancel (ie remove rental from db) and link to stuff page
+- stuff detail page should show item as rented is rented (button disbaled)
 
 ### Acceptance Criteria:
 
