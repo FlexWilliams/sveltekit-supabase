@@ -23,9 +23,21 @@
 		loading = false;
 	}
 
-	function handleRentClick(): void {
-		ToastrService.alert(`Item Added to My Rentals.\nAwaiting approval!`);
-		goto('/my-rentals');
+	async function handleRentClick(): Promise<void> {
+		const rentalResponse = await fetch('/api/my-rentals', {
+			method: 'POST',
+			body: JSON.stringify({ id: stuff?.id }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+
+		if (rentalResponse.ok) {
+			ToastrService.alert(`Item Added to My Rentals.\nAwaiting approval!`);
+			goto('/my-rentals');
+		} else {
+			Logger.error(`There was an error renting this item!`);
+		}
 	}
 
 	onMount(async () => {

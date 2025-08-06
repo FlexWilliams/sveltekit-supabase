@@ -1,0 +1,75 @@
+export interface MyRental {
+	id?: number;
+	createdOn?: string;
+	renterId: string;
+	renterName?: string;
+	renteeId: string;
+	renteeName?: string;
+	itemId: number;
+	itemName?: string;
+	pickupDate?: string;
+	returnDate?: string;
+	pickupMethod?: string;
+	returnMethod?: string;
+	status?: string;
+}
+
+export interface MyRentalFromDb {
+	id?: number;
+	created_on?: string;
+	renter_id: string;
+	renter_name?: string;
+	rentee_id: string;
+	rentee_name?: string;
+	item_id: number;
+	item_name?: string;
+	pickup_date?: string;
+	return_date?: string;
+	pickup_method?: string;
+	return_method?: string;
+	status?: string;
+}
+
+export function rentalFromDb(m: MyRentalFromDb): MyRental {
+	return {
+		id: m.id,
+		createdOn: m.created_on,
+		renterId: m.renter_id,
+		renterName: m.renter_name,
+		renteeId: m.rentee_id,
+		renteeName: m.rentee_name,
+		itemId: m.item_id,
+		itemName: m.item_name,
+		pickupDate: m.pickup_date,
+		returnDate: m.return_date,
+		pickupMethod: m.pickup_method,
+		returnMethod: m.return_method,
+		status: m.status
+	};
+}
+
+export function rentalFromDbList(list: MyRentalFromDb[]): MyRental[] {
+	return list.map(rentalFromDb);
+}
+
+export function rentalToDb(m: MyRental): MyRentalFromDb {
+	return {
+		id: m.id,
+		created_on: m.createdOn,
+		renter_id: m.renterId,
+		renter_name: m.renterName,
+		rentee_id: m.renteeId,
+		rentee_name: m.renteeName,
+		item_id: m.itemId,
+		item_name: m.itemName,
+		pickup_date: m.pickupDate,
+		return_date: m.returnDate,
+		pickup_method: m.pickupMethod,
+		return_method: m.returnMethod,
+		status: m.status
+	};
+}
+
+export function rentalToDbList(list: MyRental[]): MyRentalFromDb[] {
+	return list.map(rentalToDb);
+}
