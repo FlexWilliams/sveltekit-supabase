@@ -132,6 +132,10 @@
 				width: 100%;
 			}
 
+			li:first-child:nth-last-child(1) {
+				width: 100%;
+			}
+
 			li.search-results-card {
 				margin: 0;
 				margin-right: 1rem;

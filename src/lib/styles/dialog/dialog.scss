@@ -1,0 +1,34 @@
+@use '../overlay/shadows.scss';
+
+@mixin dialog {
+	border: none;
+	border-radius: 0.25rem;
+	width: 90%;
+	padding: 1rem 0;
+
+	@include shadows.boxShadow;
+
+	h3 {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 0.5rem;
+	}
+
+	div.actions {
+		display: flex;
+		justify-content: space-around;
+
+		button {
+			min-width: 6rem;
+			height: 2rem;
+			border: none;
+			border-radius: 0.25rem;
+		}
+
+		button.confirm {
+			background-color: #81d4fa;
+		}
+	}
+}

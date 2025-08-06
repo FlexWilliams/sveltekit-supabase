@@ -1,5 +1,8 @@
+import { userMetaFromDb, type UserMeta, type UserMetaFromDb } from '$lib/user/model/user-meta';
+
 export interface NewStuff {
 	name: string;
+	userId: string;
 	trustLevel: number; // REVIEW: how to only expose this for the user's items.
 	available: boolean;
 	description?: string;
@@ -11,9 +14,9 @@ export interface StuffEdit extends NewStuff {
 
 export interface Stuff extends StuffEdit {
 	id: string;
-	userId: string;
 	createdOn: string;
 	imageUrl?: string;
+	userMeta?: UserMeta;
 }
 
 export interface StuffFromDb {
@@ -26,6 +29,7 @@ export interface StuffFromDb {
 	available: boolean;
 	description?: string;
 	image_url?: string;
+	user_meta?: UserMetaFromDb;
 }
 
 export interface StuffSocial {
@@ -46,7 +50,8 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		trustLevel: s.trust_level,
 		available: s.available,
 		description: s.description,
-		imageUrl: s.image_url
+		imageUrl: s.image_url,
+		userMeta: s.user_meta ? userMetaFromDb(s.user_meta) : undefined
 	};
 }
 

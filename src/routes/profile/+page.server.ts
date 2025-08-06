@@ -1,5 +1,5 @@
 import { Logger } from '$lib/logging/logger';
-import { fromDbList } from '$lib/user/model/user-meta';
+import { userMetaFromDbList } from '$lib/user/model/user-meta';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGetSession } }) => {
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGe
 		.select('id,user_name,profile_pic_url')
 		.eq('id', user?.id);
 
-	const meta = fromDbList(userMeta)[0];
+	const meta = userMetaFromDbList(userMeta)[0];
 
 	Logger.debug(`UserMeta: ${JSON.stringify(meta)}`);
 

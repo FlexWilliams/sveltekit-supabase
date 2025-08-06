@@ -16,13 +16,13 @@
 		<div class="form-field">
 			<label>
 				Email:
-				<input name="email" type="email" />
+				<input name="email" type="email" autocomplete="username" />
 			</label>
 		</div>
 		<div class="form-field">
 			<label>
 				Password:
-				<input name="password" type="password" />
+				<input name="password" type="password" autocomplete="current-password" />
 			</label>
 		</div>
 	</div>

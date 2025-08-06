@@ -58,16 +58,21 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	}
 
 	const newStuff: NewStuff = {
+		userId: user?.id,
 		name,
 		trustLevel: trustLevel,
 		available: available == 'true' ? true : false,
 		description
 	};
 
-	const { data } = await supabase
+	const { data, error } = await supabase
 		.from('user_stuff')
 		.insert(stuffToDb(newStuff as Stuff))
 		.select();
+
+	if (error) {
+		Logger.debug(JSON.stringify(error));
+	}
 
 	if (!data || data?.length === 0) {
 		return unknown(

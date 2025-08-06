@@ -10,16 +10,25 @@
 </script>
 
 <article>
-	<h3>{stuff?.name}</h3>
-	<p>{stuff?.userId}</p>
+	<h3>
+		<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''}</span>
+		<span> {stuff?.name}</span>
+	</h3>
+	<p>{stuff?.description}</p>
 	<button onclick={() => goto(`/friend-stuff/${stuff?.id}`)}>Rent</button>
 </article>
 
 <style lang="scss">
 	article {
 		padding: 0 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		h3 {
 			text-align: center;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 		}
 	}
 </style>

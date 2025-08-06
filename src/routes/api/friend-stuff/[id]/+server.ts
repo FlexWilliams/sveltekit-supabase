@@ -15,7 +15,21 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return notFound(`Id null`);
 	}
 
-	const { data, error } = await supabase.from('user_stuff').select().eq('id', id);
+	const { data, error } = await supabase
+		.from('user_stuff')
+		.select(
+			`
+			id,
+			user_id,
+			name,
+			description,
+			available,
+			user_meta (
+				user_name
+			)
+				`
+		)
+		.eq('id', id);
 
 	if (error) {
 		return unknown();

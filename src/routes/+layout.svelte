@@ -19,13 +19,20 @@
 	let subscriptions: any[] = [];
 
 	async function fetchProfilePic(): Promise<void> {
+		if (!user) {
+			return;
+		}
+
 		profileState$$setProfilePicLoading(true);
 
 		const pic = await fetch('/api/profile-pic');
-		let buffer = await pic.arrayBuffer();
 
-		const newProfilePic = new Blob([buffer]);
-		profileState$$setProfilePic(newProfilePic);
+		if (pic.ok) {
+			let buffer = await pic.arrayBuffer();
+
+			const newProfilePic = new Blob([buffer]);
+			profileState$$setProfilePic(newProfilePic);
+		}
 
 		profileState$$setProfilePicLoading(false);
 	}

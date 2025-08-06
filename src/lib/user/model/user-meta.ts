@@ -13,11 +13,15 @@ export interface UserMetaFromDb {
 	profile_pic_url?: string;
 }
 
-export function fromDbList(list: UserMetaFromDb[]): UserMeta[] {
-	return list.map((l) => ({
-		id: l.id,
-		createdOn: l.created_on,
-		userName: l.user_name,
-		profilePicUrl: l.profile_pic_url
-	}));
+export function userMetaFromDb(userMeta: UserMetaFromDb): UserMeta {
+	return {
+		id: userMeta.id,
+		createdOn: userMeta.created_on,
+		userName: userMeta.user_name,
+		profilePicUrl: userMeta.profile_pic_url
+	};
+}
+
+export function userMetaFromDbList(list: UserMetaFromDb[]): UserMeta[] {
+	return list.map(userMetaFromDb);
 }
