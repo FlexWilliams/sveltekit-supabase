@@ -45,6 +45,16 @@ export const notFound = (logMessage?: string): Response => {
 	});
 };
 
+export const ok = (data?: any, logMessage?: string): Response => {
+	if (logMessage) {
+		Logger.debug(`${logMessage}`);
+	}
+
+	return new Response(data ? JSON.stringify(data) : null, {
+		status: 200
+	});
+};
+
 export const requiredFieldsMissing = (logBaseMessage?: string): Response => {
 	const message = 'Required fields are missing!';
 

@@ -26,7 +26,7 @@
 <style lang="scss">
 	h3 {
 		text-align: center;
-		margin-bottom: 0;
+		margin: 0;
 	}
 
 	ul {
@@ -47,6 +47,10 @@
 			min-width: 80%;
 			background-color: white;
 			border-radius: 0.25rem;
+
+			&:last-of-type {
+				margin-right: 0;
+			}
 		}
 
 		li.no-friend-activity {

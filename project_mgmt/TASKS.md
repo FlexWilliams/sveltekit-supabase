@@ -285,7 +285,7 @@ Verified By <> on:
 
 <br>
 
-## VOUCH-018 - Search Page Mock
+## (Complete) VOUCH-018 - Search Page Mock
 
 ### Description:
 
