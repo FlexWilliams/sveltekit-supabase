@@ -309,7 +309,7 @@ Verified By cube on: 8/5/25
 
 <br>
 
-## VOUCH-020 - View items only by direct friends
+## (Complete) VOUCH-020 - View items only by direct friends
 
 ### Description:
 
@@ -319,11 +319,11 @@ Verified By cube on: 8/5/25
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/8/25
 
 <br>
 
-## VOUCH-021 - My rentals page
+## (Complete) VOUCH-021 - My rentals page
 
 ### Description:
 
@@ -346,6 +346,86 @@ Verified By <> on:
   )
 - For now just a card list with button to cancel (ie remove rental from db) and link to stuff page
 - stuff detail page should show item as rented is rented (button disbaled)
+
+### Acceptance Criteria:
+
+Verified By cube on: 8/8/25
+
+<br>
+
+## VOUCH-022 - Friend Stuff Detail page UX changes
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-023 - Chat/Message friend/Rental Inbox...
+
+### Description:
+
+^^
+
+may be 3 diff stories or a single overlay component...
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-024 - Notifications
+
+### Description:
+
+^^
+
+_sigh_ tuffy, not sure if supabase offers a push notification service...don't want to impl my self
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-025 - Auth redirect (logged out)
+
+### Description:
+
+^^
+
+Seems like some pages can be routed to such as `/search` when user not logged in.
+
+Should always redirect to home page w/ad and sign in link only.
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-026 - Search page UX cleanup
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
+
+## VOUCH-027 - Friend Activity Impl and UX
+
+### Description:
+
+^^
 
 ### Acceptance Criteria:
 
