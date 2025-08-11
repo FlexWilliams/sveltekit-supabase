@@ -16,4 +16,12 @@ export class ToastrService {
 			message
 		});
 	}
+
+	public static error(message: string): void {
+		this._toastr$.next({
+			message,
+			bgColor: '#ef5350',
+			duration: 10000
+		});
+	}
 }

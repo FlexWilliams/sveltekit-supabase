@@ -43,7 +43,12 @@
 </script>
 
 {#if toast && toastr}
-	<dialog id="notification-toastr" in:fly={{ y: -200 }} out:fade>
+	<dialog
+		id="notification-toastr"
+		in:fly={{ y: -200 }}
+		out:fade
+		style={toastr?.bgColor ? `background-color: ${toastr?.bgColor}` : ''}
+	>
 		{#each toastr?.message?.split('\n') as message}
 			<p>{message}</p>
 		{/each}

@@ -54,16 +54,18 @@
 
 			ToastrService.alert(`New Item Saved!`);
 
-			saving = false;
-
 			if (handleSaveFinish) {
 				handleSaveFinish();
 			}
 
 			goto(`/my-stuff/${newItem.id}`);
-		} else {
-			Logger.error(JSON.parse(this.response)?.message);
+		} else if (this.response) {
+			Logger.error(`Unable to save new Stuff:\n${this.response}`);
+
+			ToastrService.error(`Oops!\nThere was an error saving your new Stuff.`);
 		}
+
+		saving = false;
 	}
 
 	async function handleUpdateResponse(this: XMLHttpRequest): Promise<void> {

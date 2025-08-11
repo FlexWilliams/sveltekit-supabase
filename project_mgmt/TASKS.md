@@ -432,3 +432,24 @@ Verified By <> on:
 Verified By <> on:
 
 <br>
+
+## VOUCH-028 - Fix new user flow
+
+### Description:
+
+^^
+
+Looks like supabase complains when doing crud for a new user if the `user_meta` db table doesn't have a row, which currently there is no stored proc or code path that does...
+
+Either impl one of the 2 above, or fix relationship requirement at db level:
+
+```
+{"code":"23503","details":"Key is not present in table \"user_meta\".","hint":null,"message":"insert or update on table \"user_stuff\" violates foreign key constraint \"user_stuff_user_id_fkey\""}
+My Stuff API [POST]: Error occurred at the DB level
+```
+
+### Acceptance Criteria:
+
+Verified By <> on:
+
+<br>
