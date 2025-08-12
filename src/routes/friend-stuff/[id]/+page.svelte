@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import bluray from '$lib/assets/images/inventory-items/bluray.png';
 	import { Logger } from '$lib/logging/logger';
 	import type { MyRental } from '$lib/rental/model/rental';
 	import type { Stuff } from '$lib/stuff/model/stuff';
@@ -16,6 +17,8 @@
 
 	let rental: MyRental | null = $state(null);
 
+	let photo: string | null = $state(null);
+
 	async function fetchStuff(): Promise<void> {
 		const response = await fetch(`/api/friend-stuff/${stuffId}`);
 
@@ -23,6 +26,23 @@
 			Logger.error(`Stuff with id ${stuffId} not found!`);
 		} else {
 			stuff = (await response.json()) as Stuff;
+		}
+
+		loadingStuff = false;
+	}
+
+	async function fetchStuffImage(): Promise<void> {
+		if (!stuff?.imageUrl) {
+			return;
+		}
+
+		const response = await fetch(`/api/stuff/${stuffId}/photo/${stuff?.imageUrl}`);
+
+		if (!response.ok) {
+			Logger.error(`Error fetching stuff photo!`);
+		} else {
+			const blob = new Blob([await response.arrayBuffer()]);
+			photo = URL.createObjectURL(blob);
 		}
 
 		loadingStuff = false;
@@ -79,88 +99,114 @@
 		let tokens = window.location.pathname.split('/');
 		stuffId = tokens[tokens.length - 1];
 		await fetchStuff();
+		await fetchStuffImage();
 		await fetchRental();
 	});
 </script>
 
-{#if loadingStuff || loadingMyRental}
-	<p>Loading...</p>
-{:else if stuff}
-	<h3>
-		<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
-		<span>{stuff.name}</span>
-	</h3>
-	<p>{stuff.description}</p>
+<section>
+	{#if loadingStuff || loadingMyRental}
+		<p>Loading...</p>
+	{:else if stuff}
+		<h3>
+			<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
+			<span>{stuff.name}</span>
+		</h3>
 
-	<div class="rental-actions">
-		<div>
+		<img src={photo || bluray} alt={`Image of ${stuff?.name}`} />
+
+		<p>{stuff.description}</p>
+
+		<div class="rental-actions">
 			{#if rental && !rental.status}
 				<button popovertarget="confirm-cancellation">Cancel Reservation</button>
 			{/if}
-		</div>
-		<div>
-			<button onclick={handleRentClick} disabled={loadingMyRental || !!rental}>Rent</button>
-		</div>
-	</div>
-{:else}
-	<p>Sorry, this item doesn't seem to exist!</p>
-	<a href="/search">Back to Search</a>
-{/if}
 
-{#if rental}
-	<dialog id="confirm-cancellation" popover="auto">
-		<h3>
-			<span>Are you sure you want to cancel your Reservation of:</span>
-			<span>{rental?.itemName}?</span>
-		</h3>
-		<div class="actions">
-			<button type="button" onclick={() => closePopover()}>No</button>
-			<button
-				type="button"
-				class="confirm"
-				onclick={() => {
-					closePopover();
-					handleCancelReservation(rental?.id);
-				}}>Yes</button
+			<button onclick={handleRentClick} disabled={loadingMyRental || !!rental} class="rent"
+				>Rent</button
 			>
 		</div>
-	</dialog>
-{/if}
+	{:else}
+		<p>Sorry, this item doesn't seem to exist!</p>
+		<a href="/search">Back to Search</a>
+	{/if}
+
+	{#if rental}
+		<dialog id="confirm-cancellation" popover="auto">
+			<h3>
+				<span>Are you sure you want to cancel your Reservation of:</span>
+				<span>{rental?.itemName}?</span>
+			</h3>
+			<div class="actions">
+				<button type="button" onclick={() => closePopover()}>No</button>
+				<button
+					type="button"
+					class="confirm"
+					onclick={() => {
+						closePopover();
+						handleCancelReservation(rental?.id);
+					}}>Yes</button
+				>
+			</div>
+		</dialog>
+	{/if}
+</section>
 
 <style lang="scss">
 	@use '../../../lib/styles/dialog/dialog.scss';
+	@use '../../../lib/styles/layout/panel.scss';
 
-	h3 {
+	section {
+		@include panel.panel;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
+		overflow: hidden;
 
-	p {
-		text-align: center;
-	}
+		h3 {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
 
-	a {
-		display: flex;
-		justify-content: center;
-		color: black;
-	}
-
-	div.rental-actions {
-		display: flex;
-		justify-content: space-between;
-
-		div {
+		img {
 			min-width: 10rem;
+			width: 10rem;
+			min-height: 10rem;
+			height: 10rem;
+			border-radius: 0.25rem;
 		}
 
-		button {
-			width: 100%;
-			height: 2rem;
+		p {
+			text-align: center;
 		}
-	}
 
-	dialog {
-		@include dialog.dialog;
+		a {
+			display: flex;
+			justify-content: center;
+			color: black;
+		}
+
+		div.rental-actions {
+			padding: 1rem 0;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+
+			button {
+				width: 10rem;
+				height: 3rem;
+				border: none;
+				border-radius: 0.25rem;
+			}
+
+			button.rent {
+				background-color: #cddc39;
+			}
+		}
+
+		dialog {
+			@include dialog.dialog;
+		}
 	}
 </style>

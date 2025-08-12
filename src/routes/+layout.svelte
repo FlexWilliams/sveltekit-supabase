@@ -63,11 +63,11 @@
 
 <style lang="scss">
 	main {
-		height: calc(70% - 2rem);
-		max-height: calc(70% - 2rem);
+		height: calc(70%);
+		max-height: calc(70%);
 		overflow: hidden;
 		width: calc(100% - 4rem);
-		padding: 1rem;
+		padding: 0 1rem;
 		margin: 0 1rem;
 	}
 </style>

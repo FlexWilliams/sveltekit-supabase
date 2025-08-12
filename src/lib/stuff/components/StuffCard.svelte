@@ -51,11 +51,12 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 1rem;
-		background-color: gray;
+		background-color: transparent;
 		width: 100%;
 		height: 100%;
 		border: none;
 		@include variables.border-radius-panel;
+		@include shadows.boxShadow;
 
 		h3 {
 			text-align: center;
@@ -78,7 +79,7 @@
 		height: 3rem;
 		border-radius: 3rem;
 		border: none;
-		background-color: #ffeb3b;
+		background-color: #cddc39;
 		@include shadows.boxShadow;
 	}
 

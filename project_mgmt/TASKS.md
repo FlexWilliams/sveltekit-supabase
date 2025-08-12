@@ -359,7 +359,7 @@ Verified By cube on: 8/8/25
 
 ^^
 
-May need to impl image resizing, public bucket first...
+May need to impl image resizing, public bucket first... (VOUCH-029)
 
 ### Acceptance Criteria:
 
@@ -464,6 +464,6 @@ Verified By <> on:
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/11/25
 
 <br>

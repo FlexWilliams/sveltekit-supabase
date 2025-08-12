@@ -282,7 +282,7 @@
 
 		button.remove {
 			color: black;
-			background-color: #ffeb3b;
+			background-color: #cddc39;
 
 			&:disabled {
 				// TODO: standardize save buttons

@@ -48,7 +48,7 @@
 			height: 3rem;
 			border-radius: 3rem;
 			border: none;
-			background-color: #ffeb3b;
+			background-color: #cddc39;
 			font-weight: bold;
 			@include shadows.boxShadow;
 		}

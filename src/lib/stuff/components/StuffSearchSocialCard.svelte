@@ -37,6 +37,9 @@
 	article {
 		position: relative;
 		height: 100%;
+		border: 1px solid black;
+		min-height: 100%;
+		border-radius: 0.25rem;
 
 		h3 {
 			display: flex;

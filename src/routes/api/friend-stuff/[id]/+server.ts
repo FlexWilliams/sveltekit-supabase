@@ -24,6 +24,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 			name,
 			description,
 			available,
+			image_url,
 			user_meta (
 				user_name
 			)

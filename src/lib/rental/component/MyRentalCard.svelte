@@ -54,14 +54,15 @@
 
 <style lang="scss">
 	@use '../../styles/dialog/dialog.scss';
+	@use '../../styles/overlay/shadows.scss';
 
 	article {
 		position: relative;
-		background-color: white;
 		border: none;
 		border-radius: 0.25rem;
 		padding: 1rem;
 		margin: 1rem 0;
+		@include shadows.boxShadow;
 
 		h3 {
 			display: flex;
@@ -71,6 +72,10 @@
 		button.cancel {
 			position: relative;
 			z-index: 2;
+			height: 2rem;
+			border: none;
+			border-radius: 0.25rem;
+			background-color: #cddc39;
 		}
 
 		button.item-details {

@@ -97,13 +97,17 @@
 </section>
 
 <style lang="scss">
+	@use '../../lib/styles/layout/panel.scss';
+	@use '../../lib/styles/overlay/shadows.scss';
+
 	section {
+		@include panel.panel;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 
 		form {
-			height: 20%;
+			height: 15%;
 
 			h2 {
 				margin: 0;
@@ -111,19 +115,18 @@
 			}
 
 			input {
-				width: 100%;
+				width: calc(100% - 0.5rem);
 				height: 2rem;
 				border-radius: 0.25rem;
-				border: none;
+				border: 1px solid black;
 			}
 		}
 
 		ul.search-results {
-			height: 40%;
+			height: calc(40% - 2rem);
 			list-style: none;
-			margin: 1rem 0;
+			margin: 0;
 			padding: 1rem 0;
-			height: calc(100% - 4rem);
 			display: flex;
 			overflow-x: auto;
 			overflow-y: hidden;
@@ -157,7 +160,8 @@
 		}
 
 		div.social {
-			height: 40%;
+			height: calc(40% - 2rem);
+			padding: 1rem 0;
 		}
 	}
 </style>

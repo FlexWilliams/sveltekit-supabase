@@ -39,47 +39,55 @@
 	});
 </script>
 
-<h2>My Rentals</h2>
+<section>
+	<h2>My Rentals</h2>
 
-{#if loading}
-	<p>Loading...</p>
-{:else}
-	<ul>
-		{#each rentals as rental}
-			<li>
-				<MyRentalCard {rental} {handleCancelReservation} />
-			</li>
-		{:else}
-			<li>
-				<p>You don't have any active rentals</p>
-				<a href="/search">Search for things to rent here</a>
-			</li>
-		{/each}
-	</ul>
-{/if}
+	{#if loading}
+		<p>Loading...</p>
+	{:else}
+		<ul>
+			{#each rentals as rental}
+				<li>
+					<MyRentalCard {rental} {handleCancelReservation} />
+				</li>
+			{:else}
+				<li>
+					<p>You don't have any active rentals</p>
+					<a href="/search">Search for things to rent here</a>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+</section>
 
 <style lang="scss">
-	h2 {
-		text-align: center;
-	}
+	@use '../../lib/styles/layout/panel.scss';
 
-	p {
-		text-align: center;
-	}
+	section {
+		@include panel.panel;
 
-	ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
+		h2 {
+			text-align: center;
+		}
 
-		li {
+		p {
+			text-align: center;
+		}
+
+		ul {
+			list-style: none;
 			margin: 0;
 			padding: 0;
 
-			a {
-				display: flex;
-				justify-content: center;
-				color: white;
+			li {
+				margin: 0;
+				padding: 0 1rem;
+
+				a {
+					display: flex;
+					justify-content: center;
+					color: black;
+				}
 			}
 		}
 	}

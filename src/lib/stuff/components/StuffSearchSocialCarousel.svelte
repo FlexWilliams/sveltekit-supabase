@@ -31,9 +31,9 @@
 
 	ul {
 		list-style: none;
-		margin: 1rem 0;
-		padding: 1rem 0;
-		height: calc(100% - 4rem);
+		margin: 0;
+		padding: 0.5rem 0;
+		height: calc(100% - 1rem);
 		display: flex;
 		overflow-x: auto;
 		overflow-y: hidden;

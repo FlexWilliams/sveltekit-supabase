@@ -23,6 +23,11 @@
 		}
 	}
 
+	function handleScrollToItem(evt: Event): void {
+		const target = evt.target as HTMLElement;
+		target?.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+	}
+
 	onMount(async () => {
 		await fetchPhoto();
 	});
@@ -33,28 +38,68 @@
 		<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''}</span>
 		<span> {stuff?.name}</span>
 	</h3>
-	<img src={photo || bluray} alt={`${stuff.name}`} />
 	<p>{stuff?.description}</p>
-	<button onclick={() => goto(`/friend-stuff/${stuff?.id}`)}>Rent</button>
+	<button onclick={() => goto(`/friend-stuff/${stuff?.id}`)} class="rent">Rent</button>
+
+	<img src={photo || bluray} alt={`${stuff.name}`} />
+	<button aria-label="Scroll to item" class="scroll-to" onclick={handleScrollToItem}></button>
 </article>
 
 <style lang="scss">
+	@use '../../../lib/styles/overlay/shadows.scss';
+
 	article {
 		padding: 0 1rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		position: relative;
+		border: 1px solid black;
+		min-height: 100%;
+		border-radius: 0.25rem;
+
+		@include shadows.boxShadow;
 
 		h3 {
 			text-align: center;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			margin-bottom: 0;
+		}
+
+		p {
+			text-align: center;
 		}
 
 		img {
-			max-width: 3rem;
-			max-height: 3rem;
+			max-width: 100%;
+			max-height: 100%;
+			opacity: 0.2;
+			position: absolute;
+		}
+
+		button.scroll-to {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border: none;
+			background-color: transparent;
+			z-index: 1;
+		}
+
+		button.rent {
+			position: absolute;
+			bottom: 1rem;
+			right: 1rem;
+			z-index: 2;
+			width: 6rem;
+			height: 2rem;
+			border: none;
+			border-radius: 0.25rem;
+			background-color: #cddc39;
 		}
 	}
 </style>
