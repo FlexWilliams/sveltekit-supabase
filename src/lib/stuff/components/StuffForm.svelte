@@ -72,8 +72,6 @@
 		if (this.status === 204) {
 			ToastrService.alert(`Item Updated!`);
 
-			saving = false;
-
 			newPhotos.length = 0;
 			const photoInput = document.getElementsByName('photos')[0] as HTMLInputElement;
 			if (photoInput) {
@@ -88,8 +86,10 @@
 				handleUpdate();
 			}
 		} else {
-			Logger.error(JSON.parse(this.response)?.message);
+			ToastrService.error(`Oops!\nThere was an error updating your Stuff!`);
 		}
+
+		saving = false;
 	}
 
 	function getFormData(
@@ -143,6 +143,22 @@
 		}
 	}
 
+	async function handlePhotoSetDefault(photoName: string): Promise<void> {
+		const response = await fetch(`/api/my-stuff/${stuff?.id}/default-photo`, {
+			method: 'PUT',
+			body: JSON.stringify({ imageUrl: photoName }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+
+		if (response.ok) {
+			ToastrService.alert(`Updated default photo!`);
+		} else {
+			ToastrService.error(`Error updating default photo!`);
+		}
+	}
+
 	async function handleFormSubmission(event: Event): Promise<void> {
 		event.preventDefault();
 
@@ -182,7 +198,7 @@
 		</label>
 	</div>
 
-	<NewStuffPhotoCarousel photos={photosList} {handlePhotoRemove} />
+	<NewStuffPhotoCarousel photos={photosList} {handlePhotoRemove} {handlePhotoSetDefault} />
 
 	<div class="form-field">
 		<label>

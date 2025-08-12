@@ -10,6 +10,7 @@ export interface NewStuff {
 
 export interface StuffEdit extends NewStuff {
 	updatedOn: string;
+	imageUrl?: string;
 }
 
 export interface Stuff extends StuffEdit {

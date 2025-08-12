@@ -32,6 +32,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			name,
 			description,
 			available,
+			image_url,
 			user_meta (
 				user_name
 			)

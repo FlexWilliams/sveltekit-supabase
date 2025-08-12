@@ -2,9 +2,10 @@
 	interface Props {
 		photos: File[];
 		handlePhotoRemove: (photoName: string) => void;
+		handlePhotoSetDefault: (photoName: string) => void;
 	}
 
-	let { photos, handlePhotoRemove }: Props = $props();
+	let { photos, handlePhotoRemove, handlePhotoSetDefault }: Props = $props();
 	let photoUrls: string[] = $derived.by(() =>
 		photos ? photos.map((p) => URL.createObjectURL(p)) : []
 	);
@@ -18,6 +19,9 @@
 				aria-label="Remove Photo?"
 				class="close"
 				onclick={() => handlePhotoRemove(photos[idx]?.name)}>X</button
+			>
+			<button class="default" onclick={() => handlePhotoSetDefault(photos[idx]?.name)}
+				>Set Default</button
 			>
 		</li>
 	{:else}
@@ -64,6 +68,17 @@
 				height: 2rem;
 				border: none;
 				border-radius: 2rem;
+			}
+
+			button.default {
+				position: absolute;
+				bottom: 0.5rem;
+				right: 0.5rem;
+				width: 6rem;
+				height: 2rem;
+				border: none;
+				border-radius: 2rem;
+				opacity: 75%;
 			}
 		}
 

@@ -7,41 +7,15 @@ import {
 	unknown
 } from '$lib/web/http/error-response';
 import type { PhotoNamesResponse } from '$lib/web/http/response';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Stuff [id] API';
 
-const uploadMyStuffPhotos = async (
-	userId: string,
-	stuffId: string,
-	files: File[],
-	supabase: SupabaseClient
-): Promise<boolean> => {
-	let success = true;
-
-	for (let i = 0; i < files.length; i++) {
-		let file = files[i];
-		let fileName = file?.name || `${stuffId}_${new Date().getTime()}`;
-
-		const filePath = `${userId}/${stuffId}/images/${fileName}`;
-		Logger.debug(`Bucket Path: ${filePath}`);
-		const { error } = await supabase.storage
-			.from(`user-stuff`)
-			.upload(filePath, file, { upsert: true });
-
-		if (error) {
-			success = false;
-		}
-	}
-
-	return success;
-};
-
 export const PUT: RequestHandler = async ({
 	request,
 	params,
-	locals: { supabase, safeGetSession }
+	locals: { supabase, safeGetSession },
+	fetch
 }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
@@ -69,6 +43,7 @@ export const PUT: RequestHandler = async ({
 	}
 
 	const stuffEdit: StuffEdit = {
+		userId: user?.id,
 		name,
 		trustLevel: trustLevel,
 		available: available == 'true' ? true : false,
@@ -88,26 +63,13 @@ export const PUT: RequestHandler = async ({
 		return unknown();
 	}
 
-	if (newPhotosCount > 0) {
-		const photos: File[] = [];
+	const uploadPhotos = await fetch(`/api/stuff/${id}/photos`, {
+		method: 'POST',
+		body: formData
+	});
 
-		for (let i = 0; i < newPhotosCount; i++) {
-			const photo = formData.get(`new_photo_${i}`) as File;
-			if (photo) {
-				photos.push(photo);
-			}
-		}
-
-		Logger.debug(`Photos to upload: ${photos.length}`);
-
-		const filesUploaded = await uploadMyStuffPhotos(user?.id, id, photos, supabase);
-
-		if (!filesUploaded) {
-			Logger.debug(`${API_NAME} [PUT]: Error uploading images to stuff with id: ${id}`);
-			return unknown();
-		} else {
-			Logger.debug(`${API_NAME} [PUT]: Success uploading images to stuff with id: ${id}`);
-		}
+	if (!uploadPhotos.ok) {
+		Logger.error(`Error uploading photos for new stuff`);
 	}
 
 	return new Response(null, {
@@ -146,18 +108,18 @@ export const DELETE: RequestHandler = async ({
 	}
 
 	const { photoNames } = (await (
-		await fetch(`/api/my-stuff/${id}/photo-names`)
+		await fetch(`/api/stuff/${id}/photo-names`)
 	).json()) as PhotoNamesResponse;
 
-	const photosToRemove = photoNames.map((p) => `${user?.id}/${id}/images/${p}`);
+	Logger.debug(`Attempting to delete Stuff photos: [${photoNames.join('\n')}]\n`);
 
-	Logger.debug(`Attempting to delete My Stuff photos: [${photosToRemove.join('\n')}]\n`);
+	photoNames.forEach(async (p) => {
+		const removed = await fetch(`/api/stuff/${id}/photo/${p}`, { method: 'DELETE' });
 
-	const { error } = await supabase.storage.from('user-stuff').remove(photosToRemove);
-
-	if (error) {
-		Logger.error(`${API_NAME} [DELETE]: Error deleting stuff images! May require manual removal.`);
-	}
+		if (removed.status !== 204) {
+			Logger.error(`Error removing photo: ${p} for Stuff w/ id: ${id}. Manual deletion required!`);
+		}
+	});
 
 	return new Response(null, {
 		status: 204

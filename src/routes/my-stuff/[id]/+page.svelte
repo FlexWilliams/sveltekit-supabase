@@ -54,13 +54,13 @@
 		photos.length = 0;
 
 		const { photoNames } = (await (
-			await fetch(`/api/my-stuff/${stuff?.id}/photo-names`)
+			await fetch(`/api/stuff/${stuff?.id}/photo-names`)
 		).json()) as PhotoNamesResponse;
 
 		if (photoNames.length > 0) {
-			photoNames.forEach(async (photoName, idx) => {
+			photoNames.forEach(async (photoName) => {
 				const photo = await (
-					await fetch(`/api/my-stuff/${stuff?.id}/photo/${photoName}`)
+					await fetch(`/api/stuff/${stuff?.id}/photo/${photoName}`)
 				).arrayBuffer();
 				if (photo) {
 					photos.push(new File([photo], photoName));
@@ -80,7 +80,7 @@
 	}
 
 	async function removePhoto(photoName: string): Promise<void> {
-		const response = await fetch(`/api/my-stuff/${stuff?.id}/photo/${photoName}`, {
+		const response = await fetch(`/api/stuff/${stuff?.id}/photo/${photoName}`, {
 			method: 'DELETE'
 		});
 

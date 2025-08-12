@@ -1,12 +1,38 @@
 <script lang="ts">
 	import bluray from '$lib/assets/images/inventory-items/bluray.png';
-	let { stuff, handleClick, handleEdit } = $props();
+	import { onMount } from 'svelte';
+	import type { Stuff } from '../model/stuff';
+
+	interface StuffCardProps {
+		stuff: Stuff;
+		handleClick: (evt: Event) => void;
+		handleEdit: (id: string) => void;
+	}
+
+	let { stuff, handleClick, handleEdit }: StuffCardProps = $props();
+
+	let photo: string | null = $state(null);
+
+	async function fetchPhoto(): Promise<void> {
+		if (stuff?.imageUrl) {
+			const response = await fetch(`/api/stuff/${stuff?.id}/photo/${stuff.imageUrl}`);
+
+			if (response.ok) {
+				const buffer = await response.arrayBuffer();
+				photo = URL.createObjectURL(new Blob([buffer]));
+			}
+		}
+	}
+
+	onMount(async () => {
+		await fetchPhoto();
+	});
 </script>
 
 <button class="card" onclick={handleClick}>
 	<h3>{stuff?.name}</h3>
 
-	<img src={bluray} alt={`${stuff.name}`} />
+	<img src={photo || bluray} alt={`${stuff.name}`} />
 </button>
 <button
 	type="button"
@@ -39,6 +65,7 @@
 
 		img {
 			max-width: 80%;
+			max-height: 80%;
 			@include variables.border-radius-panel;
 		}
 	}
@@ -64,6 +91,7 @@
 
 			img {
 				max-width: 70%;
+				max-height: 70%;
 				@include variables.border-radius-panel;
 			}
 		}

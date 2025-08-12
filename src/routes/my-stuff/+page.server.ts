@@ -10,7 +10,7 @@ const fetchItems = async (
 ): Promise<Stuff[]> => {
 	let stuff: Stuff[] = [];
 
-	const columns = 'id,user_id,created_on,name,trust_level,description,available';
+	const columns = 'id,user_id,created_on,name,trust_level,description,available,image_url';
 
 	const { data, error } = await supabase
 		.from('user_stuff')

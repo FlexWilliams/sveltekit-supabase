@@ -7,39 +7,16 @@ import {
 	type StuffFromDb
 } from '$lib/stuff/model/stuff';
 import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/error-response';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { PhotoNamesResponse } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Stuff API';
 
-// TODO: consolidate, duped from src\routes\api\my-stuff\[id]\+server.ts
-const uploadMyStuffPhotos = async (
-	userId: string,
-	stuffId: string,
-	files: File[],
-	supabase: SupabaseClient
-): Promise<boolean> => {
-	let success = true;
-
-	for (let i = 0; i < files.length; i++) {
-		let file = files[i];
-		let fileName = file?.name || `${stuffId}_${new Date().getTime()}`;
-
-		const filePath = `${userId}/${stuffId}/images/${fileName}`;
-		Logger.debug(`Bucket Path: ${filePath}`);
-		const { error } = await supabase.storage
-			.from(`user-stuff`)
-			.upload(filePath, file, { upsert: true });
-
-		if (error) {
-			success = false;
-		}
-	}
-
-	return success;
-};
-
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+export const POST: RequestHandler = async ({
+	request,
+	locals: { supabase, safeGetSession },
+	fetch
+}) => {
 	const { user } = await safeGetSession();
 	if (!user) {
 		return forbidden(`${API_NAME} [POST]: Unable to add to My Stuff, user null.`);
@@ -81,35 +58,40 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		);
 	}
 
-	const newStuffFromDb = stuffFromDbList(data as StuffFromDb[])[0];
+	let newStuffFromDb = stuffFromDbList(data as StuffFromDb[])[0];
 
 	Logger.debug(JSON.stringify(newStuffFromDb));
 
-	if (newPhotosCount > 0) {
-		const photos: File[] = [];
+	const uploadPhotos = await fetch(`/api/stuff/${newStuffFromDb?.id}/photos`, {
+		method: 'POST',
+		body: formData
+	});
 
-		for (let i = 0; i < newPhotosCount; i++) {
-			const photo = formData.get(`new_photo_${i}`) as File;
-			if (photo) {
-				photos.push(photo);
+	if (!uploadPhotos.ok) {
+		Logger.error(`Error uploading photos for new stuff`);
+	} else {
+		const { photoNames } = (await (
+			await fetch(`/api/stuff/${newStuffFromDb?.id}/photo-names`)
+		).json()) as PhotoNamesResponse;
+
+		Logger.debug(`Setting file "${photoNames[0]}" as default image for new Stuff item`);
+
+		const firstFile = formData.get(`new_photo_0`) as File;
+		newStuffFromDb.imageUrl = photoNames[0] || firstFile ? firstFile.name : '';
+
+		if (newStuffFromDb.imageUrl) {
+			const { error } = await supabase
+				.from('user_stuff')
+				.update(stuffToDb(newStuffFromDb))
+				.eq('id', newStuffFromDb.id);
+
+			if (error) {
+				Logger.error(`${API_NAME} [POST]: Error setting default photo name on stuff object.`);
 			}
-		}
-
-		Logger.debug(`Photos to upload: ${photos.length}`);
-
-		const id = newStuffFromDb.id;
-
-		const filesUploaded = await uploadMyStuffPhotos(user?.id, id, photos, supabase);
-
-		if (!filesUploaded) {
-			Logger.debug(`${API_NAME} [POST]: Error uploading images to stuff with id: ${id}`);
-			return unknown();
 		} else {
-			Logger.debug(`${API_NAME} [POST]: Success uploading images to stuff with id: ${id}`);
+			Logger.error(`${API_NAME} [POST]: Error setting default photo name on stuff object.`);
 		}
 	}
-
-	Logger.debug(`${API_NAME} [POST]: Successfully added New Stuff to the user's inventory!`);
 
 	return new Response(JSON.stringify(newStuffFromDb), {
 		status: 201
