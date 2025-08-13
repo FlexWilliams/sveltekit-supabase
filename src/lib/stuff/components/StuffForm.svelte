@@ -227,10 +227,10 @@
 		</label>
 	</div>
 
+	<button type="submit" onclick={handleFormSubmission} disabled={saveButtonDisabled}>Save</button>
 	{#if stuff?.id}
 		<button type="button" class="remove" onclick={handleRemove} disabled={saving}>Remove?</button>
 	{/if}
-	<button type="submit" onclick={handleFormSubmission} disabled={saveButtonDisabled}>Save</button>
 </form>
 
 <style lang="scss">
