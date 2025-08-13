@@ -30,6 +30,7 @@
 <style lang="scss">
 	@use '../../lib/styles/layout/panel.scss';
 	@use '../../lib/styles/overlay/shadows.scss';
+	@use '../../lib/styles/responsive.scss';
 
 	section {
 		@include panel.panel;
@@ -51,6 +52,16 @@
 			background-color: #cddc39;
 			font-weight: bold;
 			@include shadows.boxShadow;
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		section {
+			button.add-item {
+				width: 5rem;
+				height: 5rem;
+				font-size: 1.5rem;
+			}
 		}
 	}
 </style>

@@ -32,6 +32,8 @@
 </ul>
 
 <style lang="scss">
+	@use '../../../lib/styles/responsive.scss';
+
 	ul {
 		list-style: none;
 		margin: 1rem 0;
@@ -85,6 +87,14 @@
 		li.no-photos {
 			width: 100%;
 			text-align: center;
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		ul {
+			min-height: 20rem;
+			height: 20rem;
+			max-height: 20rem;
 		}
 	}
 </style>

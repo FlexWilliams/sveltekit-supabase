@@ -155,6 +155,7 @@
 <style lang="scss">
 	@use '../../../lib/styles/dialog/dialog.scss';
 	@use '../../../lib/styles/layout/panel.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	section {
 		@include panel.panel;
@@ -170,8 +171,8 @@
 		}
 
 		img {
-			min-width: 10rem;
-			width: 10rem;
+			min-width: 90%;
+			width: 90%;
 			min-height: 10rem;
 			height: 10rem;
 			border-radius: 0.25rem;
@@ -192,9 +193,10 @@
 			display: flex;
 			flex-direction: column;
 			gap: 0.5rem;
+			width: 90%;
 
 			button {
-				width: 10rem;
+				width: 100%;
 				height: 3rem;
 				border: none;
 				border-radius: 0.25rem;
@@ -207,6 +209,26 @@
 
 		dialog {
 			@include dialog.dialog;
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		section {
+			h3 {
+				font-size: 2.5rem;
+			}
+
+			div.rental-actions {
+				button {
+					font-size: 1.25rem;
+					margin-bottom: 1rem;
+				}
+			}
+
+			img {
+				min-height: 20rem;
+				height: 20rem;
+			}
 		}
 	}
 </style>

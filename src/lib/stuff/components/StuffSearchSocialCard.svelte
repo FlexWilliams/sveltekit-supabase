@@ -34,18 +34,26 @@
 </article>
 
 <style lang="scss">
+	@use '../../../lib/styles/overlay/shadows.scss';
+
 	article {
 		position: relative;
 		height: 100%;
-		border: 1px solid black;
+		border: 1px solid #ddddddd4;
 		min-height: 100%;
+		max-height: 100%;
 		border-radius: 0.25rem;
+		overflow: hidden;
+
+		@include shadows.boxShadow;
 
 		h3 {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			text-align: center;
+			font-size: 1rem;
+			margin-bottom: 0;
 		}
 
 		button {

@@ -63,10 +63,17 @@
 </script>
 
 <section>
+	<h2>Search</h2>
+
 	<form name="search-friend-stuff-form">
-		<h2>Search</h2>
-		<label for="search"></label>
-		<input id="search" name="search" type="text" onkeyup={handleSearchTextChange} />
+		<label for="search" aria-label="Search"></label>
+		<input
+			id="search"
+			name="search"
+			type="text"
+			onkeyup={handleSearchTextChange}
+			placeholder={`Search if your friends have it for rent`}
+		/>
 	</form>
 
 	<ul class="search-results">
@@ -84,7 +91,7 @@
 					<p class="no-matching-criteria">No items match your criteria</p>
 				</li>
 			{:else}
-				<li>
+				<li class="list-help-text">
 					<p class="search-help">Search for anything!</p>
 					<p class="search-help">Maybe your friends have it for rent</p>
 				</li>
@@ -99,17 +106,24 @@
 <style lang="scss">
 	@use '../../lib/styles/layout/panel.scss';
 	@use '../../lib/styles/overlay/shadows.scss';
+	@use '../../lib/styles/forms/forms.scss';
+	@use '../../lib/styles/responsive.scss';
 
 	section {
 		@include panel.panel;
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+
+		h2 {
+			@include forms.form_header;
+			height: 5%;
+		}
 
 		form {
-			height: 15%;
+			padding: 1rem;
+			height: calc(10% - 2rem);
 
-			h2 {
+			label {
 				margin: 0;
 				font-size: 1.25rem;
 			}
@@ -118,15 +132,23 @@
 				width: calc(100% - 0.5rem);
 				height: 2rem;
 				border-radius: 0.25rem;
-				border: 1px solid black;
+				border: 1px solid #f3f3f3;
+				box-shadow:
+					rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+					rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+				&::placeholder {
+					text-align: center;
+				}
 			}
 		}
 
 		ul.search-results {
 			height: calc(40% - 2rem);
+			width: calc(100% - 2rem);
 			list-style: none;
 			margin: 0;
-			padding: 1rem 0;
+			padding: 1rem;
 			display: flex;
 			overflow-x: auto;
 			overflow-y: hidden;
@@ -154,6 +176,12 @@
 				}
 			}
 
+			li.list-help-text {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+
 			p {
 				text-align: center;
 			}
@@ -161,7 +189,30 @@
 
 		div.social {
 			height: calc(40% - 2rem);
-			padding: 1rem 0;
+			width: calc(100% - 2rem);
+			padding: 1rem;
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		section {
+			h2 {
+				font-size: 2.5rem;
+				margin-top: 2rem;
+			}
+
+			form {
+				input {
+					height: 3rem;
+					font-size: 1.25rem;
+				}
+			}
+
+			ul.search-results {
+				li.list-help-text {
+					font-size: 1.5rem;
+				}
+			}
 		}
 	}
 </style>

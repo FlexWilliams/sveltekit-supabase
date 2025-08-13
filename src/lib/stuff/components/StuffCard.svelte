@@ -102,4 +102,18 @@
 			right: 0.5rem;
 		}
 	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		button.card {
+			h3 {
+				font-size: 2.5rem;
+			}
+		}
+
+		button.edit-item {
+			width: 5rem;
+			height: 5rem;
+			font-size: 1.5rem;
+		}
+	}
 </style>

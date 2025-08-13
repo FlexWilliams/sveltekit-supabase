@@ -70,6 +70,10 @@
 
 		p {
 			text-align: center;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 100%;
 		}
 
 		img {

@@ -236,6 +236,7 @@
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
 	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	form {
 		@include forms.form;
@@ -253,6 +254,10 @@
 
 			input {
 				@include forms.form_field_text_input;
+
+				&::-webkit-file-upload-button {
+					border: none;
+				}
 			}
 
 			textarea {
@@ -287,6 +292,38 @@
 			&:disabled {
 				// TODO: standardize save buttons
 				background-color: gray;
+			}
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		form {
+			width: calc(100% - 6rem);
+			padding: 1rem 3rem 2rem 3rem;
+
+			div.form-field {
+				label {
+					font-size: 2rem;
+				}
+
+				input {
+					height: 3rem;
+					font-size: 1.25rem;
+
+					&::-webkit-file-upload-button {
+						height: 3rem;
+					}
+				}
+
+				textarea {
+					height: 10rem;
+					font-size: 1.25rem;
+				}
+			}
+
+			button {
+				min-height: 3rem;
+				font-size: 1.25rem;
 			}
 		}
 	}

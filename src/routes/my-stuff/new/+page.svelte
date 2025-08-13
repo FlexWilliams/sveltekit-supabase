@@ -18,6 +18,7 @@
 <style lang="scss">
 	@use '../../../lib/styles/forms/forms.scss';
 	@use '../../../lib/styles/layout/panel.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	section {
 		position: absolute;
@@ -32,6 +33,21 @@
 
 		button.close {
 			@include panel.panel_close_button;
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		section {
+			h2 {
+				font-size: 2.5rem;
+				margin-top: 2rem;
+			}
+
+			button.close {
+				width: 5rem;
+				height: 5rem;
+				font-size: 1.5rem;
+			}
 		}
 	}
 </style>

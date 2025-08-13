@@ -57,6 +57,7 @@
 		<ul>
 			{#if !user || !user.id}
 				{#if !onLoginPage}
+					<li style="flex: 1"></li>
 					<li>
 						<a href="/auth">Login</a>
 					</li>
@@ -138,8 +139,8 @@
 			padding: 0;
 			display: flex;
 			gap: 1rem;
-			justify-content: center;
-			align-items: baseline;
+			justify-content: space-evenly;
+			align-items: center;
 			width: 100%;
 
 			li {
@@ -159,7 +160,6 @@
 				a.active {
 					color: #cddc39;
 					font-weight: bold;
-					// font-size: 1.25rem;
 				}
 			}
 		}
@@ -170,6 +170,44 @@
 			ul {
 				li {
 					height: 3rem;
+				}
+			}
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		header {
+			div {
+				a {
+					min-width: 5rem;
+
+					&:first-of-type {
+						flex: 1;
+						margin-right: 5rem;
+					}
+				}
+
+				a.banner {
+					h1 {
+						font-size: 3rem;
+					}
+				}
+
+				a.avatar {
+					button {
+						width: 5rem;
+						height: 5rem;
+					}
+				}
+			}
+		}
+
+		nav {
+			ul {
+				li {
+					a {
+						font-size: 1.5rem;
+					}
 				}
 			}
 		}

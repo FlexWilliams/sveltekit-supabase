@@ -62,12 +62,14 @@
 
 <style lang="scss">
 	@use '../../lib/styles/layout/panel.scss';
+	@use '../../lib/styles/responsive.scss';
 
 	section {
 		@include panel.panel;
 
 		h2 {
 			text-align: center;
+			height: 10%;
 		}
 
 		p {
@@ -75,9 +77,12 @@
 		}
 
 		ul {
+			height: calc(90% - 2rem);
 			list-style: none;
 			margin: 0;
 			padding: 0;
+			padding-bottom: 2rem;
+			overflow-y: auto;
 
 			li {
 				margin: 0;
@@ -88,6 +93,14 @@
 					justify-content: center;
 					color: black;
 				}
+			}
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		section {
+			h2 {
+				font-size: 2.5rem;
 			}
 		}
 	}
