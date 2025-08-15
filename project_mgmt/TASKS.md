@@ -353,7 +353,7 @@ Verified By cube on: 8/8/25
 
 <br>
 
-## VOUCH-022 - Friend Stuff Detail page UX changes
+## (Complete) VOUCH-022 - Friend Stuff Detail page UX changes
 
 ### Description:
 
@@ -363,7 +363,7 @@ May need to impl image resizing, public bucket first... (VOUCH-029)
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/12/25
 
 <br>
 
@@ -411,7 +411,7 @@ Verified By <> on:
 
 <br>
 
-## VOUCH-026 - Search page UX cleanup
+## (Complete) VOUCH-026 - Search page UX cleanup
 
 ### Description:
 
@@ -419,7 +419,7 @@ Verified By <> on:
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/12/25
 
 <br>
 
