@@ -199,7 +199,7 @@ dev notes:
 
 ### Acceptance Criteria:
 
-Verified By cube on:
+Verified By cube on: 8/15/25
 
 <br>
 
@@ -413,7 +413,7 @@ Verified By <> on:
 
 <br>
 
-## VOUCH-025 - Auth redirect (logged out)
+## (Complete) VOUCH-025 - Auth redirect (logged out)
 
 ### Description:
 
@@ -425,7 +425,9 @@ Should always redirect to home page w/ad and sign in link only.
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+fixed during VOUCH-010
+
+Verified By cube on: 8/15/25
 
 <br>
 
@@ -453,7 +455,7 @@ Verified By <> on:
 
 <br>
 
-## VOUCH-028 - Fix new user flow
+## (Complete) VOUCH-028 - Fix new user flow
 
 ### Description:
 
@@ -470,7 +472,9 @@ My Stuff API [POST]: Error occurred at the DB level
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+fixed during VOUCH-010
+
+Verified By cube on: 8/15/25
 
 <br>
 
