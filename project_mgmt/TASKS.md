@@ -169,7 +169,7 @@ Verified By cube on: 7/15/25
 
 <br>
 
-## VOUCH-010 - invite someone
+## (Complete) VOUCH-010 - invite someone
 
 ### Description:
 
