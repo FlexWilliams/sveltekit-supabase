@@ -3,6 +3,7 @@ import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { Logger } from '$lib/logging/logger';
 
 // Code courtesy of: https://supabase.com/docs/guides/auth/server-side/sveltekit
 
@@ -69,8 +70,20 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	event.locals.user = user;
 
-	if (!event.locals.session && event.url.pathname.startsWith('/profile')) {
-		redirect(303, '/auth');
+	if (!session || !user) {
+		if (event.url.pathname.startsWith('/auth/confirm-email')) {
+			return resolve(event);
+		} else if (!event.url.pathname.startsWith('/auth')) {
+			Logger.debug(`User not logged in.`);
+			redirect(303, '/auth');
+		}
+
+		return resolve(event);
+	}
+
+	if (user && !user?.user_metadata?.email_verified) {
+		Logger.debug(`User email not confirmed yet! Redirecting to confirmation page.`);
+		redirect(303, '/auth/confirm-email');
 	}
 
 	return resolve(event);

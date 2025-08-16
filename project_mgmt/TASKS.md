@@ -179,6 +179,24 @@ Verified By cube on: 7/15/25
 - prelim rating (1-7)
 - save as invite request sent
 
+dev notes:
+
+1. ~~create api endpoint for invite (POST /invite)~~
+1. ~~Create service account to~~
+   - create user w/temp password
+   - send email invite
+   - create user_meta table (with new field `email_confirmed` & `reset_password`)
+   - update friends table
+1. ~~Create new send invite page~~
+   - Do we care to add a new invite table to view/cancel/etc...
+1. ~~Create new reset password page w/ server handler....~~
+   - update user_meta table (`email_confirmed` = true)
+1. ~~update auth guard to check if user-confirmed~~
+1. ~~On invitee link click, proceed to reset password page~~
+   - after reset
+   - update user_meta table (`reset_password` = true)
+   - proceed to home
+
 ### Acceptance Criteria:
 
 Verified By cube on:

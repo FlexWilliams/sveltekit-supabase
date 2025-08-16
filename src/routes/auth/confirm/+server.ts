@@ -1,7 +1,12 @@
 import type { EmailOtpType } from '@supabase/supabase-js';
 import { redirect } from '@sveltejs/kit';
 
+import { Logger } from '$lib/logging/logger';
+import { userMetaFromDb } from '$lib/user/model/user-meta';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from './$types';
+
+const API_NAME = 'EMAIL CONFIRMATION API';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	const token_hash = url.searchParams.get('token_hash');
@@ -19,13 +24,48 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	redirectTo.searchParams.delete('type');
 
 	if (token_hash && type) {
-		const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+		const { data, error } = await supabase.auth.verifyOtp({ type, token_hash });
 		if (!error) {
+			let user_meta = await supabase.from(`user_meta`).select().eq('id', data?.user?.id);
+			if (user_meta.error) {
+				Logger.error(`User_meta object not found after verifying email!`);
+				redirectTo.pathname = '/auth/error';
+				return redirect(303, redirectTo);
+			} else {
+				let meta = user_meta.data[0];
+				user_meta = await supabase
+					.from(`user_meta`)
+					.update({ ...meta, email_confirmed: true })
+					.eq('id', data?.user?.id)
+					.select();
+
+				if (user_meta.error) {
+					Logger.error(
+						`${API_NAME}: Error updating user meta email confirmed flag: ${prettyJson(error)}`
+					);
+				}
+
+				meta = user_meta.data;
+				const userMeta = userMetaFromDb(meta[0]);
+				if (!userMeta.resetPassword) {
+					redirectTo.pathname = '/auth/reset-password';
+					return redirect(303, redirectTo);
+				} else {
+					redirectTo.searchParams.delete('next');
+					return redirect(303, redirectTo);
+				}
+			}
+		}
+
+		Logger.error(JSON.stringify(error));
+
+		if (error?.status === 403 && error?.code === 'otp_expired') {
+			Logger.debug(`${API_NAME}: OTP expired. User was sent another.`);
 			redirectTo.searchParams.delete('next');
-			redirect(303, redirectTo);
+			return redirect(303, `/auth/otp-error`);
 		}
 	}
 
 	redirectTo.pathname = '/auth/error';
-	redirect(303, redirectTo);
+	return redirect(303, redirectTo);
 };

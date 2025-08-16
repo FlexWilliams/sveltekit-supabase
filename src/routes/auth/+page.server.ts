@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import { Logger } from '$lib/logging/logger';
+import { prettyJson } from '$lib/web/http/response';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -22,11 +23,17 @@ export const actions: Actions = {
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
-		const { error } = await supabase.auth.signInWithPassword({ email, password });
+		const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 		if (error) {
-			Logger.error(error);
+			Logger.error(`Login Action: Error,\n ${prettyJson(error)}`);
+
+			if (error?.code === 'email_not_confirmed') {
+				redirect(303, '/auth/confirm-email');
+			}
+
 			return { error: error.message }; // TODO: suppress messages/wrap them
 		} else {
+			Logger.debug(prettyJson(data));
 			redirect(303, '/');
 		}
 	}
