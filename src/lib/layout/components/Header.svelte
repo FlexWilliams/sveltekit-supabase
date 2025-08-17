@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
+	import avatar from '$lib/assets//images/avatars/avatar.png';
 	import { Logger } from '$lib/logging/logger';
 	import type { User } from '@supabase/supabase-js';
 	import { onMount, untrack } from 'svelte';
@@ -12,21 +13,31 @@
 	let { user, profilePic }: HeaderProps = $props();
 
 	let profilePicUrl: string | null = $derived.by(() =>
-		profilePic ? URL.createObjectURL(new Blob([profilePic])) : null
+		user?.id && profilePic ? URL.createObjectURL(new Blob([profilePic])) : null
 	);
 
 	let onLoginPage = $state(true);
 
 	let route: string | null = $state(null);
 
+	function setAvatarBackgroundImage(profilePicUrl: string | null): void {
+		const avatarButton = document.getElementById('avatar');
+		if (avatarButton) {
+			avatarButton.style.backgroundImage = profilePicUrl
+				? `url(${profilePicUrl})`
+				: `url(${avatar})`;
+		}
+	}
+
 	$effect(() => {
 		if (profilePicUrl) {
 			Logger.debug(profilePicUrl);
 			untrack(() => {
-				const avatarButton = document.getElementById('avatar');
-				if (avatarButton) {
-					avatarButton.style.backgroundImage = `url(${profilePicUrl})`;
-				}
+				setAvatarBackgroundImage(profilePicUrl);
+			});
+		} else {
+			untrack(() => {
+				setAvatarBackgroundImage(null);
 			});
 		}
 	});
