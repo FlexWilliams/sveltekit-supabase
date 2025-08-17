@@ -43,6 +43,8 @@
 
 <h2>Reset Password</h2>
 <form id="reset-password">
+	<input name="email" type="email" autocomplete="username" hidden />
+
 	<label>
 		<span>Password:</span>
 		<input
@@ -65,34 +67,43 @@
 		/>
 	</label>
 
+	<button type="button" onclick={() => window.history.back()}>Cancel</button>
+
 	<button type="submit" disabled={!passwordsMatch || saving} onclick={resetPassword}
 		>Update Password</button
 	>
 </form>
 
 <style lang="scss">
+	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/responsive.scss';
+
+	h2 {
+		@include forms.form_header;
+	}
+
 	form {
+		@include forms.form;
 		display: flex;
 		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
 		gap: 1rem;
-		align-items: flex-start;
 
 		label {
 			display: flex;
 			flex-direction: column;
+			width: 90%;
 
-			font-size: 1.5rem;
 			input {
-				width: 20rem;
-
+				width: calc(100% - 8px);
 				height: 2rem;
 			}
 		}
 
 		button {
-			width: 20rem;
-			min-height: 3rem;
-			font-size: 1.25rem;
+			width: 90%;
+			min-height: 2rem;
 			background-color: #cddc39;
 			border: none;
 			border-radius: 0.25rem;
@@ -100,6 +111,22 @@
 
 			&:disabled {
 				background-color: gray;
+			}
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		form {
+			label {
+				font-size: 1.5rem;
+				input {
+					height: 3rem;
+				}
+			}
+
+			button {
+				min-height: 3rem;
+				font-size: 1.25rem;
 			}
 		}
 	}

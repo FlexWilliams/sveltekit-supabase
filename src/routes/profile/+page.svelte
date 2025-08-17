@@ -6,7 +6,7 @@
 			<a href="/profile/update">Update Profile</a>
 		</li>
 		<li>
-			<a href="/auth/reset-password">Update Password</a>
+			<a href="/auth/reset-password">Reset Password</a>
 		</li>
 		<li>
 			<a href="/profile/invite">Invite a Friend</a>
@@ -15,6 +15,8 @@
 </menu>
 
 <style lang="scss">
+	@use '../../lib/styles/responsive.scss';
+
 	menu {
 		margin: 0;
 		padding: 2rem 0;
@@ -41,10 +43,21 @@
 				a {
 					height: 100%;
 					width: 100%;
-					font-size: 1.5rem;
 					text-decoration: none;
 					text-align: center;
 					color: black;
+				}
+			}
+		}
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		menu {
+			ul {
+				li {
+					a {
+						font-size: 1.5rem;
+					}
 				}
 			}
 		}

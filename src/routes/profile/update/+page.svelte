@@ -89,8 +89,6 @@
 	}
 </script>
 
-<h2>My Profile</h2>
-
 <form name="user-profile">
 	<div class="form-controls">
 		<div class="profile-pic">

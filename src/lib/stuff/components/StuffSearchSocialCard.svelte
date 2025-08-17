@@ -39,7 +39,6 @@
 	article {
 		position: relative;
 		height: 100%;
-		border: 1px solid #ddddddd4;
 		min-height: 100%;
 		max-height: 100%;
 		border-radius: 0.25rem;
@@ -54,6 +53,8 @@
 			text-align: center;
 			font-size: 1rem;
 			margin-bottom: 0;
+			position: relative;
+			z-index: 1;
 		}
 
 		button {
@@ -63,7 +64,7 @@
 			height: 100%;
 			width: 100%;
 			border: none;
-			background-color: transparent;
+			background-color: #6633990d;
 		}
 	}
 </style>

@@ -27,6 +27,7 @@
 	h3 {
 		text-align: center;
 		margin: 0;
+		color: rebeccapurple;
 	}
 
 	ul {
@@ -42,7 +43,7 @@
 			margin: 0;
 			margin-right: 1rem;
 			padding: 0;
-			height: calc(100%);
+			height: 90%;
 			width: 80%;
 			min-width: 80%;
 			background-color: white;

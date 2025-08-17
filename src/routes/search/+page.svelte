@@ -93,7 +93,6 @@
 			{:else}
 				<li class="list-help-text">
 					<p class="search-help">Search for anything!</p>
-					<p class="search-help">Maybe your friends have it for rent</p>
 				</li>
 			{/if}
 		{/each}
@@ -116,12 +115,12 @@
 
 		h2 {
 			@include forms.form_header;
-			height: 5%;
+			height: 10%;
 		}
 
 		form {
-			padding: 1rem;
-			height: calc(10% - 2rem);
+			padding: 0 1rem;
+			height: 10%;
 
 			label {
 				margin: 0;
@@ -165,7 +164,6 @@
 				margin: 0;
 				margin-right: 1rem;
 				padding: 0;
-				height: calc(100%);
 				width: 80%;
 				min-width: 80%;
 				background-color: white;
