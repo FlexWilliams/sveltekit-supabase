@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
+
 	import Footer from '$lib/layout/components/Footer.svelte';
 	import Header from '$lib/layout/components/Header.svelte';
 	import {
@@ -41,6 +43,13 @@
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
+			}
+		});
+		afterNavigate((e) => {
+			const route = e.to?.route?.id;
+
+			if (!user && route !== '/auth') {
+				goto('/auth'); // client side redirecting if hook.server doesn't catch (in case of preloading data links)
 			}
 		});
 
