@@ -1,6 +1,7 @@
 import { SUPABASE_KEY } from '$env/static/private';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { Logger } from '$lib/logging/logger';
+import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import { createServerClient } from '@supabase/ssr';
 import type { RequestHandler } from '@sveltejs/kit';
@@ -27,17 +28,7 @@ export const POST: RequestHandler = async ({
 
 	Logger.debug(`${API_NAME} [POST]: Attempting to create new user for email: ${email}...`);
 
-	const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_KEY, {
-		cookies: {
-			getAll: () => [],
-			/**
-			 * SvelteKit's cookies API requires `path` to be explicitly set in
-			 * the cookie options. Setting `path` to `/` replicates previous/
-			 * standard behavior.
-			 */
-			setAll: () => {}
-		}
-	});
+	const supabase = getSupabaseServerClient();
 
 	if (!supabase) {
 		return unknown();

@@ -27,7 +27,7 @@
 		</div>
 	</div>
 	<div class="form-actions">
-		<button formaction="?/signup">Sign up</button>
+		<button type="button" formaction="?/signup">Sign up</button>
 		<button type="submit" class="submit">Login</button>
 	</div>
 </form>

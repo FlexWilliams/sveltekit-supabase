@@ -70,8 +70,10 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	event.locals.user = user;
 
+	Logger.debug(`AuthGuard: pathname: ${event.url.pathname}`);
+
 	if (!session || !user) {
-		if (event.url.pathname.startsWith('/auth/confirm-email')) {
+		if (event.url.pathname.startsWith('/auth')) {
 			return resolve(event);
 		} else if (!event.url.pathname.startsWith('/auth')) {
 			Logger.debug(`User not logged in.`);

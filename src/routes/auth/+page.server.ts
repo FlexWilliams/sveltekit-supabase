@@ -33,6 +33,9 @@ export const actions: Actions = {
 
 			return { error: error.message }; // TODO: suppress messages/wrap them
 		} else {
+			if (data) {
+				Logger.debug('LOGIN ACTION' + prettyJson(data));
+			}
 			Logger.debug(prettyJson(data));
 			redirect(303, '/');
 		}
