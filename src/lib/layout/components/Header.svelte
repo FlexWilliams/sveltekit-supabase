@@ -7,14 +7,12 @@
 
 	interface HeaderProps {
 		user: User | null;
-		profilePic: Blob | null;
+		profilePic: string | null;
 	}
 
 	let { user, profilePic }: HeaderProps = $props();
 
-	let profilePicUrl: string | null = $derived.by(() =>
-		user?.id && profilePic ? URL.createObjectURL(new Blob([profilePic])) : null
-	);
+	let profilePicUrl: string | null = $derived.by(() => (user?.id && profilePic) || null);
 
 	let onLoginPage = $state(true);
 

@@ -1,5 +1,5 @@
 import { Logger } from '$lib/logging/logger';
-import { PHOTO_SIZES } from '$lib/photo/model/photo';
+import { getPhotoSizeDimensions, PHOTO_SIZES } from '$lib/photo/model/photo';
 import {
 	badRequest,
 	forbidden,
@@ -8,7 +8,7 @@ import {
 	requiredFieldsMissing,
 	unknown
 } from '$lib/web/http/error-response';
-import type { PhotoNamesResponse } from '$lib/web/http/response';
+import { prettyJson, type PhotoNamesResponse } from '$lib/web/http/response';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -25,21 +25,18 @@ const uploadMyStuffPhotos = async (
 	let success = true;
 
 	for (let i = 0; i < files.length; i++) {
-		let file = files[i];
-		let fileName = file?.name || `${stuffId}_${new Date().getTime()}`;
+		const file = files[i];
+		const fileName = file?.name || `${stuffId}_${new Date().getTime()}`;
+		const filePath = `${userId}/${stuffId}/photos/raw/${fileName}`;
 
-		// TODO: handle resizing here...
-		PHOTO_SIZES.forEach(async (p) => {
-			const filePath = `${userId}/${stuffId}/photos/${p}/${fileName}`;
-			Logger.debug(`Photo upload path: ${filePath}`);
-			const { error } = await supabase.storage
-				.from(`stuff`)
-				.upload(filePath, file, { upsert: true });
+		Logger.debug(`Photo upload path: ${filePath}, bytes: ${file.size}`);
 
-			if (error) {
-				success = false;
-			}
-		});
+		const { error } = await supabase.storage.from(`stuff`).upload(filePath, file, { upsert: true });
+
+		if (error) {
+			Logger.debug(`Photo upload error: ${prettyJson(error)}`);
+			success = false;
+		}
 	}
 
 	return success;
@@ -64,6 +61,7 @@ export const GET: RequestHandler = async ({
 
 	let photoSize = url.searchParams.get('size') || '';
 	photoSize = PHOTO_SIZES.indexOf(photoSize) !== -1 ? photoSize : 'preview';
+	const dimensions = getPhotoSizeDimensions(photoSize);
 
 	// TODO: rework to only pull the imageUrl from my stuff property! or default to this below if not set
 	const { photoNames } = (await (
@@ -75,21 +73,32 @@ export const GET: RequestHandler = async ({
 
 	const fileName = photoNames[0];
 
-	const { data, error } = await supabase.storage
-		.from('stuff')
-		.download(`${id}/photos/${photoSize}/${fileName}`);
+	const {
+		data: { signedUrl },
+		error
+	} = await supabase.storage.from('stuff').createSignedUrl(
+		`${id}/photos/${photoSize}/${fileName}`,
+		60,
+		dimensions
+			? {
+					transform: {
+						width: dimensions.width,
+						height: dimensions.height
+					}
+				}
+			: null
+	);
 
 	if (error) {
 		return unknown();
 	}
 
-	if (data as Blob) {
-		const photo = await data.arrayBuffer();
-		return new Response(photo, {
+	if (signedUrl as string) {
+		return new Response(signedUrl, {
 			status: 200
 		});
 	} else {
-		return unknown(`Photo name found, but unable to download!`);
+		return unknown(`Photo name found, but unable to get signed url!`);
 	}
 };
 

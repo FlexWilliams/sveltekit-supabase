@@ -1,7 +1,7 @@
 import { Logger } from '$lib/logging/logger';
-import { PHOTO_SIZES } from '$lib/photo/model/photo';
+import { getPhotoSizeDimensions, PHOTO_SIZES } from '$lib/photo/model/photo';
 import type { Stuff } from '$lib/stuff/model/stuff';
-import { badRequest, forbidden, notFound } from '$lib/web/http/error-response';
+import { badRequest, forbidden, notFound, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'Stuff [id] Photo [name] API';
@@ -30,7 +30,6 @@ export const GET: RequestHandler = async ({
 
 	const stuffResponse = await fetch(`/api/stuff/${id}`);
 	if (!stuffResponse.ok) {
-		Logger.error(`\nAHHHHHHH\n`);
 		return notFound();
 	}
 
@@ -38,10 +37,25 @@ export const GET: RequestHandler = async ({
 
 	let photoSize = url.searchParams.get('size') || '';
 	photoSize = PHOTO_SIZES.indexOf(photoSize) !== -1 ? photoSize : 'preview';
+	const dimensions = getPhotoSizeDimensions(photoSize);
 
-	const filePath = `${stuff?.userId}/${id}/photos/${photoSize}/${name}`;
+	const filePath = `${stuff?.userId}/${id}/photos/raw/${name}`;
 
-	const { data, error } = await supabase.storage.from(`stuff`).download(`${filePath}`);
+	const {
+		data: { signedUrl },
+		error
+	} = await supabase.storage.from(`stuff`).createSignedUrl(
+		filePath,
+		60,
+		dimensions
+			? {
+					transform: {
+						width: dimensions.width,
+						height: dimensions.height
+					}
+				}
+			: null
+	);
 
 	if (error) {
 		Logger.debug(
@@ -53,10 +67,13 @@ export const GET: RequestHandler = async ({
 		});
 	}
 
-	const photo = await (data as Blob).arrayBuffer();
-	return new Response(photo, {
-		status: 200
-	});
+	if (signedUrl as string) {
+		return new Response(signedUrl, {
+			status: 200
+		});
+	} else {
+		return unknown(`Photo name found, but unable to get signed url!`);
+	}
 };
 
 // TODO: restrict on db side to allow deletion only by owner

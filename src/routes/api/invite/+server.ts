@@ -1,9 +1,7 @@
-import { SUPABASE_KEY } from '$env/static/private';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { Logger } from '$lib/logging/logger';
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
-import { createServerClient } from '@supabase/ssr';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'Invite API';
@@ -44,6 +42,8 @@ export const POST: RequestHandler = async ({
 		return unknown(`Error sending invite, sign-up error.`);
 	}
 
+	Logger.debug(`${API_NAME} API: User obj:\n ${prettyJson(data.user)}`);
+
 	// Add user to user-meta table
 	const userMeta = await supabase.from(`user_meta`).insert({
 		id: data?.user?.id,
@@ -51,8 +51,15 @@ export const POST: RequestHandler = async ({
 	});
 
 	if (userMeta.error) {
-		Logger.debug(`${API_NAME} API: Error adding user to user_meta table, ${JSON.stringify(error)}`);
-		return unknown(`Error sending invite, sign-up error.`);
+		if (userMeta.error?.message.indexOf(`violates foreign key constraint`) !== -1) {
+			Logger.debug(`${API_NAME} API: Error adding user to user_meta table, user exists already.`);
+			return noContent(`User invite sent. Awaiting confirmation!`);
+		} else {
+			Logger.debug(
+				`${API_NAME} API: Error adding user to user_meta table, ${JSON.stringify(userMeta.error)}`
+			);
+			return unknown(`Error sending invite, sign-up error.`);
+		}
 	}
 
 	// Add users to friend table

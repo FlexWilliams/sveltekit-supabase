@@ -41,8 +41,7 @@
 		if (!response.ok) {
 			Logger.error(`Error fetching stuff photo!`);
 		} else {
-			const blob = new Blob([await response.arrayBuffer()]);
-			photo = URL.createObjectURL(blob);
+			photo = await response.text();
 		}
 
 		loadingStuff = false;

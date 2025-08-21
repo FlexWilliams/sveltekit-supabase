@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({
 	let photoSize = url.searchParams.get('size') || '';
 	photoSize = PHOTO_SIZES.indexOf(photoSize) !== -1 ? photoSize : 'preview';
 
-	const folderPath = `${user?.id}/${id}/photos/${photoSize}`;
+	const folderPath = `${user?.id}/${id}/photos/raw`;
 	const { data, error } = await supabase.storage.from('stuff').list(folderPath, {
 		limit: 100,
 		offset: 0

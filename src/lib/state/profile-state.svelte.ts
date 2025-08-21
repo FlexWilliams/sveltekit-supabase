@@ -1,5 +1,5 @@
 export interface ProfileState {
-	profilePic: Blob | null;
+	profilePic: string | null;
 	profilePicLoading: boolean;
 }
 
@@ -15,7 +15,7 @@ export const profileState = $state(initialProfileState);
 /**
  * Sets the profilePic
  */
-export function profileState$$setProfilePic(profilePic: Blob | null): void {
+export function profileState$$setProfilePic(profilePic: string | null): void {
 	profileState.profilePic = profilePic;
 }
 

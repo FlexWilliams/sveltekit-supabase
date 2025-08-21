@@ -13,9 +13,10 @@ export const GET: RequestHandler = async ({ request, locals: { supabase, safeGet
 		});
 	}
 
-	const { data, error } = await supabase.storage
-		.from(`user-meta`)
-		.download(`${user?.id}/profile_pic.img`);
+	const {
+		data: { signedUrl },
+		error
+	} = await supabase.storage.from('user-meta').createSignedUrl(`${user?.id}/profile_pic.img`, 60);
 
 	if (error) {
 		Logger.debug(`${API_NAME} [GET]: unable to get the user profile pic, not found.`);
@@ -25,8 +26,7 @@ export const GET: RequestHandler = async ({ request, locals: { supabase, safeGet
 		});
 	}
 
-	const profilePic = await (data as Blob).arrayBuffer();
-	return new Response(profilePic, {
+	return new Response(signedUrl, {
 		status: 200
 	});
 };

@@ -17,8 +17,7 @@
 			const response = await fetch(`/api/stuff/${stuff?.id}/photo/${stuff.imageUrl}`);
 
 			if (response.ok) {
-				const buffer = await response.arrayBuffer();
-				photo = URL.createObjectURL(new Blob([buffer]));
+				photo = await response.text();
 			}
 		}
 	}

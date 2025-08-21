@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
-	import { afterNavigate, goto } from '$app/navigation';
+	import { afterNavigate, goto, invalidate } from '$app/navigation';
 
 	import Footer from '$lib/layout/components/Footer.svelte';
 	import Header from '$lib/layout/components/Header.svelte';
@@ -16,7 +15,7 @@
 	let { user } = $derived(data);
 	let { session, supabase } = $derived(data);
 
-	let profilePic: Blob | null = $derived(profileState.profilePic);
+	let profilePic: string | null = $derived(profileState.profilePic);
 
 	let subscriptions: any[] = [];
 
@@ -30,10 +29,8 @@
 		const pic = await fetch('/api/profile-pic');
 
 		if (pic.ok) {
-			let buffer = await pic.arrayBuffer();
-
-			const newProfilePic = new Blob([buffer]);
-			profileState$$setProfilePic(newProfilePic);
+			let signedUrl = await pic.text();
+			profileState$$setProfilePic(signedUrl);
 		}
 
 		profileState$$setProfilePicLoading(false);
