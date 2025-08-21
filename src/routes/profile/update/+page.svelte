@@ -149,10 +149,6 @@
 	@use '../../../lib/styles/forms/forms.scss';
 	@use '../../../lib/styles/animations/spin.scss';
 
-	h2 {
-		@include forms.form_header;
-	}
-
 	form {
 		@include forms.form;
 		padding-top: 0;

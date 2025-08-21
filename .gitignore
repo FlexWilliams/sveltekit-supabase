@@ -3,11 +3,13 @@ node_modules
 
 # Output
 .output
+.cloudflare
 .vercel
 .netlify
 .wrangler
 /.svelte-kit
 /build
+/public
 
 # OS
 .DS_Store

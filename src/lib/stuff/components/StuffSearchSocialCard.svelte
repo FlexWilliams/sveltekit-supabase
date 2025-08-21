@@ -43,18 +43,19 @@
 		max-height: 100%;
 		border-radius: 0.25rem;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
 
 		@include shadows.boxShadow;
 
 		h3 {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			text-align: center;
 			font-size: 1rem;
 			margin-bottom: 0;
 			position: relative;
 			z-index: 1;
+			max-width: 70%;
 		}
 
 		button {

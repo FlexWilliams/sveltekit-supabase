@@ -489,3 +489,50 @@ Verified By cube on: 8/15/25
 Verified By cube on: 8/11/25
 
 <br>
+
+## VOUCH-030 - (PERF) Add basic store setup
+
+### Description:
+
+^^
+
+- fetch, cache, then re-fetch as normal on page loads but update if newer
+  - this may require that the `updated_on` always gets updated on crud operations
+  - or just always refetch and update, shouldn't cause too many ui updates
+- profile meta (image)
+- rentals
+- my stuff
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-031 - (Animation) Floating Header
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-032 - (Animation) Page transitions
+
+### Description:
+
+^^
+
+See: https://developer.chrome.com/docs/web-platform/view-transitions/
+
+^^ not supported in firefox tho...
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
