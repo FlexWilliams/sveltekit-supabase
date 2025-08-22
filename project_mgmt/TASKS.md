@@ -536,3 +536,15 @@ See: https://developer.chrome.com/docs/web-platform/view-transitions/
 Verified By cube on:
 
 <br>
+
+## VOUCH-033 - Impl magic link flow
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
