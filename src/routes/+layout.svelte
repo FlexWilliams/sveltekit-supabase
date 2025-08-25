@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { afterNavigate, goto, invalidate } from '$app/navigation';
+	import { afterNavigate, invalidate } from '$app/navigation';
 
 	import Footer from '$lib/layout/components/Footer.svelte';
 	import Header from '$lib/layout/components/Header.svelte';
+	import { Logger } from '$lib/logging/logger.js';
 	import {
 		profileState,
 		profileState$$setProfilePic,
@@ -12,8 +13,8 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	let { data, children } = $props();
-	let { user } = $derived(data);
-	let { session, supabase } = $derived(data);
+
+	let { user, session, supabase } = $derived(data);
 
 	let profilePic: string | null = $derived(profileState.profilePic);
 
@@ -39,6 +40,7 @@
 	onMount(async () => {
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
+				Logger.debug(`New session created!`);
 				invalidate('supabase:auth');
 			}
 		});
@@ -46,7 +48,12 @@
 			const route = e.to?.route?.id;
 
 			if (!user && route !== '/auth') {
-				goto('/auth'); // client side redirecting if hook.server doesn't catch (in case of preloading data links)
+				Logger.debug(
+					`layout.svelte: afterNavigate() called, no user and attempting to go to private route!`
+				);
+
+				// client side redirecting if hook.server doesn't catch (in case of preloading data links)
+				// goto('/auth/login');
 			}
 		});
 

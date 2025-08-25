@@ -32,9 +32,11 @@
 	</div>
 </form>
 
+<a href="/auth/magic-link">Send Magic Link</a>
+
 <style lang="scss">
-	@use '../../lib/styles/forms/forms.scss';
-	@use '../../lib/styles/responsive.scss';
+	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	h2 {
 		@include forms.form_header;
@@ -44,6 +46,7 @@
 		@include forms.form;
 		justify-content: space-around;
 		padding-top: 0;
+		height: initial;
 	}
 
 	.form-errors {
@@ -113,5 +116,9 @@
 				font-size: 1.25rem;
 			}
 		}
+	}
+
+	a {
+		margin: 0 2rem;
 	}
 </style>

@@ -4,6 +4,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { Logger } from '$lib/logging/logger';
+import { prettyJson } from '$lib/web/http/response';
 
 // Code courtesy of: https://supabase.com/docs/guides/auth/server-side/sveltekit
 
@@ -47,7 +48,6 @@ const supabase: Handle = async ({ event, resolve }) => {
 			error
 		} = await event.locals.supabase.auth.getUser();
 		if (error) {
-			// JWT validation has failed
 			return { session: null, user: null };
 		}
 
@@ -65,30 +65,55 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
+const publicAuthRoutes = ['/auth/login', '/auth/magic-link', '/api/auth/magic-link'];
+
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();
-	event.locals.session = session;
-	event.locals.user = user;
 
-	Logger.debug(`AuthGuard: pathname: ${event.url.pathname}`);
+	const loggedIn = session && user;
 
-	if (!session || !user) {
-		if (event.url.pathname.startsWith('/auth')) {
-			return resolve(event);
-		} else if (!event.url.pathname.startsWith('/auth')) {
-			Logger.debug(`User not logged in.`);
-			redirect(303, '/auth');
+	Logger.debug(event.url.pathname);
+
+	if (loggedIn) {
+		if (!user?.user_metadata?.email_verified) {
+			Logger.debug(`User email not confirmed yet! Redirecting to confirmation page.`);
+			redirect(303, '/auth/confirm-email');
 		}
 
-		return resolve(event);
-	}
+		if (publicAuthRoutes.some((p) => p === event.url.pathname)) {
+			Logger.debug(
+				`AuthGuard: User attempting to access an auth page but already logged in, redirecting...`
+			);
+			redirect(303, '/');
+		} else {
+			return resolve(event);
+		}
+	} else {
+		const code = event.url.searchParams.get('code');
 
-	if (user && !user?.user_metadata?.email_verified) {
-		Logger.debug(`User email not confirmed yet! Redirecting to confirmation page.`);
-		redirect(303, '/auth/confirm-email');
-	}
+		if (code) {
+			Logger.debug(`AuthGuard: Magic Link auth code present, attempting to login...`);
 
-	return resolve(event);
+			const {
+				data: { session, user },
+				error
+			} = await event.locals.supabase.auth.exchangeCodeForSession(code);
+
+			if (session && user) {
+				Logger.debug(`AuthGuard: User id ${user?.id} logged in via Magic Link!`);
+				redirect(303, '/');
+			} else {
+				Logger.debug(`AuthGuard: Unable to login user via Magic Link!\n${prettyJson(error)}`);
+			}
+		}
+
+		if (publicAuthRoutes.some((p) => p === event.url.pathname)) {
+			return resolve(event);
+		} else {
+			Logger.debug(`${event.url.pathname} - User not logged in. Redirecting to login page...`);
+			redirect(303, '/auth/login');
+		}
+	}
 };
 
 export const handle: Handle = sequence(supabase, authGuard);

@@ -43,7 +43,7 @@
 	onMount(() => {
 		afterNavigate((e) => {
 			const routeId = e.to?.route?.id;
-			onLoginPage = routeId === '/auth';
+			onLoginPage = routeId === '/auth/login';
 
 			if (routeId) {
 				route = routeId;
