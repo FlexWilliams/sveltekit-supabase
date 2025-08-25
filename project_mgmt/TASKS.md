@@ -275,7 +275,7 @@ Verified By cube on: 7/29/25
 
 <br>
 
-## VOUCH-016 - Resize images before upload
+## (Deferred) VOUCH-016 - Resize images before upload
 
 ### Description:
 
@@ -285,7 +285,10 @@ Verified By cube on: 7/29/25
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 8/24/25
+
+See VOUCH-029, as supabase allows resizing when fetching the image.
+For now will utilize that instead of uploading various image sizes.
 
 <br>
 
@@ -478,7 +481,7 @@ Verified By cube on: 8/15/25
 
 <br>
 
-## VOUCH-029 - Rework photo upload
+## (Complete) VOUCH-029 - Rework photo upload
 
 ### Description:
 
@@ -549,11 +552,63 @@ Verified By cube on: 8/24/25
 
 <br>
 
-## VOUCH-034 - Remove signup code now that invite, magic link, and reset pw work now
+## (Complete) VOUCH-034 - Remove signup code now that invite, magic link, and reset pw work now
 
 ### Description:
 
 ^^
+
+### Acceptance Criteria:
+
+Verified By cube on: 8/24/25
+
+<br>
+
+## VOUCH-035 - UX tollgate
+
+### Description:
+
+^^
+
+- forms, fonts, errors, mobile, desktop, alerts, ... just really polished for demoing
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-036 - Testing Tollgate
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-037 - Add app to portfolio
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-038 - Invite 3 users!!!
+
+### Description:
+
+^^
+
+The app should be in prod-ready mode by now, lets get serious...
 
 ### Acceptance Criteria:
 
