@@ -537,7 +537,19 @@ Verified By cube on:
 
 <br>
 
-## VOUCH-033 - Impl magic link flow
+## (complete) VOUCH-033 - Impl magic link flow
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on: 8/24/25
+
+<br>
+
+## VOUCH-034 - Remove signup code now that invite, magic link, and reset pw work now
 
 ### Description:
 
