@@ -277,7 +277,7 @@
 
 			&:disabled {
 				// TODO: standardize save buttons
-				background-color: gray;
+				background-color: #8080804a;
 			}
 
 			box-shadow:
@@ -291,7 +291,7 @@
 
 			&:disabled {
 				// TODO: standardize save buttons
-				background-color: gray;
+				background-color: #8080804a;
 			}
 		}
 	}

@@ -363,7 +363,7 @@ Verified By cube on: 8/8/25
   status
   )
 - For now just a card list with button to cancel (ie remove rental from db) and link to stuff page
-- stuff detail page should show item as rented is rented (button disbaled)
+- stuff detail page should show item as rented is rented (button disabled)
 
 ### Acceptance Criteria:
 

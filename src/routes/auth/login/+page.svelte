@@ -1,5 +1,9 @@
-<script>
+<script lang="ts">
 	let { form } = $props();
+
+	let email: string | null = $state(null);
+
+	let password: string | null = $state(null);
 </script>
 
 <h2>Login</h2>
@@ -16,19 +20,23 @@
 		<div class="form-field">
 			<label>
 				Email:
-				<input name="email" type="email" autocomplete="username" />
+				<input name="email" type="email" autocomplete="username" bind:value={email} />
 			</label>
 		</div>
 		<div class="form-field">
 			<label>
 				Password:
-				<input name="password" type="password" autocomplete="current-password" />
+				<input
+					name="password"
+					type="password"
+					autocomplete="current-password"
+					bind:value={password}
+				/>
 			</label>
 		</div>
 	</div>
 	<div class="form-actions">
-		<button type="button" formaction="?/signup">Sign up</button>
-		<button type="submit" class="submit">Login</button>
+		<button type="submit" class="submit" disabled={!email || !password}>Login</button>
 	</div>
 </form>
 
@@ -79,6 +87,10 @@
 
 		button.submit {
 			background-color: #cddc39;
+
+			&:disabled {
+				background-color: #8080804a;
+			}
 		}
 	}
 

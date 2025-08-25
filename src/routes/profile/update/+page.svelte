@@ -229,7 +229,7 @@
 			border-radius: 0.25rem;
 
 			&:disabled {
-				background-color: gray;
+				background-color: #8080804a;
 			}
 		}
 
@@ -238,7 +238,7 @@
 			color: white;
 
 			&:disabled {
-				background-color: gray;
+				background-color: #8080804a;
 			}
 		}
 	}

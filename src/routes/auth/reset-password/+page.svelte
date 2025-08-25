@@ -116,7 +116,7 @@
 				padding: 1rem 0;
 
 				&:disabled {
-					background-color: gray;
+					background-color: #8080804a;
 				}
 			}
 		}
