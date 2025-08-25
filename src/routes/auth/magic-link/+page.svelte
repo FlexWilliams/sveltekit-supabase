@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
-	import { onMount } from 'svelte';
 
 	let email: string | null = $state(null);
 
@@ -9,51 +7,12 @@
 
 	let sendingMagicLink: boolean = $state(false);
 
-	async function getAccessToken(): Promise<void> { // Deprecated...
-
-		let hash = window.location.hash;
-		if (hash.indexOf('#error') === 0) {
-			verifyingToken = false;
-
-			ToastrService.error(`The magic link you clicked is invalid.\nPlease use the latest sent to you or request another.`);
-
-			return;
-		}
-
-		let hashTokens = hash.split('#');
-
-		if (hashTokens && hashTokens.length > 1) {
-			const tokens = hashTokens[1].split('&');
-
-			let accessToken = tokens[0].split('=')[1]; // TODO: null checking...
-			let refreshToken = tokens[3].split('=')[1]; // TODO: null checking...
-
-			const response = await fetch(`/api/auth/magic-link`, {
-				method: 'POST',
-				body: JSON.stringify({ accessToken, refreshToken }),
-				headers: {
-					'Contenty-Type': 'application/json'
-				}
-			});
-
-			if (response.ok) {
-				const { user, userMeta } = await response.json();
-
-				ToastrService.alert(`Welcome back\n${userMeta?.userName || user?.email}!`);
-
-				goto('/', { invalidateAll: true });
-			}
-		}
-
-		verifyingToken = false;
-	}
-
 	async function sendMagicLink(event: Event): Promise<void> {
 		event.preventDefault();
 
 		sendingMagicLink = true;
 
-		const response = await fetch('/api/auth/magic-link/send', {
+		const response = await fetch('/api/auth/magic-link', {
 			method: 'POST',
 			body: JSON.stringify({ email }),
 			headers: {
@@ -71,10 +30,6 @@
 
 		sendingMagicLink = false;
 	}
-
-	onMount(async () => {
-		// await getAccessToken();
-	});
 </script>
 
 <section>

@@ -10,25 +10,15 @@
 		profileState$$setProfilePicLoading
 	} from '$lib/state/profile-state.svelte.js';
 	import Toastr from '$lib/toastr/components/Toastr.svelte';
-	import { prettyJson } from '$lib/web/http/response.js';
 	import { onDestroy, onMount } from 'svelte';
 
 	let { data, children } = $props();
-	let { user, session, supabase } = $derived(data);
 
-	// let user = $derived.by(() => {
-	//   let state = $state(data.user);
-	//   return state;
-	// });
+	let { user, session, supabase } = $derived(data);
 
 	let profilePic: string | null = $derived(profileState.profilePic);
 
 	let subscriptions: any[] = [];
-
-	$effect(() => {
-		// TODO: remove, testing to see if user obj refresh after magic link flow...
-		Logger.debug(`layout.svelte: user obj changed: ${prettyJson(data.user)}`);
-	});
 
 	async function fetchProfilePic(): Promise<void> {
 		if (!user) {
@@ -61,7 +51,9 @@
 				Logger.debug(
 					`layout.svelte: afterNavigate() called, no user and attempting to go to private route!`
 				);
-				// goto('/auth'); // client side redirecting if hook.server doesn't catch (in case of preloading data links)
+
+				// client side redirecting if hook.server doesn't catch (in case of preloading data links)
+				// goto('/auth/login');
 			}
 		});
 

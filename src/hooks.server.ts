@@ -4,6 +4,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { Logger } from '$lib/logging/logger';
+import { prettyJson } from '$lib/web/http/response';
 
 // Code courtesy of: https://supabase.com/docs/guides/auth/server-side/sveltekit
 
@@ -64,12 +65,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
-const publicAuthRoutes = [
-	'/auth/login',
-	'/auth/magic-link',
-	'/api/auth/magic-link',
-	'/api/auth/magic-link/send'
-];
+const publicAuthRoutes = ['/auth/login', '/auth/magic-link', '/api/auth/magic-link'];
 
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();
@@ -85,14 +81,6 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		}
 
 		if (publicAuthRoutes.some((p) => p === event.url.pathname)) {
-			if (
-				event.url.pathname === '/auth/magic-link' ||
-				event.url.pathname === '/api/auth/magic-link'
-			) {
-				// Allow this route for the access token verification
-				return resolve(event);
-			}
-
 			Logger.debug(
 				`AuthGuard: User attempting to access an auth page but already logged in, redirecting...`
 			);
@@ -104,12 +92,18 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		const code = event.url.searchParams.get('code');
 
 		if (code) {
+			Logger.debug(`AuthGuard: Magic Link auth code present, attempting to login...`);
+
 			const {
-				data: { session, user }
+				data: { session, user },
+				error
 			} = await event.locals.supabase.auth.exchangeCodeForSession(code);
 
 			if (session && user) {
+				Logger.debug(`AuthGuard: User id ${user?.id} logged in via Magic Link!`);
 				redirect(303, '/');
+			} else {
+				Logger.debug(`AuthGuard: Unable to login user via Magic Link!\n${prettyJson(error)}`);
 			}
 		}
 

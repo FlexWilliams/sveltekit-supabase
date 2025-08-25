@@ -7,18 +7,14 @@
 	import { fade } from 'svelte/transition';
 	let { data } = $props();
 
-	let profilePic: Blob | null = $derived(profileState.profilePic);
+	let profilePic: string | null = $derived(profileState.profilePic);
 
 	let profilePicLoading: boolean = $derived(profileState.profilePicLoading);
 
 	let newProfilePic: Blob | null = $state(null);
 
 	let profilePicUrl: string | null = $derived.by(() =>
-		newProfilePic
-			? URL.createObjectURL(newProfilePic)
-			: profilePic
-				? URL.createObjectURL(profilePic)
-				: null
+		newProfilePic ? URL.createObjectURL(newProfilePic) : profilePic ? profilePic : null
 	);
 
 	let newUserName: string | null = $state(data?.userMeta?.userName);
@@ -48,7 +44,7 @@
 
 		if (this.status === 204 && !this.response) {
 			if (newProfilePic) {
-				profileState$$setProfilePic(newProfilePic);
+				profileState$$setProfilePic(URL.createObjectURL(newProfilePic));
 				newProfilePic = null;
 			}
 

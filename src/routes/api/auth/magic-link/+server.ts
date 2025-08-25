@@ -1,44 +1,36 @@
 import { Logger } from '$lib/logging/logger';
-import { userMetaFromDbList, type UserMetaFromDb } from '$lib/user/model/user-meta';
-import { badRequest, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, noContent, ok, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import { type RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'Magic Link API';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-	const { accessToken, refreshToken } = await request.json();
-	if (!accessToken || !refreshToken) {
-		return badRequest(`Invalid tokens!`);
+export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
+	let loggedInUser = (await safeGetSession()).user;
+	if (loggedInUser) {
+		return noContent(`User already logged in.`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Attempting to set session for user w/token: ${accessToken}...`);
+	const { email } = await request.json();
+	if (!email) {
+		return badRequest(`Invalid email!`);
+	}
 
-	const {
-		data: { user },
-		error
-	} = await supabase.auth.setSession({
-		access_token: accessToken,
-		refresh_token: refreshToken
+	Logger.debug(`${API_NAME} [POST]: Attempting to send magic link for email: ${email}...`);
+
+	const { error } = await supabase.auth.signInWithOtp({
+		email,
+		options: {
+			shouldCreateUser: false
+		}
 	});
 
 	if (error) {
-		Logger.error(`${API_NAME} [POST]: Error setting session: ${prettyJson(error)}`);
-		return unknown(`Error logging in via-magic link`);
+		Logger.error(`${API_NAME} [POST]: Error sending magic link: ${prettyJson(error)}`);
+		return unknown(`Error sending magic link`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: User logged in successfully!`);
+	Logger.debug(`${API_NAME} [POST]: Magic Link sent!`);
 
-	let userMeta = null;
-
-	if (user?.id) {
-		const { data: userMetaFromDb } = await supabase
-			.from('user_meta')
-			.select('id,user_name,profile_pic_url')
-			.eq('id', user?.id);
-
-		userMeta = userMetaFromDbList(userMetaFromDb as UserMetaFromDb[])[0];
-	}
-
-	return ok({ user, userMeta });
+	return ok();
 };
