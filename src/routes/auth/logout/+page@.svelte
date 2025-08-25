@@ -14,7 +14,7 @@
 
 		ToastrService.alert(`Signed out!`);
 
-		goto('/');
+		goto('/auth/login');
 	}
 
 	onMount(async () => {

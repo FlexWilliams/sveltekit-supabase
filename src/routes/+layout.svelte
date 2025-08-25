@@ -1,23 +1,34 @@
 <script lang="ts">
-	import { afterNavigate, goto, invalidate } from '$app/navigation';
+	import { afterNavigate, invalidate } from '$app/navigation';
 
 	import Footer from '$lib/layout/components/Footer.svelte';
 	import Header from '$lib/layout/components/Header.svelte';
+	import { Logger } from '$lib/logging/logger.js';
 	import {
 		profileState,
 		profileState$$setProfilePic,
 		profileState$$setProfilePicLoading
 	} from '$lib/state/profile-state.svelte.js';
 	import Toastr from '$lib/toastr/components/Toastr.svelte';
+	import { prettyJson } from '$lib/web/http/response.js';
 	import { onDestroy, onMount } from 'svelte';
 
 	let { data, children } = $props();
-	let { user } = $derived(data);
-	let { session, supabase } = $derived(data);
+	let { user, session, supabase } = $derived(data);
+
+	// let user = $derived.by(() => {
+	//   let state = $state(data.user);
+	//   return state;
+	// });
 
 	let profilePic: string | null = $derived(profileState.profilePic);
 
 	let subscriptions: any[] = [];
+
+	$effect(() => {
+		// TODO: remove, testing to see if user obj refresh after magic link flow...
+		Logger.debug(`layout.svelte: user obj changed: ${prettyJson(data.user)}`);
+	});
 
 	async function fetchProfilePic(): Promise<void> {
 		if (!user) {
@@ -39,6 +50,7 @@
 	onMount(async () => {
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
+				Logger.debug(`New session created!`);
 				invalidate('supabase:auth');
 			}
 		});
@@ -46,7 +58,10 @@
 			const route = e.to?.route?.id;
 
 			if (!user && route !== '/auth') {
-				goto('/auth'); // client side redirecting if hook.server doesn't catch (in case of preloading data links)
+				Logger.debug(
+					`layout.svelte: afterNavigate() called, no user and attempting to go to private route!`
+				);
+				// goto('/auth'); // client side redirecting if hook.server doesn't catch (in case of preloading data links)
 			}
 		});
 

@@ -7,7 +7,7 @@
 </section>
 
 <style lang="scss">
-	@use '../../lib/styles/layout/panel.scss';
+	@use '../../../lib/styles/layout/panel.scss';
 
 	section {
 		@include panel.panel;

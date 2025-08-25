@@ -18,6 +18,7 @@ export const actions: Actions = {
 			redirect(303, '/');
 		}
 	},
+
 	login: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
