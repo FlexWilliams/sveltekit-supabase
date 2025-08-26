@@ -493,7 +493,7 @@ Verified By cube on: 8/11/25
 
 <br>
 
-## VOUCH-030 - (PERF) Add basic store setup
+## (Deffered) VOUCH-030 - (PERF) Add basic store setup
 
 ### Description:
 
@@ -508,7 +508,12 @@ Verified By cube on: 8/11/25
 
 ### Acceptance Criteria:
 
-Verified By cube on:
+Verified By cube on: 8/26/25
+
+Notes: due to ssr (i.e., load functions) the data is always retrieved before page load,
+therefore state won't improve perf.
+
+This will require caching server side, but not sure if its worth the squeeze right now.
 
 <br>
 
@@ -609,6 +614,23 @@ Verified By cube on:
 ^^
 
 The app should be in prod-ready mode by now, lets get serious...
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-039 - [Bug] Removing photo needs to update stuff entity (imageUrl) and
+
+### Description:
+
+^^
+
+- default image url needs to be updated if it is the image being deleted.
+  - update the ui state also
+- how to handle deleting last image? should that be allowed?
+- also need to specify if the current image is default already (every one has a `Set Default` button even if already default)
 
 ### Acceptance Criteria:
 

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger';
+	import type { PhotoNameAndUrl } from '$lib/photo/model/photo';
 	import NewStuffPhotoCarousel from '$lib/stuff/components/NewStuffPhotoCarousel.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 
 	interface StuffFormProps {
 		stuff?: Stuff;
-		photos?: File[];
+		photos: PhotoNameAndUrl[];
 		handleRemove?: () => void;
 		handleUpdate?: () => void;
 		handleSaveStart?: () => void;
@@ -26,8 +27,6 @@
 	}: StuffFormProps = $props();
 
 	let saving = $state(false);
-
-	let photosList: File[] = $state(photos || []);
 
 	let newPhotos: File[] = $state([]);
 
@@ -94,7 +93,7 @@
 
 	function getFormData(
 		name: string,
-		photos: File[],
+		newPhotos: File[],
 		trustLevel: number,
 		description: string | null
 	): FormData {
@@ -102,9 +101,9 @@
 
 		formData.append('name', name);
 
-		formData.append('photo_count', `${$state.snapshot(photosList).length}`);
+		formData.append('photo_count', `${$state.snapshot(photos)?.length}`);
 
-		formData.append('new_photo_count', `${$state.snapshot(newPhotos).length}`);
+		formData.append('new_photo_count', `${newPhotos.length}`);
 
 		newPhotos.forEach((p, idx) => formData.append(`new_photo_${idx}`, p));
 
@@ -198,7 +197,7 @@
 		</label>
 	</div>
 
-	<NewStuffPhotoCarousel photos={photosList} {handlePhotoRemove} {handlePhotoSetDefault} />
+	<NewStuffPhotoCarousel {photos} {handlePhotoRemove} {handlePhotoSetDefault} />
 
 	<div class="form-field">
 		<label>

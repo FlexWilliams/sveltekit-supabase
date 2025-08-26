@@ -1,26 +1,25 @@
 <script lang="ts">
+	import type { PhotoNameAndUrl } from '$lib/photo/model/photo';
+
 	interface Props {
-		photos: File[];
+		photos: PhotoNameAndUrl[];
 		handlePhotoRemove: (photoName: string) => void;
 		handlePhotoSetDefault: (photoName: string) => void;
 	}
 
 	let { photos, handlePhotoRemove, handlePhotoSetDefault }: Props = $props();
-	let photoUrls: string[] = $derived.by(() =>
-		photos ? photos.map((p) => URL.createObjectURL(p)) : []
-	);
 </script>
 
 <ul>
-	{#each photoUrls as photo, idx}
+	{#each photos as photo}
 		<li>
-			<img src={photo} alt={`Photo`} />
+			<img src={photo?.photoUrl} alt={`Photo`} />
 			<button
 				aria-label="Remove Photo?"
 				class="close"
-				onclick={() => handlePhotoRemove(photos[idx]?.name)}>X</button
+				onclick={() => handlePhotoRemove(photo.photoName)}>X</button
 			>
-			<button class="default" onclick={() => handlePhotoSetDefault(photos[idx]?.name)}
+			<button class="default" onclick={() => handlePhotoSetDefault(photo.photoName)}
 				>Set Default</button
 			>
 		</li>

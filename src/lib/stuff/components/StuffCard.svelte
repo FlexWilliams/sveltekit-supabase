@@ -1,5 +1,6 @@
 <script lang="ts">
 	import bluray from '$lib/assets/images/inventory-items/bluray.png';
+	import { myStuffState, myStuffState$$setStuffImage } from '$lib/state/my-stuff-state.svelte';
 	import { onMount } from 'svelte';
 	import type { Stuff } from '../model/stuff';
 
@@ -11,14 +12,16 @@
 
 	let { stuff, handleClick, handleEdit }: StuffCardProps = $props();
 
-	let photo: string | null = $state(null);
+	let photo: string | null = $derived(myStuffState.myStuffImages.get(stuff.imageUrl || '') || null);
 
 	async function fetchPhoto(): Promise<void> {
-		if (stuff?.imageUrl) {
+		if (stuff?.imageUrl && !photo) {
 			const response = await fetch(`/api/stuff/${stuff?.id}/photo/${stuff.imageUrl}`);
 
 			if (response.ok) {
 				photo = await response.text();
+
+				myStuffState$$setStuffImage(stuff.imageUrl, photo);
 			}
 		}
 	}

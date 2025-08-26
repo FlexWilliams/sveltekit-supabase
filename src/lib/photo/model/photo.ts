@@ -27,3 +27,8 @@ export function getPhotoSizeDimensions(
 			return null;
 	}
 }
+
+export interface PhotoNameAndUrl {
+	photoName: string;
+	photoUrl: string;
+}

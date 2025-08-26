@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger.js';
+	import type { PhotoNameAndUrl } from '$lib/photo/model/photo.js';
 	import StuffForm from '$lib/stuff/components/StuffForm.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
@@ -9,7 +10,7 @@
 
 	let { data } = $props();
 
-	let photos: File[] = $state([]);
+	let photos: PhotoNameAndUrl[] = $state([]);
 
 	let photoToRemove: string | null = $state(null);
 
@@ -59,11 +60,13 @@
 
 		if (photoNames.length > 0) {
 			photoNames.forEach(async (photoName) => {
-				const photo = await (
-					await fetch(`/api/stuff/${stuff?.id}/photo/${photoName}`)
-				).arrayBuffer();
-				if (photo) {
-					photos.push(new File([photo], photoName));
+				const photoUrl = await (await fetch(`/api/stuff/${stuff?.id}/photo/${photoName}`)).text();
+
+				if (photoUrl) {
+					photos.push({
+						photoName,
+						photoUrl
+					});
 				}
 			});
 		}

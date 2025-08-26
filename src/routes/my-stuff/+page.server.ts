@@ -28,7 +28,7 @@ const fetchItems = async (
 	return stuff;
 };
 
-export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGetSession } }) => {
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 
 	const stuff = await fetchItems(user?.id, supabase);
