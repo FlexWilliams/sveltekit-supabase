@@ -21,7 +21,7 @@
 	let subscriptions: any[] = [];
 
 	async function fetchProfilePic(): Promise<void> {
-		if (!user) {
+		if (!user || profilePic) {
 			return;
 		}
 
@@ -44,6 +44,7 @@
 				invalidate('supabase:auth');
 			}
 		});
+
 		afterNavigate((e) => {
 			const route = e.to?.route?.id;
 
@@ -51,9 +52,6 @@
 				Logger.debug(
 					`layout.svelte: afterNavigate() called, no user and attempting to go to private route!`
 				);
-
-				// client side redirecting if hook.server doesn't catch (in case of preloading data links)
-				// goto('/auth/login');
 			}
 		});
 
