@@ -1,4 +1,5 @@
 import { Logger } from '$lib/logging/logger';
+import type { UserMetaFromDb } from '$lib/user/model/user-meta';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'Profile API';
@@ -38,21 +39,24 @@ export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGet
 			status: 400,
 			statusText: 'Username is null.'
 		});
-	} else {
-		const userNameChangeResponse = await supabase
-			.from('user_meta')
-			.update({
-				user_name: userName
-			})
-			.eq('id', user?.id);
+	}
 
-		if (userNameChangeResponse.error) {
-			Logger.error(
-				`${API_NAME} [PUT]: Error updating the username for user id ${user?.id}: ${userNameChangeResponse?.error?.message}`
-			);
-		} else {
-			Logger.debug(`${API_NAME} [PUT]: Success updating username!`);
-		}
+	const userMeta: Partial<UserMetaFromDb> = {
+		user_name: userName,
+		updated_on: new Date().toISOString()
+	};
+
+	const userNameChangeResponse = await supabase
+		.from('user_meta')
+		.update(userMeta)
+		.eq('id', user?.id);
+
+	if (userNameChangeResponse.error) {
+		Logger.error(
+			`${API_NAME} [PUT]: Error updating the username for user id ${user?.id}: ${userNameChangeResponse?.error?.message}`
+		);
+	} else {
+		Logger.debug(`${API_NAME} [PUT]: Success updating username!`);
 	}
 
 	if (profilePic) {

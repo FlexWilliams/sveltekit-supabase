@@ -1,6 +1,7 @@
 export interface UserMeta {
 	id: string;
 	createdOn: string;
+	updatedOn: string;
 	userName: string;
 	profilePic?: ArrayBuffer;
 	profilePicUrl?: string;
@@ -11,6 +12,7 @@ export interface UserMeta {
 export interface UserMetaFromDb {
 	id: string;
 	created_on: string;
+	updated_on: string;
 	user_name: string;
 	profile_pic_url?: string;
 	email_confirmed: boolean;
@@ -21,6 +23,7 @@ export function userMetaFromDb(userMeta: UserMetaFromDb): UserMeta {
 	return {
 		id: userMeta.id,
 		createdOn: userMeta.created_on,
+		updatedOn: userMeta.updated_on,
 		userName: userMeta.user_name,
 		profilePicUrl: userMeta.profile_pic_url,
 		emailConfirmed: userMeta.email_confirmed,

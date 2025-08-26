@@ -23,12 +23,9 @@ export const PUT: RequestHandler = async ({
 	}
 
 	const id = params.id;
-
 	if (!id) {
 		return badRequest(`${API_NAME} [PUT]: Unable to update My Stuff, id null.`);
 	}
-
-	Logger.debug(`${id}, ${user?.id}`);
 
 	const formData = await request.formData();
 	const name = formData.get('name') as string;
@@ -50,9 +47,6 @@ export const PUT: RequestHandler = async ({
 		description,
 		updatedOn: new Date().toISOString()
 	};
-
-	Logger.debug(JSON.stringify(stuffEdit));
-	Logger.debug(JSON.stringify(stuffToDb(stuffEdit as Stuff)));
 
 	const { error } = await supabase
 		.from('user_stuff')
