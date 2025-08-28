@@ -57,7 +57,7 @@
 		afterNavigate((e) => {
 			const route = e.to?.route?.id;
 
-			if (!user && route !== '/auth') {
+			if (!user && route !== '/auth/login') {
 				Logger.debug(
 					`layout.svelte: afterNavigate() called, no user and attempting to go to private route!`
 				);

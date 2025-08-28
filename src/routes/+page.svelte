@@ -10,7 +10,7 @@
 	onMount(() => {
 		afterNavigate((e) => {
 			const route = e.from?.route?.id;
-			if ((!route || route === '/auth') && user) {
+			if ((!route || route === '/auth/login') && user) {
 				ToastrService.alert(`Welcome back\n${userMeta?.userName || user?.email}!`);
 			}
 		});

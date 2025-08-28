@@ -9,5 +9,9 @@
 		"directory": "./public/",
 		"binding": "ASSETS"
 	},
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1
+	},
 	"compatibility_date": "2021-11-12"
 }

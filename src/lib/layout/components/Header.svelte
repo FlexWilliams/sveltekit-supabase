@@ -2,6 +2,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import avatar from '$lib/assets//images/avatars/avatar.png';
 	import { Logger } from '$lib/logging/logger';
+	import { userState } from '$lib/state/user-state.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import { onMount, untrack } from 'svelte';
 
@@ -11,6 +12,8 @@
 	}
 
 	let { user, profilePic }: HeaderProps = $props();
+
+	let userId: string | null = $derived(userState.id);
 
 	let profilePicUrl: string | null = $derived.by(() => (user?.id && profilePic) || null);
 

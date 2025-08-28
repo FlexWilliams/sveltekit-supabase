@@ -65,7 +65,12 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
-const publicAuthRoutes = ['/auth/login', '/auth/confirm', '/auth/magic-link', '/api/auth/magic-link'];
+const publicAuthRoutes = [
+	'/auth/login',
+	'/auth/confirm',
+	'/auth/magic-link',
+	'/api/auth/magic-link'
+];
 
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();

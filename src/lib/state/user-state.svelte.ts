@@ -1,10 +1,9 @@
-
 export interface UserState {
 	id: string | null;
 }
 
 const initialUserState: UserState = {
-    id: null
+	id: null
 };
 
 export const userState = $state(initialUserState);
