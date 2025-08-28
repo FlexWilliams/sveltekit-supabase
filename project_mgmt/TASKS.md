@@ -651,3 +651,15 @@ to allow app to be used w/out JS
 Verified By cube on:
 
 <br>
+
+## VOUCH-040 - My Rentals w incoming/outgoing
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
