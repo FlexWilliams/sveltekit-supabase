@@ -4,7 +4,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { ToastrService, type ToastrConfig } from '../services/ToastrService';
 
-	const defaultToastrDuration = 5000;
+	const defaultToastrDuration = 2500;
 
 	const subscriptions: Subscription[] = [];
 

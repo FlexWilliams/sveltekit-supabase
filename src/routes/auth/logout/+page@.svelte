@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { userState$$setId } from '$lib/state/user-state.svelte.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 	import { onMount } from 'svelte';
 
@@ -11,6 +12,8 @@
 		if (error) {
 			console.error(error);
 		}
+
+		userState$$setId(null);
 
 		ToastrService.alert(`Signed out!`);
 

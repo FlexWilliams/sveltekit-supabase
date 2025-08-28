@@ -1,14 +1,21 @@
 <script lang="ts">
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
+	import { userState } from '$lib/state/user-state.svelte';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	let userId: string | null = $derived(userState.id);
 
 	let route: string | null = $state(null);
 
 	onMount(() => {
 		afterNavigate((e) => {
 			route = e.to?.route?.id || null;
+
+			if (!userId) {
+				goto(`/auth/login`);
+			}
 		});
 	});
 </script>

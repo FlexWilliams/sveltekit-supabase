@@ -9,8 +9,9 @@
 		profileState$$setProfilePic,
 		profileState$$setProfilePicLoading
 	} from '$lib/state/profile-state.svelte.js';
+	import { userState$$setId } from '$lib/state/user-state.svelte.js';
 	import Toastr from '$lib/toastr/components/Toastr.svelte';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 
 	let { data, children } = $props();
 
@@ -19,6 +20,14 @@
 	let profilePic: string | null = $derived(profileState.profilePic);
 
 	let subscriptions: any[] = [];
+
+	$effect(() => {
+		const userId = user?.id || null;
+
+		untrack(() => {
+			userState$$setId(userId);
+		});
+	});
 
 	async function fetchProfilePic(): Promise<void> {
 		if (!user || profilePic) {
