@@ -637,3 +637,17 @@ Verified By cube on:
 Verified By cube on:
 
 <br>
+
+## VOUCH-039 - All forms to use form action and then use:enhance as supportive!
+
+### Description:
+
+^^
+
+to allow app to be used w/out JS
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>

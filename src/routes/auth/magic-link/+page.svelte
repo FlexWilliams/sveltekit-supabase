@@ -34,6 +34,8 @@
 
 <section>
 	<h2>Send Magic Link</h2>
+
+	<!-- TODO: use:enhance here! -->
 	<form>
 		<div class="form-field">
 			<label>
