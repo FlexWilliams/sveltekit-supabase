@@ -40,6 +40,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 			data: { session }
 		} = await event.locals.supabase.auth.getSession();
 		if (!session) {
+			Logger.debug(`safeGetSession: No Session`);
 			return { session: null, user: null };
 		}
 
@@ -48,9 +49,11 @@ const supabase: Handle = async ({ event, resolve }) => {
 			error
 		} = await event.locals.supabase.auth.getUser();
 		if (error) {
+			Logger.debug(`safeGetSession: Session, No User`);
 			return { session: null, user: null };
 		}
 
+		Logger.debug(`safeGetSession: Session AND User`);
 		return { session, user };
 	};
 
@@ -74,6 +77,9 @@ const publicAuthRoutes = [
 
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();
+
+	Logger.debug(`authGuard session access token: ${session?.access_token}`);
+	Logger.debug(`authGuard session user id: ${user?.id}`);
 
 	const loggedIn = session && user;
 

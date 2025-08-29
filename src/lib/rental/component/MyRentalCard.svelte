@@ -76,6 +76,7 @@
 			border: none;
 			border-radius: 0.25rem;
 			background-color: #cddc39;
+			padding: 0 0.5rem;
 		}
 
 		button.item-details {

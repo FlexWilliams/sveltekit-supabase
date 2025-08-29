@@ -7,7 +7,11 @@
 
 	let loading = $state(true);
 
-	let rentals: MyRental[] = $state([]);
+	let incomingRentals: MyRental[] = $state([]);
+
+	let outgoingRentals: MyRental[] = $state([]);
+
+	let activeTab: string = $state('incoming');
 
 	async function handleCancelReservation(id?: number): Promise<void> {
 		const response = await fetch(`/api/my-rentals/${id}`, {
@@ -15,23 +19,40 @@
 		});
 
 		if (response.ok) {
-			await fetchRentals();
+			await fetchIncomingRentals();
 			ToastrService.alert(`Your reservation was\nCancelled!`);
 		} else {
 			Logger.error(`There was an error deleting My Rental w/id ${id}`);
 		}
 	}
 
-	async function fetchRentals(): Promise<void> {
+	async function fetchIncomingRentals(): Promise<void> {
 		const response = await fetch(`/api/my-rentals`);
 
 		if (!response.ok) {
 			Logger.error(`Error fetching my rentals!`);
 		} else {
-			rentals = (await response.json()) as MyRental[];
+			incomingRentals = (await response.json()) as MyRental[];
 		}
 
 		loading = false;
+	}
+
+	async function fetchOutGoingRentals(): Promise<void> {
+		const response = await fetch(`/api/my-rentals?outgoing=true`);
+		if (!response.ok) {
+			Logger.error(`Error fetching my outgoing rentals!`);
+		} else {
+			outgoingRentals = (await response.json()) as MyRental[];
+		}
+
+		loading = false;
+	}
+
+	async function fetchRentals(): Promise<void> {
+		return Promise.all([fetchIncomingRentals(), fetchOutGoingRentals()]).then(() => {
+			Logger.debug(`Fetched incoming and outoging rentals!`);
+		});
 	}
 
 	onMount(async () => {
@@ -40,13 +61,26 @@
 </script>
 
 <section>
-	<h2>My Rentals</h2>
+	<h2>Rentals</h2>
+
+	<menu>
+		<li>
+			<button class:active={activeTab !== 'outgoing'} onclick={() => (activeTab = 'incoming')}>
+				<span>Incoming</span>
+			</button>
+		</li>
+		<li>
+			<button class:active={activeTab === 'outgoing'} onclick={() => (activeTab = 'outgoing')}>
+				<span>Outgoing</span>
+			</button>
+		</li>
+	</menu>
 
 	{#if loading}
 		<p>Loading...</p>
-	{:else}
+	{:else if activeTab === 'incoming'}
 		<ul>
-			{#each rentals as rental}
+			{#each incomingRentals as rental}
 				<li>
 					<MyRentalCard {rental} {handleCancelReservation} />
 				</li>
@@ -54,6 +88,18 @@
 				<li>
 					<p>You don't have any active rentals</p>
 					<a href="/search">Search for things to rent here</a>
+				</li>
+			{/each}
+		</ul>
+	{:else}
+		<ul>
+			{#each outgoingRentals as rental}
+				<li>
+					<MyRentalCard {rental} {handleCancelReservation} />
+				</li>
+			{:else}
+				<li>
+					<p>You don't have any outoging rentals</p>
 				</li>
 			{/each}
 		</ul>
@@ -72,12 +118,54 @@
 			height: 10%;
 		}
 
+		menu {
+			display: flex;
+			justify-content: space-around;
+			list-style: none;
+			margin: 0;
+			margin-bottom: 1rem;
+			padding: 0;
+
+			li {
+				padding: 0;
+				margin: 0;
+				text-align: center;
+				display: flex;
+				align-items: center;
+				border-radius: 0.25rem;
+				min-height: 3rem;
+
+				button {
+					background-color: gray;
+					color: white;
+					padding: 1rem;
+					border: none;
+					border-radius: 0.25rem;
+					font-size: 1rem;
+					height: 100%;
+					width: 100%;
+
+					span {
+						padding: 0 0.5rem;
+					}
+				}
+
+				button.active {
+					background-color: rebeccapurple;
+
+					span {
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+
 		p {
 			text-align: center;
 		}
 
 		ul {
-			height: calc(90% - 2rem);
+			height: calc(70% - 2rem);
 			list-style: none;
 			margin: 0;
 			padding: 0;

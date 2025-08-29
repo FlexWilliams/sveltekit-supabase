@@ -11,16 +11,21 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Rentals API';
 
-export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+export const GET: RequestHandler = async ({
+	params,
+	url,
+	locals: { supabase, safeGetSession }
+}) => {
 	const { user } = await safeGetSession();
 	if (!user) {
 		return forbidden(`${API_NAME} [GET]: Unable to get My Rentals, user null.`);
 	}
 
-	const { data, error } = await supabase
-		.from('user_rentals')
-		.select()
-		.or(`rentee_id.eq.${user?.id}`);
+	const outgoing = url.searchParams.get('outgoing')?.toLowerCase() == 'true';
+
+	const filter = outgoing ? `renter_id.eq.${user?.id}` : `rentee_id.eq.${user?.id}`;
+
+	const { data, error } = await supabase.from('user_rentals').select().or(filter);
 
 	if (error) {
 		Logger.error(JSON.stringify(error));

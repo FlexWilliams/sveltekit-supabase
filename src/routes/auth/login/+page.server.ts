@@ -20,7 +20,7 @@ export const actions: Actions = {
 
 			return { error: error.message }; // TODO: suppress messages/wrap them
 		} else {
-			Logger.debug(prettyJson(data));
+			Logger.debug(`Login Success:\n${prettyJson(data)}`);
 			redirect(303, '/');
 		}
 	}
