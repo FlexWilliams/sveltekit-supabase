@@ -27,19 +27,29 @@
 	</h3>
 
 	{#if outgoing}
-		<p>Status: <span>Awaiting Your Approval</span></p>
-	{:else}
+		{#if rental?.status === RentalStatus.Reserved}
+			<p>Status: <span>Awaiting Your Approval</span></p>
+		{:else if rental?.status === RentalStatus.Cancelled}
+			<p>Status: <span>Request was Cancelled</span></p>
+		{:else if rental?.status === RentalStatus.Rejected}
+			<p>Status: <span>You Rejected the Request</span></p>
+		{/if}
+	{:else if rental?.status === RentalStatus.Reserved}
 		<p>Status: <span>Pending Approval</span></p>
+	{:else if rental?.status === RentalStatus.Cancelled}
+		<p>Status: <span>You Cancelled the Reservation</span></p>
+	{:else if rental?.status === RentalStatus.Rejected}
+		<p>Status: <span>Owner Rejected the Request</span></p>
 	{/if}
 
 	{#if outgoing}
-		<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`}>Reject</button>
+		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
+			<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`}>Reject</button>
+		{/if}
 	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
 		<button class="cancel" popovertarget={`confirm-cancellation-${rental?.id}`}
 			>Cancel Reservation</button
 		>
-	{:else}
-		<button class="cancel" disabled>{rental?.status}</button>
 	{/if}
 
 	<button
