@@ -652,11 +652,25 @@ Verified By cube on:
 
 <br>
 
-## VOUCH-040 - My Rentals w incoming/outgoing
+## (Complete) VOUCH-040 - My Rentals w incoming/outgoing
 
 ### Description:
 
 ^^
+
+### Acceptance Criteria:
+
+Verified By cube on: 8/28/25
+
+<br>
+
+## VOUCH-041 - Incoming/Outgoing Rentals (card and details page)
+
+### Description:
+
+^^
+
+Card and Details page can be reused from existing My Rentals Card & id page, but with renter/rentee designation
 
 ### Acceptance Criteria:
 
