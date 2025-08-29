@@ -3,6 +3,7 @@
 	import bluray from '$lib/assets/images/inventory-items/bluray.png';
 	import { Logger } from '$lib/logging/logger';
 	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
+	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 	import { onMount } from 'svelte';
@@ -22,6 +23,10 @@
 	let renting: boolean = $state(false);
 
 	let cancelling: boolean = $state(false);
+
+	let rejecting: boolean = $state(false);
+
+	let userId: string | null = $derived(userState.id);
 
 	async function fetchStuff(): Promise<void> {
 		const response = await fetch(`/api/friend-stuff/${stuffId}`);
@@ -54,7 +59,10 @@
 	async function fetchRental(): Promise<void> {
 		loadingMyRental = true;
 
-		const response = await fetch(`/api/my-rentals?stuffId=${stuffId}`);
+		// TODO: perf improve by fetching the stuff obj and see the renter id flag
+		// or maybe add a newrental_id column on the stuff obj...
+		const outgoing = stuff?.userId === userId;
+		const response = await fetch(`/api/my-rentals?stuffId=${stuff?.id}&outgoing=${outgoing}`);
 
 		if (response.ok) {
 			const rentals = (await response.json()) as MyRental[];
@@ -87,8 +95,8 @@
 		renting = false;
 	}
 
-	function closePopover(): void {
-		const popover = document.getElementById('confirm-cancellation') as HTMLDialogElement;
+	function closePopover(id: string): void {
+		const popover = document.getElementById(id) as HTMLDialogElement;
 		if (popover) {
 			popover.hidePopover();
 		}
@@ -110,6 +118,23 @@
 		}
 
 		cancelling = false;
+	}
+
+	async function handleRejectRentalRequest(id?: number): Promise<void> {
+		rejecting = true;
+
+		const response = await fetch(`/api/my-rentals/${rental?.id}/reject`, {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			rental = null;
+			ToastrService.alert(`The rental request was\nRejected!`);
+		} else {
+			ToastrService.error(`There was an error rejecting the rental request.`);
+		}
+
+		rejecting = false;
 	}
 
 	onMount(async () => {
@@ -135,15 +160,19 @@
 		<p>{stuff.description}</p>
 
 		<div class="rental-actions">
-			{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
-				<button popovertarget="confirm-cancellation" disabled={cancelling}
-					>Cancel Reservation</button
-				>
-			{/if}
+			{#if stuff?.userId !== userId}
+				{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
+					<button popovertarget="confirm-cancellation" disabled={cancelling}
+						>Cancel Reservation</button
+					>
+				{/if}
 
-			<button onclick={handleRentClick} disabled={renting || rental !== null} class="rent"
-				>Rent</button
-			>
+				<button onclick={handleRentClick} disabled={renting || rental !== null} class="rent"
+					>Rent</button
+				>
+			{:else if rental?.status === RentalStatus.Reserved}
+				<p>This item is currently being requested to rent!</p>
+			{/if}
 		</div>
 	{:else}
 		<p>Sorry, this item doesn't seem to exist!</p>
@@ -157,17 +186,49 @@
 				<span>{rental?.itemName}?</span>
 			</h3>
 			<div class="actions">
-				<button type="button" onclick={() => closePopover()}>No</button>
+				<button type="button" onclick={() => closePopover('confirm-cancellation')}>No</button>
 				<button
 					type="button"
 					class="confirm"
 					onclick={() => {
-						closePopover();
+						closePopover('confirm-cancellation');
 						handleCancelReservation(rental?.id);
 					}}>Yes</button
 				>
 			</div>
 		</dialog>
+	{/if}
+
+	{#if rental?.status === RentalStatus.Approved}
+		<p>The item is ready to be exchanged!</p>
+
+		{#if stuff?.userId === userId}
+			<button type="button" popovertarget="confirm-rejection" disabled={rejecting} class="reject"
+				>Reject</button
+			>
+		{/if}
+	{/if}
+
+	<dialog id="confirm-rejection" popover="auto">
+		<h3>
+			<span>Are you sure you want to reject the rental request for:</span>
+			<span>{rental?.itemName}?</span>
+		</h3>
+		<div class="actions">
+			<button type="button" onclick={() => closePopover('confirm-rejection')}>No</button>
+			<button
+				type="button"
+				class="confirm"
+				onclick={() => {
+					closePopover('confirm-rejection');
+					handleRejectRentalRequest(rental?.id);
+				}}>Yes</button
+			>
+		</div>
+	</dialog>
+
+	{#if stuff?.userId !== userId || (stuff?.userId === userId && (rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved || rental?.status === RentalStatus.Rented))}
+		<button type="button" class="chat">Chat</button>
 	{/if}
 </section>
 
@@ -182,6 +243,7 @@
 		flex-direction: column;
 		align-items: center;
 		overflow: hidden;
+		position: relative;
 
 		h3 {
 			display: flex;
@@ -228,6 +290,26 @@
 
 		dialog {
 			@include dialog.dialog;
+		}
+
+		button.chat {
+			position: absolute;
+			right: 1rem;
+			bottom: 1rem;
+			height: 3rem;
+			width: 3rem;
+			border-radius: 3rem;
+			border: none;
+			background-color: #cddc39;
+			text-align: center;
+		}
+
+		button.reject {
+			width: 90%;
+			height: 3rem;
+			border: none;
+			border-radius: 0.25rem;
+			background-color: #cddc39;
 		}
 	}
 

@@ -22,8 +22,18 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 	const outgoing = url.searchParams.get('outgoing')?.toLowerCase() == 'true';
 	const stuffId = url.searchParams.get('stuffId');
 
+	Logger.debug(`\noutgoing:${outgoing}\n`);
+	Logger.debug(`\nstuffId:${stuffId}\n`);
+
 	const { data, error } = outgoing
-		? await supabase.from('user_rentals').select().eq('renter_id', user?.id)
+		? stuffId
+			? await supabase
+					.from('user_rentals')
+					.select()
+					.eq('renter_id', user?.id)
+					.eq('item_id', stuffId)
+					.in('status', [RentalStatus.Reserved, RentalStatus.Approved, RentalStatus.Rented])
+			: await supabase.from('user_rentals').select().eq('renter_id', user?.id)
 		: stuffId
 			? await supabase
 					.from('user_rentals')

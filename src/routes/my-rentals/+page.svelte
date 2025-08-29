@@ -42,6 +42,23 @@
 		}
 	}
 
+	async function handleApproveReservation(id?: number, callback?: Function): Promise<void> {
+		const response = await fetch(`/api/my-rentals/${id}/approve`, {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			await fetchOutGoingRentals();
+			ToastrService.alert(`You approved the rental request!\nArrange for a time to exchange.`);
+		} else {
+			ToastrService.error(`There was an error approving the rental request.`);
+		}
+
+		if (callback) {
+			callback();
+		}
+	}
+
 	async function fetchIncomingRentals(): Promise<void> {
 		const response = await fetch(`/api/my-rentals`);
 
@@ -98,7 +115,12 @@
 		<ul>
 			{#each incomingRentals as rental}
 				<li>
-					<MyRentalCard {rental} {handleCancelReservation} handleRejectReservation={() => {}} />
+					<MyRentalCard
+						{rental}
+						{handleCancelReservation}
+						handleRejectReservation={() => {}}
+						handleApproveReservation={() => {}}
+					/>
 				</li>
 			{:else}
 				<li>
@@ -116,6 +138,7 @@
 						outgoing={true}
 						handleCancelReservation={() => {}}
 						{handleRejectReservation}
+						{handleApproveReservation}
 					/>
 				</li>
 			{:else}

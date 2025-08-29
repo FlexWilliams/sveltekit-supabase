@@ -5,12 +5,22 @@
 	interface MyRentalCardProps {
 		rental: MyRental;
 		outgoing?: boolean;
-		handleCancelReservation: (id?: number) => void;
-		handleRejectReservation: (id?: number) => void;
+		handleCancelReservation: (id?: number, callback?: () => void) => void;
+		handleRejectReservation: (id?: number, callback?: () => void) => void;
+		handleApproveReservation: (id?: number, callback?: () => void) => void;
 	}
 
-	let { rental, outgoing, handleCancelReservation, handleRejectReservation }: MyRentalCardProps =
-		$props();
+	let {
+		rental,
+		outgoing,
+		handleCancelReservation,
+		handleRejectReservation,
+		handleApproveReservation
+	}: MyRentalCardProps = $props();
+
+	let cancelling: boolean = $state(false);
+	let rejecting: boolean = $state(false);
+	let approving: boolean = $state(false);
 
 	function closePopover(id: string): void {
 		const popover = document.getElementById(id) as HTMLDialogElement;
@@ -33,6 +43,8 @@
 			<p>Status: <span>Request was Cancelled</span></p>
 		{:else if rental?.status === RentalStatus.Rejected}
 			<p>Status: <span>You Rejected the Request</span></p>
+		{:else if rental?.status === RentalStatus.Approved}
+			<p>Status: <span>You Approved the request, awaiting item exchange</span></p>
 		{/if}
 	{:else if rental?.status === RentalStatus.Reserved}
 		<p>Status: <span>Pending Approval</span></p>
@@ -40,15 +52,34 @@
 		<p>Status: <span>You Cancelled the Reservation</span></p>
 	{:else if rental?.status === RentalStatus.Rejected}
 		<p>Status: <span>Owner Rejected the Request</span></p>
+	{:else if rental?.status === RentalStatus.Approved}
+		<p>Status: <span>Owner Approved, arrange time for an Exchange!</span></p>
 	{/if}
 
 	{#if outgoing}
+		{#if rental?.status === RentalStatus.Reserved}
+			<button
+				class="approve"
+				onclick={() => {
+					approving = true;
+
+					handleApproveReservation(rental?.id, () => {
+						approving = false;
+					});
+				}}
+				disabled={approving}>Approve</button
+			>
+		{/if}
 		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
-			<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`}>Reject</button>
+			<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`} disabled={rejecting}
+				>Reject</button
+			>
 		{/if}
 	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
-		<button class="cancel" popovertarget={`confirm-cancellation-${rental?.id}`}
-			>Cancel Reservation</button
+		<button
+			class="cancel"
+			popovertarget={`confirm-cancellation-${rental?.id}`}
+			disabled={cancelling}>Cancel Reservation</button
 		>
 	{/if}
 
@@ -74,7 +105,10 @@
 			class="confirm"
 			onclick={() => {
 				closePopover(`confirm-cancellation-${rental?.id}`);
-				handleCancelReservation(rental?.id);
+				cancelling = true;
+				handleCancelReservation(rental?.id, () => {
+					cancelling = false;
+				});
 			}}>Yes</button
 		>
 	</div>
@@ -93,7 +127,10 @@
 			class="confirm"
 			onclick={() => {
 				closePopover(`confirm-rejection-${rental?.id}`);
-				handleRejectReservation(rental?.id);
+				rejecting = true;
+				handleRejectReservation(rental?.id, () => {
+					rejecting = false;
+				});
 			}}>Yes</button
 		>
 	</div>
@@ -114,6 +151,16 @@
 		h3 {
 			display: flex;
 			flex-direction: column;
+		}
+
+		button.approve {
+			position: relative;
+			z-index: 2;
+			height: 2rem;
+			border: none;
+			border-radius: 0.25rem;
+			background-color: #cddc39;
+			padding: 0 0.5rem;
 		}
 
 		button.cancel {
