@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import bluray from '$lib/assets/images/inventory-items/bluray.png';
 	import { Logger } from '$lib/logging/logger';
-	import type { MyRental } from '$lib/rental/model/rental';
+	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 	import { onMount } from 'svelte';
@@ -18,6 +18,10 @@
 	let rental: MyRental | null = $state(null);
 
 	let photo: string | null = $state(null);
+
+	let renting: boolean = $state(false);
+
+	let cancelling: boolean = $state(false);
 
 	async function fetchStuff(): Promise<void> {
 		const response = await fetch(`/api/friend-stuff/${stuffId}`);
@@ -48,19 +52,26 @@
 	}
 
 	async function fetchRental(): Promise<void> {
-		const response = await fetch(`/api/my-rentals/${stuffId}`);
+		loadingMyRental = true;
+
+		const response = await fetch(`/api/my-rentals?stuffId=${stuffId}`);
 
 		if (response.ok) {
-			rental = (await response.json()) as MyRental;
+			const rentals = (await response.json()) as MyRental[];
+			if (rentals?.length > 0) {
+				rental = rentals[0];
+			}
 		}
 
 		loadingMyRental = false;
 	}
 
 	async function handleRentClick(): Promise<void> {
+		renting = true;
+
 		const rentalResponse = await fetch('/api/my-rentals', {
 			method: 'POST',
-			body: JSON.stringify({ id: stuff?.id }),
+			body: JSON.stringify({ stuffId: stuff?.id }),
 			headers: {
 				'Content-Type': 'application/json'
 			}
@@ -72,6 +83,8 @@
 		} else {
 			Logger.error(`There was an error renting this item!`);
 		}
+
+		renting = false;
 	}
 
 	function closePopover(): void {
@@ -82,16 +95,21 @@
 	}
 
 	async function handleCancelReservation(id?: number): Promise<void> {
-		const response = await fetch(`/api/my-rentals/${id}`, {
-			method: 'DELETE'
+		cancelling = true;
+
+		const response = await fetch(`/api/my-rentals/${rental?.id}/cancel`, {
+			method: 'POST'
 		});
 
 		if (response.ok) {
+			rental = null;
 			ToastrService.alert(`Your reservation was\nCancelled!`);
-			goto('/my-rentals');
 		} else {
-			Logger.error(`There was an error deleting My Rental w/id ${id}`);
+			ToastrService.error(`There was an error cancelling your reservation.`);
+			Logger.error(`There was an error cancelling My Rental w/id ${id}`);
 		}
+
+		cancelling = false;
 	}
 
 	onMount(async () => {
@@ -117,11 +135,13 @@
 		<p>{stuff.description}</p>
 
 		<div class="rental-actions">
-			{#if rental && !rental.status}
-				<button popovertarget="confirm-cancellation">Cancel Reservation</button>
+			{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
+				<button popovertarget="confirm-cancellation" disabled={cancelling}
+					>Cancel Reservation</button
+				>
 			{/if}
 
-			<button onclick={handleRentClick} disabled={loadingMyRental || !!rental} class="rent"
+			<button onclick={handleRentClick} disabled={renting || rental !== null} class="rent"
 				>Rent</button
 			>
 		</div>

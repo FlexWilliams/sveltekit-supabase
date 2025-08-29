@@ -18,6 +18,7 @@ export interface Stuff extends StuffEdit {
 	createdOn: string;
 	imageUrl?: string;
 	userMeta?: UserMeta;
+	reservedBy?: string;
 }
 
 export interface StuffFromDb {
@@ -31,6 +32,7 @@ export interface StuffFromDb {
 	description?: string;
 	image_url?: string;
 	user_meta?: UserMetaFromDb;
+	reserved_by?: string;
 }
 
 export interface StuffSocial {
@@ -52,7 +54,8 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		available: s.available,
 		description: s.description,
 		imageUrl: s.image_url,
-		userMeta: s.user_meta ? userMetaFromDb(s.user_meta) : undefined
+		userMeta: s.user_meta ? userMetaFromDb(s.user_meta) : undefined,
+		reservedBy: s.reserved_by
 	};
 }
 

@@ -1,3 +1,12 @@
+export enum RentalStatus {
+	Reserved = 1,
+	Cancelled = 2,
+	Rejected = 3,
+	Approved = 4,
+	Rented = 5,
+	Returned = 6
+}
+
 export interface MyRental {
 	id?: number;
 	createdOn?: string;
@@ -11,7 +20,7 @@ export interface MyRental {
 	returnDate?: string;
 	pickupMethod?: string;
 	returnMethod?: string;
-	status?: string;
+	status: RentalStatus;
 }
 
 export interface MyRentalFromDb {
@@ -27,7 +36,7 @@ export interface MyRentalFromDb {
 	return_date?: string;
 	pickup_method?: string;
 	return_method?: string;
-	status?: string;
+	status: RentalStatus;
 }
 
 export function rentalFromDb(m: MyRentalFromDb): MyRental {

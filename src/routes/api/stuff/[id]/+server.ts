@@ -20,7 +20,18 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return badRequest(`${API_NAME} [GET] - Error, id null.`);
 	}
 
-	const columns = 'id,user_id,created_on,name,trust_level,description,available,image_url';
+	const columns = `id,
+					user_id,
+					created_on,
+					name,
+					trust_level,
+					description,
+					available,
+					image_url,
+					reserved_by,
+					user_meta (
+						user_name
+					)`;
 
 	const { data, error } = await supabase
 		.from('user_stuff')

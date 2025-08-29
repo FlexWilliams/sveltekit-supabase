@@ -1,16 +1,19 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { MyRental } from '../model/rental';
+	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface MyRentalCardProps {
 		rental: MyRental;
+		outgoing?: boolean;
 		handleCancelReservation: (id?: number) => void;
+		handleRejectReservation: (id?: number) => void;
 	}
 
-	let { rental, handleCancelReservation }: MyRentalCardProps = $props();
+	let { rental, outgoing, handleCancelReservation, handleRejectReservation }: MyRentalCardProps =
+		$props();
 
-	function closePopover(): void {
-		const popover = document.getElementById('confirm-cancellation') as HTMLDialogElement;
+	function closePopover(id: string): void {
+		const popover = document.getElementById(id) as HTMLDialogElement;
 		if (popover) {
 			popover.hidePopover();
 		}
@@ -22,9 +25,22 @@
 		<span>{rental?.renterName}'s</span>
 		<span>{rental?.itemName}</span>
 	</h3>
-	<p>Status: <span>Pending Approval</span></p>
 
-	<button class="cancel" popovertarget="confirm-cancellation">Cancel Reservation</button>
+	{#if outgoing}
+		<p>Status: <span>Awaiting Your Approval</span></p>
+	{:else}
+		<p>Status: <span>Pending Approval</span></p>
+	{/if}
+
+	{#if outgoing}
+		<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`}>Reject</button>
+	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
+		<button class="cancel" popovertarget={`confirm-cancellation-${rental?.id}`}
+			>Cancel Reservation</button
+		>
+	{:else}
+		<button class="cancel" disabled>{rental?.status}</button>
+	{/if}
 
 	<button
 		type="button"
@@ -34,19 +50,40 @@
 	></button>
 </article>
 
-<dialog id="confirm-cancellation" popover="auto">
+<dialog id={`confirm-cancellation-${rental?.id}`} popover="auto">
 	<h3>
 		<span>Are you sure you want to cancel your Reservation of:</span>
 		<span>{rental?.itemName}?</span>
 	</h3>
 	<div class="actions">
-		<button type="button" onclick={() => closePopover()}>No</button>
+		<button type="button" onclick={() => closePopover(`confirm-cancellation-${rental?.id}`)}
+			>No</button
+		>
 		<button
 			type="button"
 			class="confirm"
 			onclick={() => {
-				closePopover();
+				closePopover(`confirm-cancellation-${rental?.id}`);
 				handleCancelReservation(rental?.id);
+			}}>Yes</button
+		>
+	</div>
+</dialog>
+
+<dialog id={`confirm-rejection-${rental?.id}`} popover="auto">
+	<h3>
+		<span>Are you sure you want to reject the Reservation of your:</span>
+		<span>{rental?.itemName}?</span>
+	</h3>
+	<div class="actions">
+		<button type="button" onclick={() => closePopover(`confirm-rejection-${rental?.id}`)}>No</button
+		>
+		<button
+			type="button"
+			class="confirm"
+			onclick={() => {
+				closePopover(`confirm-rejection-${rental?.id}`);
+				handleRejectReservation(rental?.id);
 			}}>Yes</button
 		>
 	</div>

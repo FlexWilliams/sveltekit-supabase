@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 	const { data, error } = await supabase
 		.from('user_rentals')
 		.select()
-		.eq('item_id', id)
+		.eq('id', id)
 		.eq('rentee_id', user?.id);
 
 	if (error) {

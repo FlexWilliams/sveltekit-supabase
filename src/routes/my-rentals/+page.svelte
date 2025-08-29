@@ -2,8 +2,11 @@
 	import { Logger } from '$lib/logging/logger';
 	import MyRentalCard from '$lib/rental/component/MyRentalCard.svelte';
 	import type { MyRental } from '$lib/rental/model/rental';
+	import { userState } from '$lib/state/user-state.svelte';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 	import { onMount } from 'svelte';
+
+	let userId: string | null = $derived(userState.id);
 
 	let loading = $state(true);
 
@@ -14,8 +17,8 @@
 	let activeTab: string = $state('incoming');
 
 	async function handleCancelReservation(id?: number): Promise<void> {
-		const response = await fetch(`/api/my-rentals/${id}`, {
-			method: 'DELETE'
+		const response = await fetch(`/api/my-rentals/${id}/cancel`, {
+			method: 'POST'
 		});
 
 		if (response.ok) {
@@ -23,6 +26,19 @@
 			ToastrService.alert(`Your reservation was\nCancelled!`);
 		} else {
 			Logger.error(`There was an error deleting My Rental w/id ${id}`);
+		}
+	}
+
+	async function handleRejectReservation(id?: number): Promise<void> {
+		const response = await fetch(`/api/my-rentals/${id}/reject`, {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			await fetchOutGoingRentals();
+			ToastrService.alert(`Your reservation was\nRejected!`);
+		} else {
+			Logger.error(`There was an error rejecting the reservation for My Rental w/id ${id}`);
 		}
 	}
 
@@ -82,7 +98,7 @@
 		<ul>
 			{#each incomingRentals as rental}
 				<li>
-					<MyRentalCard {rental} {handleCancelReservation} />
+					<MyRentalCard {rental} {handleCancelReservation} handleRejectReservation={() => {}} />
 				</li>
 			{:else}
 				<li>
@@ -95,7 +111,12 @@
 		<ul>
 			{#each outgoingRentals as rental}
 				<li>
-					<MyRentalCard {rental} {handleCancelReservation} />
+					<MyRentalCard
+						{rental}
+						outgoing={true}
+						handleCancelReservation={() => {}}
+						{handleRejectReservation}
+					/>
 				</li>
 			{:else}
 				<li>
