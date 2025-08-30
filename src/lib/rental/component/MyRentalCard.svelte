@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import defaultPhoto from '$lib/assets/images/default-photo.svg';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface MyRentalCardProps {
@@ -22,6 +23,8 @@
 	let rejecting: boolean = $state(false);
 	let approving: boolean = $state(false);
 
+	let itemImage: string | null = $state(null);
+
 	function closePopover(id: string): void {
 		const popover = document.getElementById(id) as HTMLDialogElement;
 		if (popover) {
@@ -31,10 +34,14 @@
 </script>
 
 <article>
-	<h3>
-		<span>{rental?.renterName}'s</span>
-		<span>{rental?.itemName}</span>
-	</h3>
+	<header>
+		<h3>
+			<span>{rental?.renterName}'s</span>
+			<span>{rental?.itemName}</span>
+		</h3>
+
+		<img src={itemImage || defaultPhoto} alt={`Image of ${rental?.itemName}`} />
+	</header>
 
 	{#if outgoing}
 		{#if rental?.status === RentalStatus.Reserved}
@@ -148,9 +155,23 @@
 		margin: 1rem 0;
 		@include shadows.boxShadow;
 
-		h3 {
+		header {
 			display: flex;
-			flex-direction: column;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+
+			h3 {
+				display: flex;
+				flex-direction: column;
+			}
+
+			img {
+				width: 4rem;
+				max-width: 4rem;
+				height: 4rem;
+				max-height: 4rem;
+			}
 		}
 
 		button.approve {

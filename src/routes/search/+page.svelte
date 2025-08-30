@@ -90,10 +90,6 @@
 				<li>
 					<p class="no-matching-criteria">No items match your criteria</p>
 				</li>
-			{:else}
-				<li class="list-help-text">
-					<p class="search-help">Search for anything!</p>
-				</li>
 			{/if}
 		{/each}
 	</ul>
@@ -174,12 +170,6 @@
 				}
 			}
 
-			li.list-help-text {
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
 			p {
 				text-align: center;
 			}
@@ -203,12 +193,6 @@
 				input {
 					height: 3rem;
 					font-size: 1.25rem;
-				}
-			}
-
-			ul.search-results {
-				li.list-help-text {
-					font-size: 1.5rem;
 				}
 			}
 		}

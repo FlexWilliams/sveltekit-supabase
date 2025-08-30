@@ -1,3 +1,9 @@
+import macbook from '$lib/assets/images/inventory-items/2019_macbook_pro_16gb.png';
+import bluray from '$lib/assets/images/inventory-items/bluray.png';
+import catCamper from '$lib/assets/images/inventory-items/cat_camper.jpg';
+import dirtBike from '$lib/assets/images/inventory-items/dirt_bike.jpg';
+import mules from '$lib/assets/images/inventory-items/mules.jpeg';
+import nintendo from '$lib/assets/images/inventory-items/nintendo_switch.png';
 import { userMetaFromDb, type UserMeta, type UserMetaFromDb } from '$lib/user/model/user-meta';
 
 export interface NewStuff {
@@ -41,6 +47,7 @@ export interface StuffSocial {
 	itemName: string;
 	currentlyRenting: boolean;
 	returnDate?: string;
+	image?: string;
 }
 
 export function stuffFromDb(s: StuffFromDb): Stuff {
@@ -96,40 +103,46 @@ export const mockSocials: StuffSocial[] = [
 	{
 		renterName: 'Alex',
 		renteeName: 'Ian',
-		itemName: 'Staple Gun',
+		itemName: 'Blu Ray Burner',
 		currentlyRenting: false,
-		returnDate: new Date().toISOString()
+		returnDate: new Date().toISOString(),
+		image: bluray
 	} as StuffSocial,
 	{
 		renterName: 'Ian',
 		renteeName: 'Alfredo',
 		itemName: 'Dirt Bike',
-		currentlyRenting: true
+		currentlyRenting: true,
+		image: dirtBike
 	} as StuffSocial,
 	{
 		renterName: 'Alfredo',
 		renteeName: 'Alex',
 		itemName: 'Copper Mugs (Moscow Mule)',
 		currentlyRenting: false,
-		returnDate: new Date().toISOString()
+		returnDate: new Date().toISOString(),
+		image: mules
 	} as StuffSocial,
 	{
 		renterName: 'Ian',
 		renteeName: 'Alex',
 		itemName: 'Cat Camper',
-		currentlyRenting: true
+		currentlyRenting: true,
+		image: catCamper
 	} as StuffSocial,
 	{
 		renterName: 'Alfredo',
 		renteeName: 'Ian',
 		itemName: '2022 Macbook Pro',
 		currentlyRenting: false,
-		returnDate: new Date().toISOString()
+		returnDate: new Date().toISOString(),
+		image: macbook
 	} as StuffSocial,
 	{
 		renterName: 'Alex',
 		renteeName: 'Alfredo',
-		itemName: 'XBOX Controller',
-		currentlyRenting: true
+		itemName: 'Nintendo Switch',
+		currentlyRenting: true,
+		image: nintendo
 	} as StuffSocial
 ];

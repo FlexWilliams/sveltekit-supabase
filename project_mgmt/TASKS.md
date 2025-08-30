@@ -664,7 +664,7 @@ Verified By cube on: 8/28/25
 
 <br>
 
-## VOUCH-041 - Incoming/Outgoing Rentals (card and details page)
+## (Complete) VOUCH-041 - Incoming/Outgoing Rentals (card and details page)
 
 ### Description:
 
@@ -674,6 +674,6 @@ Card and Details page can be reused from existing My Rentals Card & id page, but
 
 ### Acceptance Criteria:
 
-Verified By cube on:
+Verified By cube on: 8/29/25
 
 <br>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import defaultPhoto from '$lib/assets/images/default-photo.svg';
 	import type { StuffSocial } from '../model/stuff';
 
 	interface StuffSearchSocialCardProps {
@@ -30,6 +31,9 @@
 			>
 		{/if}
 	</h3>
+
+	<img src={social?.image || defaultPhoto} alt={social?.itemName} />
+
 	<button type="button" aria-label="Select" onclick={hanleArticleClick}></button>
 </article>
 
@@ -55,7 +59,20 @@
 			margin-bottom: 0;
 			position: relative;
 			z-index: 1;
-			max-width: 70%;
+			max-width: 90%;
+			max-height: 3rem;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		img {
+			margin-top: 1rem;
+			width: 6rem;
+			max-width: 6rem;
+			height: 6rem;
+			max-height: 6rem;
+			border-radius: 0.25rem;
 		}
 
 		button {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import bluray from '$lib/assets/images/inventory-items/bluray.png';
+	import defaultPhoto from '$lib/assets/images/default-photo.svg';
 	import { Logger } from '$lib/logging/logger';
 	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 	import { userState } from '$lib/state/user-state.svelte';
@@ -154,7 +154,7 @@
 			<span>{stuff.name}</span>
 		</h3>
 
-		<img src={photo || bluray} alt={`Image of ${stuff?.name}`} />
+		<img src={photo || defaultPhoto} alt={`Image of ${stuff?.name}`} />
 
 		<p>{stuff.description}</p>
 
