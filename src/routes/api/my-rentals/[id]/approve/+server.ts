@@ -1,6 +1,5 @@
 import { Logger } from '$lib/logging/logger';
 import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
-import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -48,20 +47,6 @@ export const POST: RequestHandler = async ({
 
 	if (response?.status !== 204) {
 		return unknown();
-	}
-
-	const supabaseElevated = getSupabaseServerClient();
-
-	const friendStuffResponse = await supabaseElevated
-		.from('user_stuff')
-		.update({
-			reserved_by: null,
-			renter_id: rental?.renteeId
-		})
-		.eq('id', rental?.itemId);
-
-	if (friendStuffResponse.error) {
-		Logger.error(`Error updating reservation hold on user_stuff item with id: ${rental?.itemId}`);
 	}
 
 	return noContent(`Reservation for My Rental w/id ${id} was successfully approved.`);

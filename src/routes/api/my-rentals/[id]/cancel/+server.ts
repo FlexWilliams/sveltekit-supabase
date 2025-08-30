@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({
 
 	const friendStuffResponse = await supabaseElevated
 		.from('user_stuff')
-		.update({ reserved_by: null })
+		.update({ rental_id: null })
 		.eq('id', rental?.itemId);
 
 	if (friendStuffResponse.error) {

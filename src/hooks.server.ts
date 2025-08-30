@@ -78,8 +78,8 @@ const publicAuthRoutes = [
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();
 
-	Logger.debug(`authGuard session access token: ${session?.access_token}`);
-	Logger.debug(`authGuard session user id: ${user?.id}`);
+	// Logger.debug(`authGuard session access token: ${session?.access_token}`);
+	// Logger.debug(`authGuard session user id: ${user?.id}`);
 
 	const loggedIn = session && user;
 

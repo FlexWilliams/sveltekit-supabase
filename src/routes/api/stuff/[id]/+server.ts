@@ -1,6 +1,7 @@
 import { Logger } from '$lib/logging/logger';
 import { stuffFromDb, type StuffFromDb } from '$lib/stuff/model/stuff';
 import { badRequest, ok } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'Stuff [id] API';
@@ -28,7 +29,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 					description,
 					available,
 					image_url,
-					reserved_by,
+					rental_id,
 					user_meta (
 						user_name
 					)`;
@@ -40,7 +41,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		.order('created_on');
 
 	if (error) {
-		Logger.debug(`${API_NAME} [GET]: Error, not found.`);
+		Logger.debug(`${API_NAME} [GET]: Error occurred: ${prettyJson(error)}`);
 
 		return new Response(null, {
 			status: 404

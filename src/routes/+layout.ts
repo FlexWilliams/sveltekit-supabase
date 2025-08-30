@@ -1,7 +1,5 @@
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { Logger } from '$lib/logging/logger';
 import { userMetaFromDbList, type UserMeta, type UserMetaFromDb } from '$lib/user/model/user-meta';
-import { prettyJson } from '$lib/web/http/response';
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import type { LayoutLoad } from './$types';
 
@@ -43,9 +41,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	} = await supabase.auth.getUser();
 
 	let userMeta: UserMeta | null = null;
-
-	Logger.debug(`layout.ts: session: ${prettyJson(session)}`);
-	Logger.debug(`layout.ts: user: ${prettyJson(user)}`);
 
 	if (user?.id) {
 		const { data: userMetaFromDb } = await supabase

@@ -60,7 +60,7 @@
 	}
 
 	async function fetchIncomingRentals(): Promise<void> {
-		const response = await fetch(`/api/my-rentals`);
+		const response = await fetch(`/api/my-rentals/incoming`);
 
 		if (!response.ok) {
 			Logger.error(`Error fetching my rentals!`);
@@ -72,7 +72,7 @@
 	}
 
 	async function fetchOutGoingRentals(): Promise<void> {
-		const response = await fetch(`/api/my-rentals?outgoing=true`);
+		const response = await fetch(`/api/my-rentals/outgoing`);
 		if (!response.ok) {
 			Logger.error(`Error fetching my outgoing rentals!`);
 		} else {

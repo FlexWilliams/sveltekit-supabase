@@ -18,7 +18,7 @@ export interface Stuff extends StuffEdit {
 	createdOn: string;
 	imageUrl?: string;
 	userMeta?: UserMeta;
-	reservedBy?: string;
+	rentalId?: string;
 }
 
 export interface StuffFromDb {
@@ -32,7 +32,7 @@ export interface StuffFromDb {
 	description?: string;
 	image_url?: string;
 	user_meta?: UserMetaFromDb;
-	reserved_by?: string;
+	rental_id?: string;
 }
 
 export interface StuffSocial {
@@ -55,7 +55,7 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		description: s.description,
 		imageUrl: s.image_url,
 		userMeta: s.user_meta ? userMetaFromDb(s.user_meta) : undefined,
-		reservedBy: s.reserved_by
+		rentalId: s.rental_id
 	};
 }
 

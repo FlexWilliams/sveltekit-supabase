@@ -57,18 +57,17 @@
 	}
 
 	async function fetchRental(): Promise<void> {
+		if (!stuff?.rentalId) {
+			loadingMyRental = false;
+			return;
+		}
+
 		loadingMyRental = true;
 
-		// TODO: perf improve by fetching the stuff obj and see the renter id flag
-		// or maybe add a newrental_id column on the stuff obj...
-		const outgoing = stuff?.userId === userId;
-		const response = await fetch(`/api/my-rentals?stuffId=${stuff?.id}&outgoing=${outgoing}`);
+		const response = await fetch(`/api/rentals/${stuff?.rentalId}`);
 
 		if (response.ok) {
-			const rentals = (await response.json()) as MyRental[];
-			if (rentals?.length > 0) {
-				rental = rentals[0];
-			}
+			rental = (await response.json()) as MyRental;
 		}
 
 		loadingMyRental = false;
@@ -105,7 +104,7 @@
 	async function handleCancelReservation(id?: number): Promise<void> {
 		cancelling = true;
 
-		const response = await fetch(`/api/my-rentals/${rental?.id}/cancel`, {
+		const response = await fetch(`/api/my-rentals/${id}/cancel`, {
 			method: 'POST'
 		});
 
@@ -123,7 +122,7 @@
 	async function handleRejectRentalRequest(id?: number): Promise<void> {
 		rejecting = true;
 
-		const response = await fetch(`/api/my-rentals/${rental?.id}/reject`, {
+		const response = await fetch(`/api/my-rentals/${id}/reject`, {
 			method: 'POST'
 		});
 
