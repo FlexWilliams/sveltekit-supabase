@@ -1,3 +1,5 @@
+import type { StuffFromDb } from '$lib/stuff/model/stuff';
+
 export enum RentalStatus {
 	Reserved = 1,
 	Cancelled = 2,
@@ -21,6 +23,7 @@ export interface MyRental {
 	pickupMethod?: string;
 	returnMethod?: string;
 	status: RentalStatus;
+	imageUrl?: string;
 }
 
 export interface MyRentalFromDb {
@@ -37,6 +40,7 @@ export interface MyRentalFromDb {
 	pickup_method?: string;
 	return_method?: string;
 	status: RentalStatus;
+	user_stuff?: Partial<StuffFromDb>;
 }
 
 export function rentalFromDb(m: MyRentalFromDb): MyRental {
@@ -53,7 +57,8 @@ export function rentalFromDb(m: MyRentalFromDb): MyRental {
 		returnDate: m.return_date,
 		pickupMethod: m.pickup_method,
 		returnMethod: m.return_method,
-		status: m.status
+		status: m.status,
+		imageUrl: m?.user_stuff?.image_url
 	};
 }
 

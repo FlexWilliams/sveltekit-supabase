@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import defaultPhoto from '$lib/assets/images/default-photo.svg';
+	import { myRentalsState } from '$lib/state/my-rentals-state.svelte';
+	import { onMount } from 'svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface MyRentalCardProps {
@@ -23,7 +25,26 @@
 	let rejecting: boolean = $state(false);
 	let approving: boolean = $state(false);
 
-	let itemImage: string | null = $state(null);
+	let rentalPhotos = $derived(myRentalsState.rentalPhotos);
+
+	let photo: string | null = $state(null);
+
+	async function fetchPhoto(): Promise<void> {
+		const chachedUrl = rentalPhotos.get(rental?.itemId);
+
+		if (chachedUrl) {
+			photo = chachedUrl;
+		} else if (rental?.imageUrl) {
+			const response = await fetch(`/api/stuff/${rental?.itemId}/photo/${rental.imageUrl}`);
+
+			if (response.ok) {
+				const imageUrl = await response.text();
+
+				rentalPhotos.set(rental?.itemId, imageUrl);
+				photo = imageUrl;
+			}
+		}
+	}
 
 	function closePopover(id: string): void {
 		const popover = document.getElementById(id) as HTMLDialogElement;
@@ -31,6 +52,10 @@
 			popover.hidePopover();
 		}
 	}
+
+	onMount(async () => {
+		await fetchPhoto();
+	});
 </script>
 
 <article>
@@ -40,7 +65,7 @@
 			<span>{rental?.itemName}</span>
 		</h3>
 
-		<img src={itemImage || defaultPhoto} alt={`Image of ${rental?.itemName}`} />
+		<img src={photo || defaultPhoto} alt={`Image of ${rental?.itemName}`} />
 	</header>
 
 	{#if outgoing}

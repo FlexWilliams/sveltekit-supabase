@@ -13,7 +13,27 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 
 	Logger.debug(`${API_NAME} GET: Attempting to fetch outgoing rentals...`);
 
-	const { data, error } = await supabase.from('user_rentals').select().eq('renter_id', user?.id);
+	const columns = [
+		'id',
+		'created_on',
+		'renter_id',
+		'renter_name',
+		'rentee_id',
+		'rentee_name',
+		'item_name',
+		'status',
+		'item_id',
+		'updated_on',
+		'image_url',
+		`user_stuff!user_rentals_item_id_fkey(
+			image_url
+		)`
+	];
+
+	const { data, error } = await supabase
+		.from('user_rentals')
+		.select(columns.join(','))
+		.eq('renter_id', user?.id);
 
 	if (error || !data) {
 		Logger.error(`${API_NAME} GET: Error, ${JSON.stringify(error)}`);
