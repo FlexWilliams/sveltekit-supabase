@@ -78,12 +78,7 @@
 	<div class="form-field">
 		<label>
 			<span>Search</span>
-			<input
-				type="text"
-				name="search-text"
-				onkeyup={handleSearchTextChange}
-				placeholder={`Search through your stuff`}
-			/>
+			<input type="text" name="search-text" onkeyup={handleSearchTextChange} />
 		</label>
 	</div>
 </form>

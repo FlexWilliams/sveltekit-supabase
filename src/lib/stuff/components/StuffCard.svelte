@@ -1,5 +1,5 @@
 <script lang="ts">
-	import bluray from '$lib/assets/images/inventory-items/bluray.png';
+	import defaultPhoto from '$lib/assets/images/default-photo.svg';
 	import { myStuffState, myStuffState$$setStuffImage } from '$lib/state/my-stuff-state.svelte';
 	import { onMount } from 'svelte';
 	import type { Stuff } from '../model/stuff';
@@ -34,7 +34,7 @@
 <button class="card" onclick={handleClick}>
 	<h3>{stuff?.name}</h3>
 
-	<img src={photo || bluray} alt={`${stuff.name}`} />
+	<img src={photo || defaultPhoto} alt={`${stuff.name}`} />
 </button>
 <button
 	type="button"
