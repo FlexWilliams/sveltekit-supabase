@@ -84,9 +84,7 @@ export const POST: RequestHandler = async ({
 
 		Logger.debug(`${API_NAME} POST: Successfully rejected rental reservation w/id: ${rental?.id}.`);
 
-		return unknown(
-			`Unable to rent item, error placing reservation.`
-		);
+		return unknown(`Unable to rent item, error placing reservation.`);
 	}
 
 	Logger.debug(
