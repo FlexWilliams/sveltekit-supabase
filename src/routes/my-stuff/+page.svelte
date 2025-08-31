@@ -84,7 +84,7 @@
 </form>
 
 <ul>
-	{#each stuff as s}
+	{#each stuff as s (s?.id)}
 		<li>
 			<StuffCard stuff={s} handleClick={handleStuffCardClick} {handleEdit} />
 		</li>

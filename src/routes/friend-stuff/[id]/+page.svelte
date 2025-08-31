@@ -137,7 +137,7 @@
 
 		<section class="photo">
 			<StuffPhoto
-				cacheKey={stuff.id}
+				cacheKey={`stuff-${stuff?.id}`}
 				fetchUrl={`/api/stuff/${stuffId}/photo/${stuff?.imageUrl}`}
 				photoName={stuff?.name}
 			/>

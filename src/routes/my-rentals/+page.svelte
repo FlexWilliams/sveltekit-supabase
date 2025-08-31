@@ -113,7 +113,7 @@
 		<p>Loading...</p>
 	{:else if activeTab === 'incoming'}
 		<ul>
-			{#each incomingRentals as rental}
+			{#each incomingRentals as rental (rental?.id)}
 				<li>
 					<MyRentalCard
 						{rental}
@@ -131,7 +131,7 @@
 		</ul>
 	{:else}
 		<ul>
-			{#each outgoingRentals as rental}
+			{#each outgoingRentals as rental (rental?.id)}
 				<li>
 					<MyRentalCard
 						{rental}

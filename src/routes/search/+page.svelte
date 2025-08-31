@@ -30,13 +30,6 @@
 		searchText$$.next(input.value);
 	}
 
-	function focusSearchInput(): void {
-		const search = document.getElementById('search') as HTMLInputElement;
-		if (search) {
-			search.focus();
-		}
-	}
-
 	function listenForSearchTextChanges(): Subscription {
 		return searchText$
 			.pipe(
@@ -50,8 +43,6 @@
 					loading = true;
 					stuff = await search();
 					loading = false;
-
-					focusSearchInput();
 				})
 			)
 			.subscribe();
@@ -103,7 +94,7 @@
 	</form>
 
 	<ul class="search-results">
-		{#each stuff as s}
+		{#each stuff as s (s?.id)}
 			<li class="search-results-card">
 				<StuffSearchCard stuff={s} />
 			</li>

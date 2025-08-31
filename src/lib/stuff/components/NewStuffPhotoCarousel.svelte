@@ -11,7 +11,7 @@
 </script>
 
 <ul>
-	{#each photos as photo}
+	{#each photos as photo (photo?.photoUrl)}
 		<li>
 			<img src={photo?.photoUrl} alt={`Photo`} />
 			<button

@@ -40,7 +40,7 @@
 
 		<section class="photo">
 			<StuffPhoto
-				cacheKey={`${rental?.itemId}`}
+				cacheKey={`rental-${rental?.itemId}`}
 				fetchUrl={`/api/stuff/${rental?.itemId}/photo/${rental.imageUrl}`}
 				photoName={rental?.itemName}
 			/>
