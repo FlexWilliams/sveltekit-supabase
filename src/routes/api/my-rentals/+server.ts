@@ -3,6 +3,7 @@ import { rentalFromDb, RentalStatus, rentalToDb, type MyRental } from '$lib/rent
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { type Stuff } from '$lib/stuff/model/stuff';
 import { badRequest, forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Rentals API';
@@ -70,15 +71,24 @@ export const POST: RequestHandler = async ({
 		.eq('id', stuffId);
 
 	if (friendStuffResponse.error) {
+		Logger.error(
+			`${API_NAME} POST: Error making reservation on item, rejecting rental reservation w/id: ${rental?.id}.`
+		);
+
 		await supabase
 			.from('user_rentals')
 			.update({ status: RentalStatus.Rejected })
-			.eq('id', rental?.itemId);
-		return unknown(`Unable to rent item, error placing reservation.`);
+			.eq('id', rental?.id);
+
+		Logger.debug(`${API_NAME} POST: Successfully rejected rental reservation w/id: ${rental?.id}.`);
+
+		return unknown(
+			`Unable to rent item, error placing reservation: ${prettyJson(friendStuffResponse.error)}`
+		);
 	}
 
 	Logger.debug(
-		`${API_NAME} POST: Successfully placed rental reservation (stuff id: ${stuffId}) for user id: ${user?.id}`
+		`${API_NAME} POST: Successfully placed rental reservation (id: ${rental?.id}) (stuff id: ${stuffId}) for user id: ${user?.id}`
 	);
 
 	return ok(rental);

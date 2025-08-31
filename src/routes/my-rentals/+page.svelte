@@ -36,7 +36,7 @@
 
 		if (response.ok) {
 			await fetchOutGoingRentals();
-			ToastrService.alert(`Your reservation was\nRejected!`);
+			ToastrService.alert(`Your reservation request was\nRejected!`);
 		} else {
 			Logger.error(`There was an error rejecting the reservation for My Rental w/id ${id}`);
 		}

@@ -25,8 +25,8 @@ export const POST: RequestHandler = async ({
 
 	const rental = (await (await fetch(`/api/my-rentals/${id}`)).json()) as MyRental;
 
-	if (rental.status === RentalStatus.Cancelled) {
-		return noContent(`Reservation is already cancelled.`);
+	if (rental.status === RentalStatus.Cancelled || rental.status === RentalStatus.Rejected) {
+		return noContent(`Reservation is already cancelled or rejected.`);
 	}
 
 	const validStatuses = [RentalStatus.Reserved, RentalStatus.Approved];
