@@ -95,10 +95,6 @@
 	}
 
 	@media screen and (min-width: responsive.$tablet-width) {
-		form {
-			max-width: 30rem;
-		}
-
 		h2 {
 			margin-top: 5rem;
 			font-size: 2.5rem;

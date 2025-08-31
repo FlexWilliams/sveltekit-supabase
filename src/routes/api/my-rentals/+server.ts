@@ -72,8 +72,10 @@ export const POST: RequestHandler = async ({
 
 	if (friendStuffResponse.error) {
 		Logger.error(
-			`${API_NAME} POST: Error making reservation on item, rejecting rental reservation w/id: ${rental?.id}.`
+			`${API_NAME} POST: Error making reservation on item w/id: ${stuffId}.\n${prettyJson(friendStuffResponse.error)}`
 		);
+
+		Logger.debug(`${API_NAME} POST: Attempting to reject rental reservation w/id: ${rental?.id}.`);
 
 		await supabase
 			.from('user_rentals')
@@ -83,7 +85,7 @@ export const POST: RequestHandler = async ({
 		Logger.debug(`${API_NAME} POST: Successfully rejected rental reservation w/id: ${rental?.id}.`);
 
 		return unknown(
-			`Unable to rent item, error placing reservation: ${prettyJson(friendStuffResponse.error)}`
+			`Unable to rent item, error placing reservation.`
 		);
 	}
 
