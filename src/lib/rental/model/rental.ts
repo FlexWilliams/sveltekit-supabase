@@ -1,4 +1,4 @@
-import type { StuffFromDb } from '$lib/stuff/model/stuff';
+import type { Stuff, StuffFromDb } from '$lib/stuff/model/stuff';
 
 export enum RentalStatus {
 	Reserved = 1,
@@ -86,4 +86,18 @@ export function rentalToDb(m: MyRental): MyRentalFromDb {
 
 export function rentalToDbList(list: MyRental[]): MyRentalFromDb[] {
 	return list.map(rentalToDb);
+}
+
+export function createMyRentalForReservation(stuff: Stuff, userId: string): MyRental {
+	const myRental: MyRental = {
+		renterId: stuff.userId,
+		renterName: stuff?.userMeta?.userName || 'Unknown Renter', // TODO: remove and get via join on select
+		renteeId: userId,
+		renteeName: 'Unknown Rentee', // TODO: remove and get via join on select
+		itemId: parseInt(stuff.id),
+		itemName: stuff.name, // TODO: remove and get via join on select
+		status: RentalStatus.Reserved
+	};
+
+	return myRental;
 }

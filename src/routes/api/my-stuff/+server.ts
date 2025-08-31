@@ -1,4 +1,4 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import {
 	stuffFromDbList,
 	stuffToDb,
@@ -8,18 +8,21 @@ import {
 } from '$lib/stuff/model/stuff';
 import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/error-response';
 import type { PhotoNamesResponse } from '$lib/web/http/response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Stuff API';
+const logger = new ApiLogger('My Stuff API');
 
 export const POST: RequestHandler = async ({
 	request,
 	locals: { supabase, safeGetSession },
 	fetch
 }) => {
+	logger.setRequestType('POST');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [POST]: Unable to add to My Stuff, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const formData = await request.formData();
@@ -31,7 +34,7 @@ export const POST: RequestHandler = async ({
 	const available = formData.get('available') as string;
 
 	if (!name || !trustLevel || (photosCount <= 0 && newPhotosCount <= 0)) {
-		return requiredFieldsMissing(`${API_NAME} [POST]: Unable to add to My Stuff`);
+		return requiredFieldsMissing();
 	}
 
 	const newStuff: NewStuff = {
@@ -48,19 +51,15 @@ export const POST: RequestHandler = async ({
 		.select();
 
 	if (error) {
-		Logger.debug(JSON.stringify(error));
+		logger.debug(`Error inserting new row for my stuff: ${prettyJson(error)}`);
+		return unknown();
 	}
 
 	if (!data || data?.length === 0) {
-		return unknown(
-			`${API_NAME} [POST]: Error occurred at the DB level`,
-			'Error occurred at the DB level'
-		);
+		return unknown('Error occurred at the DB level');
 	}
 
 	let newStuffFromDb = stuffFromDbList(data as StuffFromDb[])[0];
-
-	Logger.debug(JSON.stringify(newStuffFromDb));
 
 	const uploadPhotos = await fetch(`/api/stuff/${newStuffFromDb?.id}/photos`, {
 		method: 'POST',
@@ -68,13 +67,17 @@ export const POST: RequestHandler = async ({
 	});
 
 	if (!uploadPhotos.ok) {
-		Logger.error(`Error uploading photos for new stuff`);
+		logger.error(`Error uploading photos for new stuff`);
 	} else {
-		const { photoNames } = (await (
-			await fetch(`/api/stuff/${newStuffFromDb?.id}/photo-names`)
-		).json()) as PhotoNamesResponse;
+		const photoNamesResponse = await fetch(`/api/stuff/${newStuffFromDb?.id}/photo-names`);
+		if (!photoNamesResponse.ok) {
+			logger.error(`Unable to upload photos for my stuff. Error fetching photo names.`);
+			return unknown();
+		}
 
-		Logger.debug(`Setting file "${photoNames[0]}" as default image for new Stuff item`);
+		const { photoNames } = (await photoNamesResponse.json()) as PhotoNamesResponse;
+
+		logger.debug(`Setting file "${photoNames[0]}" as default image for new Stuff item`);
 
 		const firstFile = formData.get(`new_photo_0`) as File;
 		newStuffFromDb.imageUrl = photoNames[0] || firstFile ? firstFile.name : '';
@@ -86,12 +89,14 @@ export const POST: RequestHandler = async ({
 				.eq('id', newStuffFromDb.id);
 
 			if (error) {
-				Logger.error(`${API_NAME} [POST]: Error setting default photo name on stuff object.`);
+				logger.error(`Error setting default photo name on stuff object.`);
 			}
 		} else {
-			Logger.error(`${API_NAME} [POST]: Error setting default photo name on stuff object.`);
+			logger.error(`Error setting default photo name on stuff object.`);
 		}
 	}
+
+	logger.debug(`Successfully created new My Stuff w/id: ${newStuffFromDb?.id}.`);
 
 	return new Response(JSON.stringify(newStuffFromDb), {
 		status: 201

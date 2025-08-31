@@ -1,3 +1,4 @@
+import { ApiLogger } from '$lib/logging/api-logger';
 import { Logger } from '$lib/logging/logger';
 import { getPhotoSizeDimensions, PHOTO_SIZES } from '$lib/photo/model/photo';
 import {
@@ -5,6 +6,7 @@ import {
 	forbidden,
 	noContent,
 	notFound,
+	ok,
 	requiredFieldsMissing,
 	unknown
 } from '$lib/web/http/error-response';
@@ -13,8 +15,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // TODO: refactor code in `/my-stuff` and `/friend-stuff` to wrap around this api
-
-const API_NAME = 'Stuff [id] Photos API';
+const logger = new ApiLogger('Stuff [id] Photos API');
 
 const uploadMyStuffPhotos = async (
 	userId: string,
@@ -48,20 +49,24 @@ export const GET: RequestHandler = async ({
 	locals: { supabase, safeGetSession },
 	fetch
 }) => {
+	logger.setRequestType('GET');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [GET] - Error: user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const { id } = params;
 
 	if (!id) {
-		return badRequest(`${API_NAME} [GET] - Error: id null.`);
+		return badRequest(`Error, id null.`);
 	}
 
 	let photoSize = url.searchParams.get('size') || '';
 	photoSize = PHOTO_SIZES.indexOf(photoSize) !== -1 ? photoSize : 'preview';
 	const dimensions = getPhotoSizeDimensions(photoSize);
+
+	logger.debug(`Fetching photo names for stuff w/id: ${id}...`);
 
 	// TODO: rework to only pull the imageUrl from my stuff property! or default to this below if not set
 	const { photoNames } = (await (
@@ -72,6 +77,8 @@ export const GET: RequestHandler = async ({
 	}
 
 	const fileName = photoNames[0];
+
+	logger.debug(`Fetching signedUrl for default photo for stuff w/id: ${id}...`);
 
 	const {
 		data: { signedUrl },
@@ -90,14 +97,17 @@ export const GET: RequestHandler = async ({
 	);
 
 	if (error) {
+		logger.error(
+			`Error fetching signedUrl for default photo for stuff w/id: ${id}...${prettyJson(error)}`
+		);
 		return unknown();
 	}
 
 	if (signedUrl as string) {
-		return new Response(signedUrl, {
-			status: 200
-		});
+		logger.debug(`Successfully Fetched signedUrl for default photo for stuff w/id: ${id}...`);
+		return ok(signedUrl);
 	} else {
+		logger.error(`Unable to fetch signedUrl for default photo for stuff w/id: ${id}...`);
 		return unknown(`Photo name found, but unable to get signed url!`);
 	}
 };
@@ -107,22 +117,24 @@ export const POST: RequestHandler = async ({
 	request,
 	locals: { supabase, safeGetSession }
 }) => {
+	logger.setRequestType('POST');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [POST]: Unable to upload Stuff photos, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const { id } = params;
 
 	if (!id) {
-		return badRequest(`${API_NAME} [POST] - Error: id null.`);
+		return badRequest(`Error, id null.`);
 	}
 
 	const formData = await request.formData();
 	const newPhotosCount = parseInt(formData.get('new_photo_count') as string);
 
 	if (newPhotosCount <= 0) {
-		return requiredFieldsMissing(`${API_NAME} [POST]: Unable to upload Stuff photos`);
+		return requiredFieldsMissing();
 	}
 
 	if (newPhotosCount > 0) {
@@ -135,15 +147,15 @@ export const POST: RequestHandler = async ({
 			}
 		}
 
-		Logger.debug(`Photos to upload: ${photos.length}`);
+		logger.debug(`Photos to upload: ${photos.length}`);
 
 		const filesUploaded = await uploadMyStuffPhotos(user?.id, id, photos, supabase);
 
 		if (!filesUploaded) {
-			Logger.debug(`${API_NAME} [POST]: Error uploading photos for stuff with id: ${id}`);
+			logger.error(`Error uploading photos for stuff with id: ${id}`);
 			return unknown();
 		} else {
-			Logger.debug(`${API_NAME} [POST]: Successfully uploaded photos for Stuff ${id}!`);
+			logger.debug(`Successfully uploaded photos for Stuff ${id}!`);
 		}
 	}
 

@@ -1,28 +1,35 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Rentals [id] Approve API';
+const logger = new ApiLogger(`My Rentals [id] Approve API`);
 
 export const POST: RequestHandler = async ({
 	params,
 	fetch,
 	locals: { supabase, safeGetSession }
 }) => {
+	logger.setRequestType('POST');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [POST]: Unable to reject My Rental, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const id = params.id;
 	if (!id) {
-		return badRequest(`${API_NAME} [POST]: Unable to reject My Rental, no id.`);
+		return badRequest(`Error, no id.`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Attempting to approve reservation for rental: ${id}`);
+	logger.debug(`Attempting to approve reservation for rental: ${id}`);
 
-	const rental = (await (await fetch(`/api/my-rentals/${id}?outgoing=true`)).json()) as MyRental;
+	const rentalResponse = await fetch(`/api/my-rentals/${id}?outgoing=true`);
+	if (!rentalResponse.ok) {
+		logger.error(`Unable to fetch my rental w/id: ${id}`);
+	}
+
+	const rental = (await rentalResponse.json()) as MyRental;
 
 	if (rental.status === RentalStatus.Cancelled || rental.status === RentalStatus.Rejected) {
 		return badRequest(`Rental is already cancelled or rejected.`);
@@ -48,6 +55,8 @@ export const POST: RequestHandler = async ({
 	if (response?.status !== 204) {
 		return unknown();
 	}
+
+	logger.debug(`Successfully approved reservation for rental: ${id}`);
 
 	return noContent(`Reservation for My Rental w/id ${id} was successfully approved.`);
 };

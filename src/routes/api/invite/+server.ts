@@ -1,30 +1,26 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'Invite API';
+const logger = new ApiLogger(`Invite API`);
 
-export const POST: RequestHandler = async ({
-	url,
-	cookies,
-	fetch,
-	request,
-	locals: { safeGetSession }
-}) => {
+export const POST: RequestHandler = async ({ request, locals: { safeGetSession } }) => {
+	logger.setRequestType('POST');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [POST]: User null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const { email } = await request.json();
 	if (!email) {
 		// TODO: email regex check here as well...
-		return badRequest(`Invalid email!`);
+		return badRequest(`Error, invalid email.`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Attempting to create new user for email: ${email}...`);
+	logger.debug(`Attempting to create new user for email: ${email}...`);
 
 	const supabase = getSupabaseServerClient();
 
@@ -38,11 +34,11 @@ export const POST: RequestHandler = async ({
 	});
 
 	if (error) {
-		Logger.debug(`${API_NAME} API: Error, ${JSON.stringify(error)}`);
+		logger.debug(`Error, ${JSON.stringify(error)}`);
 		return unknown(`Error sending invite, sign-up error.`);
 	}
 
-	Logger.debug(`${API_NAME} API: User obj:\n ${prettyJson(data.user)}`);
+	logger.debug(`User obj:\n ${prettyJson(data.user)}`);
 
 	// Add user to user-meta table
 	const userMeta = await supabase.from(`user_meta`).insert({
@@ -52,12 +48,10 @@ export const POST: RequestHandler = async ({
 
 	if (userMeta.error) {
 		if (userMeta.error?.message.indexOf(`violates foreign key constraint`) !== -1) {
-			Logger.debug(`${API_NAME} API: Error adding user to user_meta table, user exists already.`);
+			logger.debug(`Error adding user to user_meta table, user exists already.`);
 			return noContent(`User invite sent. Awaiting confirmation!`);
 		} else {
-			Logger.debug(
-				`${API_NAME} API: Error adding user to user_meta table, ${JSON.stringify(userMeta.error)}`
-			);
+			logger.debug(`Error adding user to user_meta table, ${JSON.stringify(userMeta.error)}`);
 			return unknown(`Error sending invite, sign-up error.`);
 		}
 	}
@@ -66,7 +60,7 @@ export const POST: RequestHandler = async ({
 	const user_id = user?.id;
 	const friend_id = data?.user?.id;
 
-	Logger.debug(`${user_id},${friend_id}`);
+	logger.debug(`${user_id},${friend_id}`);
 
 	const friend1 = await supabase.from(`friends`).insert({
 		user_id: user?.id,
@@ -81,13 +75,13 @@ export const POST: RequestHandler = async ({
 	});
 
 	if (friend1.error || friend2.error) {
-		Logger.debug(
-			`${API_NAME} API: Error adding users as friends, ${JSON.stringify(friend1.error)}\n${JSON.stringify(friend2.error)}`
+		logger.debug(
+			`Error adding users as friends, ${JSON.stringify(friend1.error)}\n${JSON.stringify(friend2.error)}`
 		);
 		return unknown(`Error sending invite, sign-up error.`);
 	}
 
-	Logger.debug(`Sent user invite: ${JSON.stringify(data)}`);
+	logger.debug(`Sent user invite: ${JSON.stringify(data)}`);
 
 	return noContent(`User invite sent. Awaiting confirmation!`);
 };

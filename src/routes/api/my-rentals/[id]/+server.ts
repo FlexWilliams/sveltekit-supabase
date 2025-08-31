@@ -1,23 +1,26 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { rentalFromDb } from '$lib/rental/model/rental';
-import { forbidden, notFound, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, notFound, ok, unknown } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Rentals [id] API';
+const logger = new ApiLogger(`My Rentals [id] API`);
 
 export const GET: RequestHandler = async ({
 	params,
 	url,
 	locals: { supabase, safeGetSession }
 }) => {
+	logger.setRequestType('GET');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [GET]: Unable to get My Rental, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const { id } = params;
 	if (!id) {
-		return notFound(`Id null`);
+		return badRequest(`Error, id null`);
 	}
 
 	const outgoing = url.searchParams.get('outgoing')?.toLowerCase() == 'true';
@@ -29,14 +32,15 @@ export const GET: RequestHandler = async ({
 		.eq(outgoing ? 'renter_id' : 'rentee_id', user?.id);
 
 	if (error) {
+		logger.error(`Error fetching my rental w/id: ${id}: ${prettyJson(error)}`);
 		return unknown();
 	}
 
 	if (!data || data.length === 0) {
-		return notFound(`My Rental with id ${id} not found.`);
+		return notFound(`My Rental w/id ${id} not found.`);
 	}
 
-	Logger.debug(JSON.stringify(data));
+	logger.debug(`Successfully fetched my rental w/id: ${id}`);
 
 	return ok(rentalFromDb(data[0]));
 };

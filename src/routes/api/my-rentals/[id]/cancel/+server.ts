@@ -1,29 +1,36 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Rentals [id] Cancel API';
+const logger = new ApiLogger(`My Rentals [id] Cancel API`);
 
 export const POST: RequestHandler = async ({
 	params,
 	fetch,
 	locals: { supabase, safeGetSession }
 }) => {
+	logger.setRequestType('POST');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [POST]: Unable to cancel My Rental, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const id = params.id;
 	if (!id) {
-		return badRequest(`${API_NAME} [POST]: Unable to cancel My Rental, no id.`);
+		return badRequest(`Error, no id.`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Attempting to cancel reservation for rental: ${id}`);
+	logger.debug(`Attempting to cancel reservation for rental: ${id}`);
 
-	const rental = (await (await fetch(`/api/my-rentals/${id}`)).json()) as MyRental;
+	const rentalResponse = await fetch(`/api/my-rentals/${id}`);
+	if (!rentalResponse.ok) {
+		logger.error(`Unable to fetch my rental w/id: ${id}`);
+	}
+
+	const rental = (await rentalResponse.json()) as MyRental;
 
 	if (rental.status === RentalStatus.Cancelled || rental.status === RentalStatus.Rejected) {
 		return noContent(`Reservation is already cancelled or rejected.`);
@@ -56,7 +63,7 @@ export const POST: RequestHandler = async ({
 		.eq('id', rental?.itemId);
 
 	if (friendStuffResponse.error) {
-		Logger.error(`Error removing reservation hold on user_stuff item with id: ${rental?.itemId}`);
+		logger.error(`Error removing reservation hold on user_stuff item with id: ${rental?.itemId}`);
 	}
 
 	return noContent(`Reservation for My Rental w/id ${id} was successfully cancelled`);

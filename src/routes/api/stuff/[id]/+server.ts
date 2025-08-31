@@ -1,25 +1,25 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { stuffFromDb, type StuffFromDb } from '$lib/stuff/model/stuff';
-import { badRequest, ok } from '$lib/web/http/error-response';
+import { badRequest, forbidden, notFound, ok } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'Stuff [id] API';
+const logger = new ApiLogger('Stuff [id] API');
 
 export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+	logger.setRequestType('GET');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		Logger.debug(`${API_NAME} [GET]: Error, user null.`);
-
-		return new Response(null, {
-			status: 403
-		});
+		return forbidden(`Error, user null.`);
 	}
 
 	const { id } = params;
 	if (!id) {
-		return badRequest(`${API_NAME} [GET] - Error, id null.`);
+		return badRequest(`Error, id null.`);
 	}
+
+	logger.debug(`Fetching stuff w/id: ${id}...`);
 
 	const columns = `id,
 					user_id,
@@ -41,12 +41,11 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		.order('created_on');
 
 	if (error) {
-		Logger.debug(`${API_NAME} [GET]: Error occurred: ${prettyJson(error)}`);
-
-		return new Response(null, {
-			status: 404
-		});
+		logger.error(`Error occurred: ${prettyJson(error)}`);
+		return notFound();
 	}
+
+	logger.debug(`Successfully fetched stuff w/id: ${id}...`);
 
 	let stuff = data as StuffFromDb[];
 

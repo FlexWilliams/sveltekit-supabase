@@ -1,4 +1,4 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { stuffToDb, type Stuff, type StuffEdit } from '$lib/stuff/model/stuff';
 import {
 	badRequest,
@@ -6,32 +6,33 @@ import {
 	requiredFieldsMissing,
 	unknown
 } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Stuff [id] Default Photo API';
+const logger = new ApiLogger(`My Stuff [id] Default Photo API`);
 
 export const PUT: RequestHandler = async ({
 	request,
 	params,
 	locals: { supabase, safeGetSession }
 }) => {
+	logger.setRequestType('PUT');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [PUT]: Unable to update My Stuff default photo, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const id = params.id;
 
 	if (!id) {
-		return badRequest(`${API_NAME} [PUT]: Unable to update My Stuff default photo, id null.`);
+		return badRequest(`Error, id null.`);
 	}
-
-	Logger.debug(`${id}, ${user?.id}`);
 
 	const { imageUrl } = await request.json();
 
 	if (!imageUrl) {
-		return requiredFieldsMissing(`${API_NAME} [PUT]: Unable to update My Stuff default photo.`);
+		return requiredFieldsMissing(`Error, imageUrl null`);
 	}
 
 	const stuffEdit: Partial<StuffEdit> = {
@@ -45,10 +46,11 @@ export const PUT: RequestHandler = async ({
 		.eq('id', id);
 
 	if (error) {
+		logger.debug(`Unable to set default photo for My Stuff w/id: ${id}:\n ${prettyJson(error)}`);
 		return unknown();
 	}
 
-	Logger.debug(`${API_NAME} [PUT]: Successfully set default photo for My Stuff w/id: ${id}.`);
+	logger.debug(`Successfully set default photo for My Stuff w/id: ${id}.`);
 
 	return new Response(null, {
 		status: 204

@@ -1,14 +1,17 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { stuffFromDbList } from '$lib/stuff/model/stuff';
 import { forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'Friend Stuff API';
+const logger = new ApiLogger(`Friend Stuff API`);
 
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
+	logger.setRequestType('GET');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [GET]: Unable to get Friend Stuff, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const searchText = url.searchParams.get('q');
@@ -42,11 +45,11 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 		.or(`name.ilike.%${searchText}%,description.ilike.%${searchText}%`);
 
 	if (error) {
-		Logger.error(`\n${JSON.stringify(error)}\n`);
+		logger.error(`Error occured: ${prettyJson(error)}`);
 		return unknown();
 	}
 
-	const logMessage = `${API_NAME}: Successfully found ${data?.length} items for query: ${searchText}`;
+	logger.debug(`Successfully found ${data?.length} items for query: ${searchText}`);
 
-	return ok(stuffFromDbList(data), logMessage);
+	return ok(stuffFromDbList(data));
 };

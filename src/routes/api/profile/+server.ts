@@ -1,19 +1,18 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import type { UserMetaFromDb } from '$lib/user/model/user-meta';
+import { badRequest, forbidden, unknown } from '$lib/web/http/error-response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'Profile API';
+const logger = new ApiLogger('Profile API');
 
 const allowedImageFormats = ['image/jpeg', 'image/png'];
 
 export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+	logger.setRequestType('PUT');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		Logger.debug(`${API_NAME} [PUT]: unable to update the user profile, user null.`);
-
-		return new Response(null, {
-			status: 403
-		});
+		return forbidden('Error, user null');
 	}
 
 	const formData = await request.formData();
@@ -21,24 +20,11 @@ export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGet
 	const profilePic = formData.get('profile_pic') as File;
 
 	if (profilePic && allowedImageFormats.indexOf(profilePic.type.toLowerCase()) === -1) {
-		return new Response(
-			JSON.stringify({
-				error: 'Image format not supported!'
-			}),
-			{
-				status: 400,
-				statusText: 'Image format not supported!'
-			}
-		);
+		return badRequest('Error, image format not supported.');
 	}
 
 	if (!userName) {
-		Logger.debug(`${API_NAME} [PUT]: unable to update the user profile, user name not passed in.`);
-
-		return new Response(null, {
-			status: 400,
-			statusText: 'Username is null.'
-		});
+		return badRequest('Error, username null');
 	}
 
 	const userMeta: Partial<UserMetaFromDb> = {
@@ -46,17 +32,20 @@ export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGet
 		updated_on: new Date().toISOString()
 	};
 
+	logger.debug(`Attempting to update user profile for user w/id ${user?.id}...`);
+
 	const userNameChangeResponse = await supabase
 		.from('user_meta')
 		.update(userMeta)
 		.eq('id', user?.id);
 
 	if (userNameChangeResponse.error) {
-		Logger.error(
-			`${API_NAME} [PUT]: Error updating the username for user id ${user?.id}: ${userNameChangeResponse?.error?.message}`
+		logger.error(
+			`Error updating the username for user id ${user?.id}: ${userNameChangeResponse?.error?.message}`
 		);
+		return unknown();
 	} else {
-		Logger.debug(`${API_NAME} [PUT]: Success updating username!`);
+		logger.debug(`Success updating username!`);
 	}
 
 	if (profilePic) {
@@ -67,13 +56,14 @@ export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGet
 			.upload(`${user?.id}/${fileName}`, profilePic, { upsert: true });
 
 		if (error) {
-			Logger.error(`${API_NAME} [PUT]: Error uploading new profile pic: ${error?.message}`);
+			logger.error(`Error uploading new profile pic: ${error?.message}`);
+			return unknown();
 		} else if (data) {
-			Logger.debug(`${API_NAME} [PUT]: Success uploading new profile pic!`);
+			logger.debug(`Success uploading new profile pic!`);
 		}
 	}
 
-	Logger.debug(`${API_NAME} [PUT]: Successfully updated user profile.`);
+	logger.debug(`Successfully updated user profile for user w/id ${user?.id}!`);
 
 	return new Response(null, {
 		status: 204

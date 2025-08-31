@@ -50,7 +50,9 @@ export const ok = (data?: any, logMessage?: string): Response => {
 		Logger.debug(`${logMessage}`);
 	}
 
-	return new Response(data ? JSON.stringify(data) : null, {
+	data = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : null;
+
+	return new Response(data, {
 		status: 200
 	});
 };

@@ -1,11 +1,13 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { badRequest, noContent, ok, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import { type RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'Magic Link API';
+const logger = new ApiLogger('Magic Link API');
 
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
+	logger.setRequestType('POST');
+
 	let loggedInUser = (await safeGetSession()).user;
 	if (loggedInUser) {
 		return noContent(`User already logged in.`);
@@ -13,10 +15,10 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 
 	const { email } = await request.json();
 	if (!email) {
-		return badRequest(`Invalid email!`);
+		return badRequest(`Error, invalid email.`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Attempting to send magic link for email: ${email}...`);
+	logger.debug(`Attempting to send magic link for email: ${email}...`);
 
 	const { error } = await supabase.auth.signInWithOtp({
 		email,
@@ -26,11 +28,11 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	});
 
 	if (error) {
-		Logger.error(`${API_NAME} [POST]: Error sending magic link: ${prettyJson(error)}`);
+		logger.error(`Error sending magic link: ${prettyJson(error)}`);
 		return unknown(`Error sending magic link`);
 	}
 
-	Logger.debug(`${API_NAME} [POST]: Magic Link sent!`);
+	logger.debug(`Magic Link sent!`);
 
 	return ok();
 };

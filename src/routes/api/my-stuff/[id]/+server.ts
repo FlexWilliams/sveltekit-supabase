@@ -1,4 +1,4 @@
-import { Logger } from '$lib/logging/logger';
+import { ApiLogger } from '$lib/logging/api-logger';
 import { stuffToDb, type Stuff, type StuffEdit } from '$lib/stuff/model/stuff';
 import {
 	badRequest,
@@ -9,7 +9,7 @@ import {
 import type { PhotoNamesResponse } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const API_NAME = 'My Stuff [id] API';
+const logger = new ApiLogger('My Stuff [id] API');
 
 export const PUT: RequestHandler = async ({
 	request,
@@ -17,14 +17,16 @@ export const PUT: RequestHandler = async ({
 	locals: { supabase, safeGetSession },
 	fetch
 }) => {
+	logger.setRequestType('PUT');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [PUT]: Unable to PUT My Stuff, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const id = params.id;
 	if (!id) {
-		return badRequest(`${API_NAME} [PUT]: Unable to update My Stuff, id null.`);
+		return badRequest(`Error, id null.`);
 	}
 
 	const formData = await request.formData();
@@ -36,7 +38,7 @@ export const PUT: RequestHandler = async ({
 	const available = formData.get('available') as string;
 
 	if (!name || !trustLevel || (photosCount <= 0 && newPhotosCount <= 0)) {
-		return requiredFieldsMissing(`${API_NAME} [PUT]: Unable to update My Stuff`);
+		return requiredFieldsMissing('Error: ');
 	}
 
 	const stuffEdit: StuffEdit = {
@@ -63,7 +65,7 @@ export const PUT: RequestHandler = async ({
 	});
 
 	if (!uploadPhotos.ok) {
-		Logger.error(`Error uploading photos for new stuff`);
+		logger.error(`Error uploading photos for new stuff`);
 	}
 
 	return new Response(null, {
@@ -76,18 +78,18 @@ export const DELETE: RequestHandler = async ({
 	locals: { supabase, safeGetSession },
 	fetch
 }) => {
+	logger.setRequestType('DELETE');
+
 	const { user } = await safeGetSession();
 	if (!user) {
-		return forbidden(`${API_NAME} [DELETE]: Unable to delete My Stuff, user null.`);
+		return forbidden(`Error, user null.`);
 	}
 
 	const id = params.id;
 
 	if (!id) {
-		return badRequest(`${API_NAME} [DELETE]: Unable to delete My Stuff w/id ${id}, user null.`);
+		return badRequest(`Error, user null.`);
 	}
-
-	Logger.debug(`${id}, ${user?.id}`);
 
 	const response = await supabase
 		.from('user_stuff')
@@ -95,25 +97,29 @@ export const DELETE: RequestHandler = async ({
 		.eq('id', parseInt(id))
 		.eq('user_id', user?.id);
 
-	Logger.debug(`${response?.status}`);
-
 	if (response?.status !== 204) {
 		return unknown();
 	}
 
-	const { photoNames } = (await (
-		await fetch(`/api/stuff/${id}/photo-names`)
-	).json()) as PhotoNamesResponse;
+	const photoNamesResponse = await fetch(`/api/stuff/${id}/photo-names`);
+	if (!photoNamesResponse.ok) {
+		logger.error(`Unable to delete photos for my stuff. Error fetching photo names.`);
+		return unknown();
+	}
 
-	Logger.debug(`Attempting to delete Stuff photos: [${photoNames.join('\n')}]\n`);
+	const { photoNames } = (await photoNamesResponse.json()) as PhotoNamesResponse;
+
+	logger.debug(`Attempting to delete Stuff photos: [${photoNames.join('\n')}]\n`);
 
 	photoNames.forEach(async (p) => {
 		const removed = await fetch(`/api/stuff/${id}/photo/${p}`, { method: 'DELETE' });
 
 		if (removed.status !== 204) {
-			Logger.error(`Error removing photo: ${p} for Stuff w/ id: ${id}. Manual deletion required!`);
+			logger.error(`Error removing photo: ${p} for Stuff w/ id: ${id}. Manual deletion required!`);
 		}
 	});
+
+	logger.debug(`Successfully deleted photos for my stuff w/id ${id}`);
 
 	return new Response(null, {
 		status: 204
