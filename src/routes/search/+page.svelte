@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger';
 	import StuffSearchCard from '$lib/stuff/components/StuffSearchCard.svelte';
 	import StuffSearchSocialCarousel from '$lib/stuff/components/StuffSearchSocialCarousel.svelte';
@@ -10,7 +11,7 @@
 	const searchText$$ = new Subject<string>();
 	const searchText$ = searchText$$.asObservable();
 
-	let searchText = $state('');
+	let searchText = $state('*');
 
 	let loading = $state(false);
 
@@ -29,6 +30,13 @@
 		searchText$$.next(input.value);
 	}
 
+	function focusSearchInput(): void {
+		const search = document.getElementById('search') as HTMLInputElement;
+		if (search) {
+			search.focus();
+		}
+	}
+
 	function listenForSearchTextChanges(): Subscription {
 		return searchText$
 			.pipe(
@@ -37,9 +45,13 @@
 					Logger.debug(`User searching for ${text}`);
 					searchText = text;
 
+					goto(`?q=${text}`);
+
 					loading = true;
 					stuff = await search();
 					loading = false;
+
+					focusSearchInput();
 				})
 			)
 			.subscribe();
@@ -53,7 +65,20 @@
 		return stuff;
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		const searchParams = window.location.search
+			.replace('?', '&')
+			.split('&')
+			.filter((s) => s);
+		const query = searchParams.find((s) => s.indexOf('q=') === 0);
+		if (query) {
+			const searchValue = query.split('=')[1];
+			if (searchValue) {
+				searchText = searchValue;
+			}
+		}
+
+		stuff = await search();
 		subscriptions.push(listenForSearchTextChanges());
 	});
 
@@ -66,13 +91,14 @@
 	<h2>Search</h2>
 
 	<form name="search-friend-stuff-form">
-		<label for="search" aria-label="Search"></label>
+		<label for="q" aria-label="Search"></label>
 		<input
 			id="search"
-			name="search"
+			name="q"
 			type="text"
 			onkeyup={handleSearchTextChange}
 			placeholder={`Search if your friends have it for rent`}
+			bind:value={searchText}
 		/>
 	</form>
 

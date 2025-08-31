@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import defaultPhoto from '$lib/assets/images/default-photo.svg';
 	import { Logger } from '$lib/logging/logger';
+	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
@@ -18,8 +18,6 @@
 
 	let rental: MyRental | null = $state(null);
 
-	let photo: string | null = $state(null);
-
 	let renting: boolean = $state(false);
 
 	let cancelling: boolean = $state(false);
@@ -35,22 +33,6 @@
 			Logger.error(`Stuff with id ${stuffId} not found!`);
 		} else {
 			stuff = (await response.json()) as Stuff;
-		}
-
-		loadingStuff = false;
-	}
-
-	async function fetchStuffImage(): Promise<void> {
-		if (!stuff?.imageUrl) {
-			return;
-		}
-
-		const response = await fetch(`/api/stuff/${stuffId}/photo/${stuff?.imageUrl}`);
-
-		if (!response.ok) {
-			Logger.error(`Error fetching stuff photo!`);
-		} else {
-			photo = await response.text();
 		}
 
 		loadingStuff = false;
@@ -140,7 +122,6 @@
 		let tokens = window.location.pathname.split('/');
 		stuffId = tokens[tokens.length - 1];
 		await fetchStuff();
-		await fetchStuffImage();
 		await fetchRental();
 	});
 </script>
@@ -154,8 +135,13 @@
 			<span>{stuff.name}</span>
 		</h3>
 
-		<img src={photo || defaultPhoto} alt={`Image of ${stuff?.name}`} />
-
+		<section class="photo">
+			<StuffPhoto
+				cacheKey={stuff.id}
+				fetchUrl={`/api/stuff/${stuffId}/photo/${stuff?.imageUrl}`}
+				photoName={stuff?.name}
+			/>
+		</section>
 		<p>{stuff.description}</p>
 
 		<div class="rental-actions">
@@ -250,7 +236,7 @@
 			align-items: center;
 		}
 
-		img {
+		section.photo {
 			min-width: 90%;
 			width: 90%;
 			min-height: 10rem;
@@ -325,7 +311,7 @@
 				}
 			}
 
-			img {
+			section.photo {
 				min-height: 20rem;
 				height: 20rem;
 			}

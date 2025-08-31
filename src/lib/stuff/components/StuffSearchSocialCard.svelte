@@ -1,5 +1,5 @@
 <script lang="ts">
-	import defaultPhoto from '$lib/assets/images/default-photo.svg';
+	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import type { StuffSocial } from '../model/stuff';
 
 	interface StuffSearchSocialCardProps {
@@ -32,7 +32,9 @@
 		{/if}
 	</h3>
 
-	<img src={social?.image || defaultPhoto} alt={social?.itemName} />
+	<section class="photo">
+		<StuffPhoto imageUrl={social?.image} photoName={social?.itemName} />
+	</section>
 
 	<button type="button" aria-label="Select" onclick={hanleArticleClick}></button>
 </article>
@@ -66,13 +68,15 @@
 			text-overflow: ellipsis;
 		}
 
-		img {
+		section.photo {
 			margin-top: 1rem;
 			width: 6rem;
 			max-width: 6rem;
 			height: 6rem;
 			max-height: 6rem;
 			border-radius: 0.25rem;
+			position: relative;
+			z-index: 1;
 		}
 
 		button {
@@ -82,7 +86,7 @@
 			height: 100%;
 			width: 100%;
 			border: none;
-			background-color: #6633990d;
+			background-color: white;
 		}
 	}
 </style>

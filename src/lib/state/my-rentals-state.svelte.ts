@@ -1,5 +1,5 @@
 export interface MyRentalsState {
-	rentalPhotos: Map<number, string>;
+	rentalPhotos: Map<string, string>;
 }
 
 const initialMyRentalsState: MyRentalsState = {
@@ -13,6 +13,6 @@ export const myRentalsState = $state(initialMyRentalsState);
 /**
  * Sets a photo
  */
-export function userState$$setPhoto(id: number, url: string): void {
+export function userState$$setPhoto(id: string, url: string): void {
 	myRentalsState.rentalPhotos.set(id, url);
 }

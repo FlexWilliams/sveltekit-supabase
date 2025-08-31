@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import defaultPhoto from '$lib/assets/images/default-photo.svg';
-	import { myRentalsState } from '$lib/state/my-rentals-state.svelte';
-	import { onMount } from 'svelte';
-	import { RentalStatus, type MyRental } from '../model/rental';
-	import Photo from '$lib/photo/components/StuffPhoto.svelte';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
+	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface MyRentalCardProps {
 		rental: MyRental;
@@ -44,7 +40,7 @@
 
 		<section class="photo">
 			<StuffPhoto
-				cacheKey={rental?.itemId}
+				cacheKey={`${rental?.itemId}`}
 				fetchUrl={`/api/stuff/${rental?.itemId}/photo/${rental.imageUrl}`}
 				photoName={rental?.itemName}
 			/>

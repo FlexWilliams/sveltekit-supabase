@@ -1,20 +1,19 @@
 <script lang="ts">
-	import defaultPhoto from '$lib/assets/images/default-photo.svg';
-	import gear from '$lib/assets/images/gear.svg';
 	import { myRentalsState } from '$lib/state/my-rentals-state.svelte';
 	import { untrack } from 'svelte';
 
 	interface PhotoProps {
-		cacheKey: number;
-		fetchUrl: string;
+		cacheKey?: string;
+		fetchUrl?: string;
+		imageUrl?: string;
 		photoName?: string;
 	}
 
-	let { cacheKey, fetchUrl, photoName }: PhotoProps = $props();
+	let { cacheKey, fetchUrl, imageUrl, photoName }: PhotoProps = $props();
 
 	let rentalPhotos = $derived(myRentalsState.rentalPhotos);
 
-	let photo: string | null = $state(null);
+	let photo: string | null = $state(imageUrl || null);
 
 	$effect(() => {
 		if (photo !== null) {
@@ -26,7 +25,15 @@
 	});
 
 	async function fetchImage(): Promise<string | null> {
-		const cachedUrl = rentalPhotos.get(cacheKey);
+		if (imageUrl) {
+			return imageUrl;
+		}
+
+		if (!fetchUrl) {
+			return '';
+		}
+
+		const cachedUrl = cacheKey ? rentalPhotos.get(cacheKey) : null;
 
 		if (cachedUrl) {
 			return cachedUrl;
@@ -37,7 +44,10 @@
 				const photoUrl = await response.text();
 
 				if (photoUrl) {
-					rentalPhotos.set(cacheKey, photoUrl);
+					if (cacheKey) {
+						rentalPhotos.set(cacheKey, photoUrl);
+					}
+
 					return photoUrl;
 				}
 			}
@@ -49,27 +59,29 @@
 
 <section>
 	{#await fetchImage()}
-		<img class="loader" src={gear} alt={'Loading indicator'} />
+		<p class="loading">Loading...</p>
 	{:then _photo}
-		<img src={_photo || defaultPhoto} alt={`Item ${photoName}`} />
+		<img src={_photo} alt={`Item ${photoName}`} />
 	{/await}
 </section>
 
 <style lang="scss">
-	@use '../../styles/animations/spin.scss';
-
 	section {
 		height: 100%;
 		width: 100%;
 		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	p.loading {
+		font-size: 0.75rem;
 	}
 
 	img {
 		max-height: 100%;
 		max-width: 100%;
-	}
-
-	img.loader {
-		@include spin.spin360;
+		border-radius: 0.25rem;
 	}
 </style>

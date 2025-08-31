@@ -1,7 +1,5 @@
 <script lang="ts">
-	import defaultPhoto from '$lib/assets/images/default-photo.svg';
-	import { myStuffState, myStuffState$$setStuffImage } from '$lib/state/my-stuff-state.svelte';
-	import { onMount } from 'svelte';
+	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import type { Stuff } from '../model/stuff';
 
 	interface StuffCardProps {
@@ -11,30 +9,18 @@
 	}
 
 	let { stuff, handleClick, handleEdit }: StuffCardProps = $props();
-
-	let photo: string | null = $derived(myStuffState.myStuffImages.get(stuff.imageUrl || '') || null);
-
-	async function fetchPhoto(): Promise<void> {
-		if (stuff?.imageUrl && !photo) {
-			const response = await fetch(`/api/stuff/${stuff?.id}/photo/${stuff.imageUrl}`);
-
-			if (response.ok) {
-				photo = await response.text();
-
-				myStuffState$$setStuffImage(stuff.imageUrl, photo);
-			}
-		}
-	}
-
-	onMount(async () => {
-		await fetchPhoto();
-	});
 </script>
 
 <button class="card" onclick={handleClick}>
 	<h3>{stuff?.name}</h3>
 
-	<img src={photo || defaultPhoto} alt={`${stuff.name}`} />
+	<section class="photo">
+		<StuffPhoto
+			cacheKey={stuff.id}
+			fetchUrl={`/api/stuff/${stuff?.id}/photo/${stuff.imageUrl}`}
+			photoName={stuff?.name}
+		/>
+	</section>
 </button>
 <button
 	type="button"
@@ -66,7 +52,7 @@
 			margin-bottom: 2rem;
 		}
 
-		img {
+		section.photo {
 			max-width: 80%;
 			max-height: 80%;
 			@include variables.border-radius-panel;
@@ -92,7 +78,7 @@
 				font-size: 1rem;
 			}
 
-			img {
+			section.photo {
 				max-width: 70%;
 				max-height: 70%;
 				@include variables.border-radius-panel;
