@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { Logger } from '$lib/logging/logger';
 	import { myRentalsState } from '$lib/state/my-rentals-state.svelte';
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 
 	interface PhotoProps {
 		cacheKey?: string;
@@ -15,29 +16,29 @@
 
 	let photo: string | null = $state(imageUrl || null);
 
-	$effect(() => {
-		if (photo !== null) {
-			untrack(() => {
-				if (photo) {
-				}
-			});
-		}
-	});
+	let fetchingImage = $state(true);
 
-	async function fetchImage(): Promise<string | null> {
+	async function fetchImage(): Promise<void> {
 		if (imageUrl) {
-			return imageUrl;
+			photo = imageUrl;
+			fetchingImage = false;
+			return;
 		}
 
 		if (!fetchUrl) {
-			return '';
+			fetchingImage = false;
+			return;
 		}
 
 		const cachedUrl = cacheKey ? rentalPhotos.get(cacheKey) : null;
 
 		if (cachedUrl) {
-			return cachedUrl;
+			photo = cachedUrl;
+			fetchingImage = false;
+			return;
 		} else {
+			fetchingImage = true;
+
 			const response = await fetch(fetchUrl);
 
 			if (response.ok) {
@@ -48,21 +49,35 @@
 						rentalPhotos.set(cacheKey, photoUrl);
 					}
 
-					return photoUrl;
+					photo = photoUrl;
 				}
 			}
+
+			fetchingImage = false;
+		}
+	}
+
+	async function handlePhotoError(): Promise<void> {
+		Logger.debug(`Error fetching photo, possibly expired, re-fetching...`);
+
+		if (cacheKey) {
+			rentalPhotos.delete(cacheKey);
 		}
 
-		return null;
+		await fetchImage();
 	}
+
+	onMount(async () => {
+		await fetchImage();
+	});
 </script>
 
 <section>
-	{#await fetchImage()}
+	{#if fetchingImage}
 		<p class="loading">Loading...</p>
-	{:then _photo}
-		<img src={_photo} alt={`Item ${photoName}`} />
-	{/await}
+	{:else}
+		<img src={photo} alt={`Item ${photoName}`} onerror={handlePhotoError} />
+	{/if}
 </section>
 
 <style lang="scss">
