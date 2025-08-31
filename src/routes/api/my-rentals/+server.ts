@@ -3,6 +3,7 @@ import { rentalFromDb, RentalStatus, rentalToDb, type MyRental } from '$lib/rent
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { type Stuff } from '$lib/stuff/model/stuff';
 import { badRequest, forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_NAME = 'My Rentals API';
@@ -74,6 +75,7 @@ export const POST: RequestHandler = async ({
 			.from('user_rentals')
 			.update({ status: RentalStatus.Rejected })
 			.eq('id', rental?.itemId);
+		Logger.error(`${API_NAME} POST: Error occurred: ${prettyJson(friendStuffResponse.error)}`);
 		return unknown(`Unable to rent item, error placing reservation.`);
 	}
 
