@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import type { ChatGroup } from '$lib/chat/model/chat';
 	import { Logger } from '$lib/logging/logger';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
@@ -7,18 +7,14 @@
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
-	import { onMount } from 'svelte';
-	let { children } = $props();
 
-	let loadingStuff = $state(true);
+	let { children, data } = $props();
 
-	let loadingMyRental = $state(true);
+	let stuff: Stuff | null = $derived(data.stuff);
 
-	let stuffId: string | null = $state(null);
+	let rental: MyRental | null = $derived(data.rental);
 
-	let stuff: Stuff | null = $state(null);
-
-	let rental: MyRental | null = $state(null);
+	let chatGroups: ChatGroup[] | null = $derived(data.chatGroups);
 
 	let renting: boolean = $state(false);
 
@@ -27,50 +23,6 @@
 	let rejecting: boolean = $state(false);
 
 	let userId: string | null = $derived(userState.id);
-
-	let chatGroups: ChatGroup[] | null = $state(null);
-
-	async function fetchChatGroups(): Promise<void> {
-		const response = await fetch(`/api/stuff/${stuffId}/chats/renter`);
-		if (!response.ok) {
-			Logger.error(`Error fetching renter chat groups...`);
-		}
-
-		chatGroups = (await response.json()) as ChatGroup[];
-	}
-
-	async function fetchStuff(): Promise<void> {
-		const response = await fetch(`/api/friend-stuff/${stuffId}`);
-
-		if (!response.ok) {
-			Logger.error(`Stuff with id ${stuffId} not found!`);
-		} else {
-			stuff = (await response.json()) as Stuff;
-		}
-
-		loadingStuff = false;
-
-		if (stuff?.userId === userId) {
-			await fetchChatGroups();
-		}
-	}
-
-	async function fetchRental(): Promise<void> {
-		if (!stuff?.rentalId) {
-			loadingMyRental = false;
-			return;
-		}
-
-		loadingMyRental = true;
-
-		const response = await fetch(`/api/rentals/${stuff?.rentalId}`);
-
-		if (response.ok) {
-			rental = (await response.json()) as MyRental;
-		}
-
-		loadingMyRental = false;
-	}
 
 	async function handleRentClick(): Promise<void> {
 		renting = true;
@@ -134,28 +86,15 @@
 
 		rejecting = false;
 	}
-
-	onMount(() => {
-		afterNavigate(async (e) => {
-			if (e.to) {
-				stuffId = e.to.params?.id || '';
-
-				await fetchStuff();
-				await fetchRental();
-			}
-		});
-	});
 </script>
 
 <section>
-	{#if loadingStuff || loadingMyRental}
-		<p>Loading...</p>
-	{:else if stuff}
+	{#if stuff}
 		<h3>
 			{#if stuff?.userId === userId}
-			<span>Your</span>
-				{:else}
-			<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
+				<span>Your</span>
+			{:else}
+				<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
 			{/if}
 			<span>{stuff.name}</span>
 		</h3>
@@ -163,7 +102,7 @@
 		<section class="photo">
 			<StuffPhoto
 				cacheKey={`stuff-${stuff?.id}`}
-				fetchUrl={`/api/stuff/${stuffId}/photo/${stuff?.imageUrl}`}
+				fetchUrl={`/api/stuff/${stuff.id}/photo/${stuff?.imageUrl}`}
 				photoName={stuff?.name}
 			/>
 		</section>
@@ -237,12 +176,12 @@
 		</div>
 	</dialog>
 
-	{#if stuff?.userId !== userId || chatGroups && chatGroups?.length > 0 }
+	{#if stuff?.userId !== userId || (chatGroups && chatGroups?.length > 0)}
 		<div class="chat">
 			{#if chatGroups && chatGroups?.length > 0}
 				<div class="chat-group-count">{chatGroups?.length}</div>
 			{/if}
-			<a type="button" href={`./${stuffId}/chat`}>Chat</a>
+			<a type="button" href={`./${stuff?.id}/chat`}>Chat</a>
 		</div>
 	{/if}
 </section>

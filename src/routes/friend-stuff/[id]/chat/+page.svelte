@@ -1,13 +1,21 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
-	import { type Chat } from '$lib/chat/model/chat';
+	import { type Chat, type ChatGroup } from '$lib/chat/model/chat';
 	import ChatMessage from '$lib/chat/model/components/ChatMessage.svelte';
+	import type { MyRental } from '$lib/rental/model/rental';
 	import { userState } from '$lib/state/user-state.svelte';
+	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 	import { interval, Subscription, tap } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 
-	let stuffId: string | null = $state(null);
+	let { data } = $props();
+
+	let stuff: Stuff | null = $derived(data.stuff);
+
+	let rental: MyRental | null = $derived(data.rental);
+
+	let chatGroups: ChatGroup[] | null = $derived(data.chatGroups);
 
 	let userId: string | null = $derived(userState.id);
 
@@ -31,7 +39,7 @@
 		let tempChat: Partial<Chat> | undefined = { id: -9999, message, senderId: userId || '' };
 		chats.push(tempChat);
 
-		const response = await fetch(`/api/stuff/${stuffId}/chats`, {
+		const response = await fetch(`/api/stuff/${stuff?.id}/chats`, {
 			method: 'POST',
 			body: JSON.stringify({ message }),
 			headers: {
@@ -55,14 +63,14 @@
 	}
 
 	async function fetchChats(): Promise<void> {
-		if (!stuffId) {
+		if (!stuff?.id) {
 			ToastrService.error(`Unable to load chat messages`);
 			return;
 		}
 
 		fetchingChats = true;
 
-		const response = await fetch(`/api/stuff/${stuffId}/chats`);
+		const response = await fetch(`/api/stuff/${stuff?.id}/chats`);
 
 		if (!response.ok) {
 			ToastrService.error(`Unable to fetch chat messages.\nPlease try again.`);
@@ -84,7 +92,7 @@
 	async function handleSendChat(event: Event): Promise<void> {
 		event.preventDefault(); // TODO: remove and use:enhance!
 
-		if (!stuffId) {
+		if (!stuff?.id) {
 			return;
 		}
 
@@ -95,8 +103,6 @@
 	onMount(() => {
 		afterNavigate(async (e) => {
 			if (e.to) {
-				stuffId = e.to.params?.id || null;
-
 				await fetchChats();
 
 				subscriptions.push(
