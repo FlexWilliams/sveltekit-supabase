@@ -2,17 +2,13 @@
 	import { Logger } from '$lib/logging/logger';
 	import MyRentalCard from '$lib/rental/component/MyRentalCard.svelte';
 	import type { MyRental } from '$lib/rental/model/rental';
-	import { userState } from '$lib/state/user-state.svelte';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
-	import { onMount } from 'svelte';
 
-	let userId: string | null = $derived(userState.id);
+	let { data } = $props();
 
-	let loading = $state(true);
+	let incomingRentals: MyRental[] = $derived(data.incomingRentals || []);
 
-	let incomingRentals: MyRental[] = $state([]);
-
-	let outgoingRentals: MyRental[] = $state([]);
+	let outgoingRentals: MyRental[] = $derived(data.outgoingRentals || []);
 
 	let activeTab: string = $state('incoming');
 
@@ -67,8 +63,6 @@
 		} else {
 			incomingRentals = (await response.json()) as MyRental[];
 		}
-
-		loading = false;
 	}
 
 	async function fetchOutGoingRentals(): Promise<void> {
@@ -78,19 +72,7 @@
 		} else {
 			outgoingRentals = (await response.json()) as MyRental[];
 		}
-
-		loading = false;
 	}
-
-	async function fetchRentals(): Promise<void> {
-		return Promise.all([fetchIncomingRentals(), fetchOutGoingRentals()]).then(() => {
-			Logger.debug(`Fetched incoming and outoging rentals!`);
-		});
-	}
-
-	onMount(async () => {
-		await fetchRentals();
-	});
 </script>
 
 <section>
@@ -109,9 +91,7 @@
 		</li>
 	</menu>
 
-	{#if loading}
-		<p>Loading...</p>
-	{:else if activeTab === 'incoming'}
+	{#if activeTab === 'incoming'}
 		<ul>
 			{#each incomingRentals as rental (rental?.id)}
 				<li>

@@ -2,7 +2,6 @@
 	import { afterNavigate } from '$app/navigation';
 	import { type Chat, type ChatGroup } from '$lib/chat/model/chat';
 	import ChatMessage from '$lib/chat/model/components/ChatMessage.svelte';
-	import type { MyRental } from '$lib/rental/model/rental';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
@@ -12,8 +11,6 @@
 	let { data } = $props();
 
 	let stuff: Stuff | null = $derived(data.stuff);
-
-	let rental: MyRental | null = $derived(data.rental);
 
 	let chatGroups: ChatGroup[] | null = $derived(data.chatGroups);
 
