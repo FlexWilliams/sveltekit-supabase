@@ -1,5 +1,5 @@
 import { ApiLogger } from '$lib/logging/api-logger';
-import { stuffFromDb, type StuffFromDb } from '$lib/stuff/model/stuff';
+import { stuffFromDbList, type StuffFromDb } from '$lib/stuff/model/stuff';
 import { badRequest, forbidden, notFound, ok } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 
 	logger.debug(`Successfully fetched stuff w/id: ${id}...`);
 
-	let stuff = data as StuffFromDb[];
+	let stuff = stuffFromDbList(data as StuffFromDb[])[0];
 
-	return ok(stuffFromDb(stuff[0]));
+	return ok(stuff);
 };
