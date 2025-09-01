@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
+	import type { ChatGroup } from '$lib/chat/model/chat';
 	import { Logger } from '$lib/logging/logger';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
@@ -27,6 +28,17 @@
 
 	let userId: string | null = $derived(userState.id);
 
+	let chatGroups: ChatGroup[] | null = $state(null);
+
+	async function fetchChatGroups(): Promise<void> {
+		const response = await fetch(`/api/stuff/${stuffId}/chats/renter`);
+		if (!response.ok) {
+			Logger.error(`Error fetching renter chat groups...`);
+		}
+
+		chatGroups = (await response.json()) as ChatGroup[];
+	}
+
 	async function fetchStuff(): Promise<void> {
 		const response = await fetch(`/api/friend-stuff/${stuffId}`);
 
@@ -37,6 +49,10 @@
 		}
 
 		loadingStuff = false;
+
+		if (stuff?.userId === userId) {
+			await fetchChatGroups();
+		}
 	}
 
 	async function fetchRental(): Promise<void> {
@@ -136,7 +152,11 @@
 		<p>Loading...</p>
 	{:else if stuff}
 		<h3>
+			{#if stuff?.userId === userId}
+			<span>Your</span>
+				{:else}
 			<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
+			{/if}
 			<span>{stuff.name}</span>
 		</h3>
 
@@ -217,8 +237,13 @@
 		</div>
 	</dialog>
 
-	{#if stuff?.userId !== userId || (stuff?.userId === userId && (rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved || rental?.status === RentalStatus.Rented))}
-		<a type="button" class="chat" href={`./${stuffId}/chat`}>Chat</a>
+	{#if stuff?.userId !== userId || chatGroups && chatGroups?.length > 0 }
+		<div class="chat">
+			{#if chatGroups && chatGroups?.length > 0}
+				<div class="chat-group-count">{chatGroups?.length}</div>
+			{/if}
+			<a type="button" href={`./${stuffId}/chat`}>Chat</a>
+		</div>
 	{/if}
 </section>
 
@@ -284,21 +309,42 @@
 			@include dialog.dialog;
 		}
 
-		a.chat {
+		div.chat {
 			position: absolute;
 			right: 1rem;
 			bottom: 1rem;
-			height: 3rem;
-			width: 3rem;
-			border-radius: 3rem;
-			border: none;
-			font-size: 0.85rem;
-			background-color: #cddc39;
-			text-align: center;
+			height: 5rem;
+			width: 5rem;
 			display: flex;
-			justify-content: center;
 			align-items: center;
-			text-decoration: none;
+			justify-content: center;
+
+			div.chat-group-count {
+				background-color: red;
+				height: 1.5rem;
+				width: 1.5rem;
+				top: 0.75rem;
+				right: 0.75rem;
+				position: absolute;
+				border-radius: 1rem;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			a {
+				height: 3rem;
+				width: 3rem;
+				border-radius: 3rem;
+				border: none;
+				font-size: 0.85rem;
+				background-color: #cddc39;
+				text-align: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				text-decoration: none;
+			}
 		}
 
 		button.reject {

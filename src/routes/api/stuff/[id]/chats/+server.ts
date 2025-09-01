@@ -71,6 +71,8 @@ export const POST: RequestHandler = async ({
 		return badRequest(`Error, id null.`);
 	}
 
+	const { receiverId } = await request.json();
+
 	const { message } = await request.json();
 	if (!message) {
 		return badRequest(`Error, message null.`);
@@ -87,7 +89,7 @@ export const POST: RequestHandler = async ({
 		`Sending chat message for stuff w/id: ${id} between sender (${user?.id}) and receiver (${stuff.userId})`
 	);
 
-	const newChat = createNewChat(user?.id, stuff?.userId, parseInt(id), message);
+	const newChat = createNewChat(user?.id, receiverId ?? stuff?.userId, parseInt(id), message);
 
 	const { data, error } = await supabase
 		.from('user_chats')

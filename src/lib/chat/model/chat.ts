@@ -17,6 +17,30 @@ export interface ChatFromDb {
 	stuff_id: number;
 }
 
+export interface ChatGroup {
+	stuffId: number;
+	renteeId: string;
+	createdOn: string;
+}
+
+export interface ChatGroupFromDb {
+	stuff_id: number;
+	rentee_id: string;
+	created_on: string;
+}
+
+export function chatGroupFromDb(c: ChatGroupFromDb): ChatGroup {
+	return {
+		stuffId: c.stuff_id,
+		renteeId: c.rentee_id,
+		createdOn: c.created_on
+	};
+}
+
+export function chatGroupFromDbList(list: ChatGroupFromDb[]): ChatGroup[] {
+	return list.map(chatGroupFromDb);
+}
+
 export function chatFromDb(c: ChatFromDb): Chat {
 	return {
 		id: c.id,

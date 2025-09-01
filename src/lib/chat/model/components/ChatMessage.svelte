@@ -56,6 +56,7 @@
 	article.sender {
 		align-self: flex-end;
 		text-align: end;
+		background-color: #cddc39;
 	}
 
 	article.receiver {

@@ -4,7 +4,8 @@
 	import ChatMessage from '$lib/chat/model/components/ChatMessage.svelte';
 	import { userState } from '$lib/state/user-state.svelte';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
-	import { onMount } from 'svelte';
+	import { interval, Subscription, tap } from 'rxjs';
+	import { onDestroy, onMount } from 'svelte';
 
 	let stuffId: string | null = $state(null);
 
@@ -17,6 +18,8 @@
 	let fetchingChats = $state(false);
 
 	let sendingChat = $state(false);
+
+	const subscriptions: Subscription[] = [];
 
 	async function sendChat(): Promise<void> {
 		if (!message) {
@@ -65,7 +68,7 @@
 			ToastrService.error(`Unable to fetch chat messages.\nPlease try again.`);
 		} else {
 			const chatHistory = (await response.json()) as Chat[];
-			chats.push(...chatHistory);
+			chats = chatHistory;
 		}
 
 		fetchingChats = false;
@@ -94,9 +97,25 @@
 			if (e.to) {
 				stuffId = e.to.params?.id || null;
 
-				await fetchChats(); // TODO: also get via page load data
+				await fetchChats();
+
+				subscriptions.push(
+					interval(5000)
+						.pipe(
+							tap(async () => {
+								await fetchChats();
+							})
+						)
+						.subscribe()
+				);
+
+				// TODO: also get via page load data
 			}
 		});
+	});
+
+	onDestroy(() => {
+		subscriptions.forEach((sub) => sub.unsubscribe());
 	});
 </script>
 
@@ -225,6 +244,7 @@
 					height: 2rem;
 					border: none;
 					border-radius: 0.25rem;
+					background-color: #cddc39;
 				}
 			}
 		}
