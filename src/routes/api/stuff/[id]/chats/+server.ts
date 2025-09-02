@@ -6,6 +6,7 @@ import {
 	type ChatFromDb
 } from '$lib/chat/model/chat';
 import { ApiLogger } from '$lib/logging/api-logger';
+import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import type { Stuff } from '$lib/stuff/model/stuff';
 import { badRequest, forbidden, notFound, ok, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
@@ -13,7 +14,12 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger('Stuff [id] Chats API');
 
-export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+export const GET: RequestHandler = async ({
+	params,
+	url,
+	fetch,
+	locals: { supabase, safeGetSession }
+}) => {
 	logger.setRequestType('GET');
 
 	const { user } = await safeGetSession();
@@ -26,6 +32,18 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return badRequest(`Error, id null.`);
 	}
 
+	let activeConversation: string | null = null;
+
+	const stuffResponse = await fetch(`/api/stuff/${id}`);
+	if (stuffResponse.ok) {
+		const stuff = (await stuffResponse.json()) as Stuff;
+
+		if (stuff?.userId === user?.id) {
+			// If owner, allow `activeConversation` param
+			activeConversation = url.searchParams.get('activeConversation');
+		}
+	}
+
 	logger.debug(`Fetching chat messages for stuff w/id: ${id}...`);
 
 	const columns = `id,
@@ -35,11 +53,14 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
                     stuff_id,
                     message`;
 
-	const { data, error } = await supabase
-		.from('user_chats')
-		.select(columns)
-		.eq('stuff_id', id)
-		.order('created_on');
+	const { data, error } = activeConversation
+		? await supabase
+				.from('user_chats')
+				.select(columns)
+				.eq('stuff_id', id)
+				.or(`sender_id.eq.${activeConversation},receiver_id.eq.${activeConversation}`)
+				.order('created_on')
+		: await supabase.from('user_chats').select(columns).eq('stuff_id', id).order('created_on');
 
 	if (error) {
 		logger.error(`Error occurred: ${prettyJson(error)}`);
@@ -71,9 +92,8 @@ export const POST: RequestHandler = async ({
 		return badRequest(`Error, id null.`);
 	}
 
-	const { receiverId } = await request.json();
+	const { message, activeConversation } = await request.json();
 
-	const { message } = await request.json();
 	if (!message) {
 		return badRequest(`Error, message null.`);
 	}
@@ -89,7 +109,27 @@ export const POST: RequestHandler = async ({
 		`Sending chat message for stuff w/id: ${id} between sender (${user?.id}) and receiver (${stuff.userId})`
 	);
 
-	const newChat = createNewChat(user?.id, receiverId ?? stuff?.userId, parseInt(id), message);
+	const isRenter = stuff?.userId === user?.id;
+	if (isRenter && !activeConversation) {
+		return badRequest(`Error, activeConversation null.`);
+	}
+
+	const newChat = isRenter
+		? createNewChat(user?.id, activeConversation, parseInt(id), message)
+		: createNewChat(user?.id, stuff?.userId, parseInt(id), message);
+
+	const supabaseElevated = getSupabaseServerClient();
+	const existingChatGroupResponse = await supabaseElevated
+		.from('stuff_chats')
+		.upsert(
+			{ stuff_id: parseInt(id), rentee_id: isRenter ? activeConversation : user?.id },
+			{ ignoreDuplicates: true }
+		)
+		.select();
+
+	if (existingChatGroupResponse.error) {
+		return unknown(`Error creating chat group`);
+	}
 
 	const { data, error } = await supabase
 		.from('user_chats')

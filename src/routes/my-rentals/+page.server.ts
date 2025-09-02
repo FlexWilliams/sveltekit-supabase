@@ -1,7 +1,7 @@
-import type { LayoutServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
 // TODO: refactor, also used in src\routes\+layout.server.ts
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, cookies }) => {
+export const load: PageServerLoad = async ({ locals: { safeGetSession }, cookies }) => {
 	const { session } = safeGetSession ? await safeGetSession() : { session: null };
 	const { user } = safeGetSession ? await safeGetSession() : { user: null };
 
