@@ -20,7 +20,7 @@
 		<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''}</span>
 		<span> {stuff?.name}</span>
 	</h3>
-	<p>{stuff?.description}</p>
+
 	<button onclick={() => goto(`/friend-stuff/${stuff?.id}`)} class="rent">Rent</button>
 
 	<section class="photo">
@@ -54,14 +54,6 @@
 			flex-direction: column;
 			align-items: center;
 			margin-bottom: 0;
-		}
-
-		p {
-			text-align: center;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			width: 100%;
 		}
 
 		section.photo {

@@ -83,8 +83,8 @@
 
 <style lang="scss">
 	main {
-		height: calc(70%);
-		max-height: calc(70%);
+		height: calc(80% - 2rem);
+		max-height: calc(80% - 2rem);
 		overflow: hidden;
 		width: calc(100% - 4rem);
 		padding: 0 1rem;
