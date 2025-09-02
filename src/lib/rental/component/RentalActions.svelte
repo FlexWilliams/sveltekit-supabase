@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { RentalStatus, type MyRental } from '../model/rental';
@@ -52,7 +53,7 @@
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>You approved this item's rental reservation request!</p>
 			<p>Arrange for a time to exchange with: {rental?.renteeId}</p>
-			<button>Ready to exchange?</button>
+			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to exchange?</button>
 			<button type="button" popovertarget="confirm-rejection" disabled={rejecting} class="primary"
 				>Reject</button
 			>
@@ -66,7 +67,7 @@
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>You rental reservation has been approved by the owner!</p>
 			<p>Arrange for a time to exchange with: {rental?.renteeId}</p>
-			<button>Ready to exchange?</button>
+			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to exchange?</button>
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>You are currently renting this item.</p>
 			<button>Ready to return?</button>

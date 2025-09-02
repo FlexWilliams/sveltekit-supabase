@@ -52,16 +52,10 @@
 </section>
 
 <style lang="scss">
+	@use '../../../../lib/styles/overlay/overlay.scss';
+
 	section.chat {
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 2;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(227, 227, 227, 0.95);
-		display: flex;
-		flex-direction: column;
+		@include overlay.overlay;
 	}
 
 	section.chat-body {
