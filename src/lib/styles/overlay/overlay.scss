@@ -46,6 +46,10 @@
 	background-color: rgba(227, 227, 227, 0.95);
 	display: flex;
 	flex-direction: column;
+}
+
+@mixin overlay_section {
+	@include overlay;
 
 	header {
 		@include overlay_header;

@@ -38,7 +38,7 @@
 	@use '../../../lib/styles/overlay/overlay.scss';
 
 	section {
-		@include overlay.overlay;
+		@include overlay.overlay_section;
 
 		header {
 			div {
