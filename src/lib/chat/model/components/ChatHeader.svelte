@@ -32,25 +32,13 @@
 </header>
 
 <style lang="scss">
+	@use '../../../../lib/styles/overlay/overlay.scss';
+
 	header {
-		display: flex;
-		position: relative;
-		width: calc(100% - 4rem);
-		height: calc(20% - 1rem);
-		max-height: calc(20% - 1rem);
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		padding: 0.5rem 2rem;
+		@include overlay.overlay_header;
 
 		div {
-			flex: 1;
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-			width: 100%;
-			overflow: hidden;
+			@include overlay.overlay_flex_container;
 
 			a {
 				width: 20%;
@@ -92,20 +80,7 @@
 		}
 
 		a.close {
-			min-height: 3rem;
-			height: 3rem;
-			width: 3rem;
-			min-width: 3rem;
-			border-radius: 3rem;
-			border: none;
-			font-size: 0.85rem;
-			background-color: rebeccapurple;
-			color: white;
-			text-align: center;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			text-decoration: none;
+			@include overlay.overlay_close_button;
 		}
 	}
 </style>
