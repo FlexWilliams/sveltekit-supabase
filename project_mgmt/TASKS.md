@@ -388,7 +388,7 @@ Verified By cube on: 8/12/25
 
 <br>
 
-## VOUCH-023 - Chat/Message friend/Rental Inbox...
+## (Complete) VOUCH-023 - Chat/Message friend/Rental Inbox...
 
 ### Description:
 
@@ -398,7 +398,9 @@ may be 3 diff stories or a single overlay component...
 
 ### Acceptance Criteria:
 
-Verified By <> on:
+Verified By cube on: 9/2/25
+
+Notes: many improvements can be made but for now i think this is pretty rad!
 
 <br>
 
@@ -675,5 +677,35 @@ Card and Details page can be reused from existing My Rentals Card & id page, but
 ### Acceptance Criteria:
 
 Verified By cube on: 8/29/25
+
+<br>
+
+## VOUCH-042 - DB extract
+
+### Description:
+
+^^
+
+- table definitions
+- rls policies
+- storage
+- review self-hosted migration steps...(in case)
+- etc...
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
+
+## VOUCH-043 - QR code dropoff/pickup
+
+### Description:
+
+^^
+
+### Acceptance Criteria:
+
+Verified By cube on:
 
 <br>
