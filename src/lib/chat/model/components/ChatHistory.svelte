@@ -63,9 +63,10 @@
 
 		sendingChat = true;
 
+		const time = new Date().getTime();
 		let messageCopy = message;
 		let tempChat: Partial<Chat> | undefined = {
-			id: -9999,
+			id: time,
 			message: messageCopy,
 			senderId: userId || ''
 		};
@@ -87,7 +88,7 @@
 			ToastrService.error(`Unable to send chat message.\nPlease try again.`);
 		} else {
 			const newChat = (await response.json()) as Chat;
-			let tempChatIndex = chats.findIndex((c) => c.id === -9999);
+			let tempChatIndex = chats.findIndex((c) => c.id === time);
 			if (tempChatIndex > -1) {
 				chats[tempChatIndex] = newChat;
 			}
