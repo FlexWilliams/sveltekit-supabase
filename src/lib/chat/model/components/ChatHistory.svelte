@@ -12,11 +12,11 @@
 		activeConversation: string | null;
 	}
 
+	let intialChatFetch = $state(false);
+
 	let { stuff, activeConversation }: ChatHistoryProps = $props();
 
 	let userId: string | null = $derived(userState.id);
-
-	let fetchingChats = $state(false);
 
 	let sendingChat = $state(false);
 
@@ -31,20 +31,25 @@
 	$effect(() => {
 		if (activeConversation) {
 			untrack(async () => {
-				chats.length = 0;
+				if (chats.length > 0) {
+					chats.length = 0;
+				}
+
+				intialChatFetch = false;
 				await fetchChats();
+				intialChatFetch = true;
 			});
 		}
 	});
 
-	function scrollChat(): void {
+	function scrollChat(chatId: string): void {
 		timer(250)
 			.pipe(
 				take(1),
 				tap(() => {
-					const list = document.getElementById(`chat-log`) as HTMLOListElement;
-					if (list) {
-						list.scrollTop = list.scrollHeight;
+					const chatItem = document.getElementById(chatId) as HTMLLIElement;
+					if (chatItem) {
+						chatItem.scrollIntoView({ behavior: 'smooth' });
 					}
 				})
 			)
@@ -59,10 +64,14 @@
 		sendingChat = true;
 
 		let messageCopy = message;
-		let tempChat: Partial<Chat> | undefined = { id: -9999, senderId: userId || '' };
+		let tempChat: Partial<Chat> | undefined = {
+			id: -9999,
+			message: messageCopy,
+			senderId: userId || ''
+		};
 		chats.push(tempChat);
 
-		scrollChat();
+		scrollChat(`${tempChat.id}`);
 
 		message = null;
 
@@ -93,8 +102,6 @@
 			return;
 		}
 
-		fetchingChats = true;
-
 		const response = await fetch(
 			`/api/stuff/${stuff?.id}/chats?activeConversation=${activeConversation}`
 		);
@@ -114,15 +121,22 @@
 					firstMessage.senderId !== activeConversation &&
 					firstMessage.receiverId !== activeConversation
 				) {
-					fetchingChats = false;
 					return;
 				}
 			}
 
-			chats = chatHistory;
-		}
+			const chatDiff = chats?.length !== chatHistory?.length && chatHistory?.length > 0;
 
-		fetchingChats = false;
+			if (chatDiff) {
+				// TODO: it may be better to never overwrite and just push, overwrite selectively...
+				// also won't work once paging impld
+				chats = chatHistory;
+
+				if (chats.length > 0) {
+					scrollChat(`${chats[chats.length - 1]?.id}`);
+				}
+			}
+		}
 	}
 
 	function resetForm(): void {
@@ -144,8 +158,13 @@
 	}
 
 	onMount(async () => {
+		if (!isRenter) {
+			await fetchChats();
+			intialChatFetch = true;
+		}
+
 		subscriptions.push(
-			interval(10000)
+			interval(7000)
 				.pipe(
 					tap(async () => {
 						await fetchChats();
@@ -163,13 +182,15 @@
 <section class="chat-history">
 	<ol id="chat-log">
 		{#each chats as chat (chat.id)}
-			<li>
+			<li id={`${chat.id}`}>
 				<ChatMessage {chat} />
 			</li>
 		{:else}
 			<li class="no-messages">
-				{#if !fetchingChats}
+				{#if intialChatFetch}
 					<p>No messages yet</p>
+				{:else}
+					<p>Loading chats...</p>
 				{/if}
 			</li>
 		{/each}
@@ -228,6 +249,10 @@
 			.form-field {
 				@include forms.form_field;
 				margin: 0;
+			}
+
+			label {
+				color: white;
 			}
 
 			textarea {
