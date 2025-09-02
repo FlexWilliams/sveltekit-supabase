@@ -104,6 +104,7 @@
 			justify-content: flex-end;
 			padding: 0 2rem;
 			gap: 1rem;
+			flex: 1;
 
 			a.banner {
 				color: initial;
@@ -120,6 +121,9 @@
 			}
 
 			a.avatar {
+				width: 3rem;
+				height: 3rem;
+
 				button {
 					border: none;
 					background-color: transparent;
@@ -138,11 +142,9 @@
 
 	nav {
 		display: flex;
+		flex: 1;
 		justify-content: flex-start;
 		padding: 0 2rem;
-		min-height: 3rem;
-		height: 3rem;
-
 		ul {
 			list-style: none;
 			margin: 0;

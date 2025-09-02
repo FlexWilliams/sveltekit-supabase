@@ -214,8 +214,8 @@
 	section.chat-history {
 		@include panel.panel;
 		position: relative;
-		height: calc(90% - 5rem);
-		max-height: calc(90% - 5rem);
+		height: calc(100% - 2rem);
+		max-height: calc(100% - 2rem);
 		width: calc(100% - 5rem);
 		overflow: hidden;
 		overflow-y: auto;
@@ -273,8 +273,6 @@
 
 	@media screen and (max-width: responsive.$mini-width) {
 		section.chat-history {
-			height: calc(85% - 5rem);
-			max-height: calc(85% - 5rem);
 			ol {
 				height: 60%;
 				max-height: 60%;
@@ -282,8 +280,8 @@
 
 			form {
 				@include forms.form;
-				height: 30%;
-				max-height: 30%;
+				height: calc(40% - 2rem);
+				max-height: calc(40% - 2rem);
 			}
 		}
 	}

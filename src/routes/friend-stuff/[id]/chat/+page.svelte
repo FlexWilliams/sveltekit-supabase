@@ -3,7 +3,7 @@
 	import { type ChatGroup } from '$lib/chat/model/chat';
 	import ChatHeader from '$lib/chat/model/components/ChatHeader.svelte';
 	import ChatHistory from '$lib/chat/model/components/ChatHistory.svelte';
-	import ChatTabs from '$lib/chat/model/components/ChatTabs.svelte';
+	import { userState } from '$lib/state/user-state.svelte.js';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { extractSearchParamValue } from '$lib/web/http/search.js';
 	import { onMount } from 'svelte';
@@ -14,14 +14,21 @@
 
 	let chatGroups: ChatGroup[] | null = $derived(data.chatGroups);
 
+	let userId: string | null = $derived(userState.id);
+
+	let isRenter = $derived(userId === stuff?.userId);
+
 	let activeConversation: string | null = $state(
 		data?.chatGroups && data?.chatGroups.length > 0 ? data?.chatGroups[0].renteeId : null
 	);
 
-	function handleChatGroupTabClick(group: ChatGroup): void {
-		activeConversation = group?.renteeId;
+	function handleConversationChange(event: Event): void {
+		const value = (event.target as HTMLInputElement)?.value;
 
-		goto(`./chat?activeConversation=${group?.renteeId}`);
+		if (value) {
+			activeConversation = value;
+			goto(`./chat?activeConversation=${value}`);
+		}
 	}
 
 	onMount(() => {
@@ -33,23 +40,32 @@
 </script>
 
 <section class="chat">
-	<ChatHeader />
+	<ChatHeader
+		{chatGroups}
+		currentChatFriend={isRenter ? activeConversation : stuff?.userId || null}
+		{handleConversationChange}
+	/>
 
-	<ChatTabs {activeConversation} chatGroups={chatGroups || []} {handleChatGroupTabClick} />
-
-	<ChatHistory {stuff} {activeConversation} />
+	<section class="chat-body">
+		<ChatHistory {stuff} {activeConversation} />
+	</section>
 </section>
 
 <style lang="scss">
-	section {
+	section.chat {
 		position: absolute;
 		top: 0;
 		left: 0;
 		z-index: 2;
 		width: 100%;
 		height: 100%;
-		background-color: #ffffffa3;
+		background-color: rgba(227, 227, 227, 0.95);
 		display: flex;
 		flex-direction: column;
+	}
+
+	section.chat-body {
+		height: 80%;
+		max-height: 80%;
 	}
 </style>
