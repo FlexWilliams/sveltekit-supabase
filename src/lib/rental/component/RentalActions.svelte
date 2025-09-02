@@ -133,6 +133,7 @@
 	div.rental-actions {
 		height: calc(25% - 2rem);
 		max-height: calc(25% - 2rem);
+		overflow-y: auto;
 		padding: 1rem 0;
 		display: flex;
 		flex-direction: column;
@@ -147,6 +148,7 @@
 		button {
 			width: 100%;
 			height: 3rem;
+			min-height: 3rem;
 			border: none;
 			border-radius: 0.25rem;
 		}
