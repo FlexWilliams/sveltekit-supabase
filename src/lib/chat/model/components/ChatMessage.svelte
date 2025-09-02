@@ -44,6 +44,7 @@
 		}
 
 		footer {
+			margin-top: 0.5rem;
 			display: flex;
 			justify-content: space-between;
 
@@ -62,5 +63,9 @@
 	article.receiver {
 		align-self: flex-start;
 		text-align: left;
+
+		footer {
+			flex-direction: row-reverse;
+		}
 	}
 </style>

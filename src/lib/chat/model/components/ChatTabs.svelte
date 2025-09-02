@@ -40,7 +40,7 @@
 				max-height: 3rem;
 				border-radius: 0.25rem;
 				border: 1px solid gray;
-                overflow: hidden;
+				overflow: hidden;
 			}
 
 			button.active {
