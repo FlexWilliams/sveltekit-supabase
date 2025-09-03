@@ -1,11 +1,59 @@
 <script lang="ts">
+	import { PUBLIC_EXCHANGE_URL } from '$env/static/public';
+	import { Logger } from '$lib/logging/logger';
 	import { userState } from '$lib/state/user-state.svelte';
 
-	let { stuff, rental } = $props();
+	import * as qrcodegen from '$lib/vendor/qrcodegen.js';
+	import { onMount, untrack } from 'svelte';
+
+	let { stuff, loading, pickupKey, returnKey, handleGenerateQr, handleScanQr } = $props();
 
 	let userId: string | null = $derived(userState.id);
 
 	let isRenter = $derived(userId === stuff?.userId);
+
+	$effect(() => {
+		if (pickupKey) {
+			untrack(() => {
+				drawQrCode(pickupKey);
+			});
+		}
+
+		if (returnKey) {
+			untrack(() => {
+				drawQrCode(returnKey);
+			});
+		}
+	});
+
+	function drawQrCode(key: string): void {
+		const qr = qrcodegen.default.QrCode as any;
+
+		const canvasElement = document.getElementById('qr-code-canvas') as HTMLCanvasElement;
+		const url = `${PUBLIC_EXCHANGE_URL}/friend-stuff/87/exchange?pickupKey=${key}`;
+
+		Logger.debug(`QR Code url: ${url}`);
+
+		if (canvasElement) {
+			const qrCode = qr.encodeText(url, { ordinal: 1, formatBits: 0 });
+			var ctx = canvasElement.getContext('2d') as CanvasRenderingContext2D;
+			var border = 2;
+			var scale = 4;
+			var darkColor = 'black';
+			var lightColor = 'azure'; // To match bg color
+
+			for (let y = -border; y < qrCode.size + border; y++) {
+				for (let x = -border; x < qrCode.size + border; x++) {
+					ctx.fillStyle = qrCode.getModule(x, y) ? darkColor : lightColor;
+					ctx.fillRect((x + border + 16) * scale, ((y + border + 16) * scale) / 2, scale, scale);
+				}
+			}
+		}
+	}
+
+	onMount(async () => {
+		await handleGenerateQr();
+	});
 </script>
 
 <section>
@@ -22,12 +70,25 @@
 	</header>
 
 	<section class="exchanger">
-		<canvas id="qr-code-canvas"> </canvas>
-		<div>
+		<div class="canvas-container">
+			<canvas id="qr-code-canvas"></canvas>
+			{#if loading}
+				<div class="overlay"><p>Loading...</p></div>
+			{/if}
+		</div>
+
+		<div class="help">
+			{#if pickupKey}
+				<p>Please have your rentee scan this QR code to complete the exchange!</p>
+			{/if}
+		</div>
+
+		<div class="exchange-actions">
 			{#if isRenter}
-				<button>Generate QR Code</button>
+				<button type="button" onclick={handleGenerateQr} disabled={loading}>Generate QR Code</button
+				>
 			{:else}
-				<button>Scan QR Code</button>
+				<button type="button" onclick={handleScanQr} disabled={loading}>Scan QR Code</button>
 			{/if}
 		</div>
 	</section>
@@ -60,15 +121,49 @@
 		margin: 0 2rem;
 		width: calc(100% - 5rem);
 		max-width: calc(100% - 5rem);
+		align-items: center;
+		justify-content: center;
 
-		canvas {
-			width: calc(100% - 2px);
-			height: 80%;
-			border: 1px solid rebeccapurple;
-			border-radius: 0.25rem;
+		div.canvas-container {
+			width: calc(16rem + 2rem);
+			height: calc(16rem + 2rem);
+			position: relative;
+
+			canvas {
+				width: 16rem;
+				height: 16rem;
+				border: 1px solid rebeccapurple;
+				padding: 1rem;
+				border-radius: 0.25rem;
+			}
+
+			div.overlay {
+				border-radius: 0.25rem;
+				position: absolute;
+				top: 0;
+				left: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(255, 255, 255, 0.76);
+
+				p {
+					text-align: center;
+				}
+			}
 		}
 
-		div {
+		div.help {
+			min-height: 4rem;
+
+			p {
+				text-align: center;
+			}
+		}
+
+		div.exchange-actions {
 			height: calc(20% - 2rem);
 			max-height: calc(20% - 2rem);
 			margin-top: 2rem;
