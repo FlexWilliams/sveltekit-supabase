@@ -60,6 +60,9 @@
 		loading = false;
 	}
 
+	// TODO: fix race condition (or sloppy code really) where error taostr shows before success
+	//  (possibly eagerly calling handleGenerateQr on mount in subcompoonent! guessing... )
+	// But users get an error toastr although the item exchange went through (ie, returned successfully, owner sees error)
 	async function handleScanQr() {
 		if (isRenter) {
 			const response = await fetch(

@@ -698,7 +698,7 @@ Verified By cube on:
 
 <br>
 
-## VOUCH-043 - QR code dropoff/pickup
+## (Complete) VOUCH-043 - QR code dropoff/pickup
 
 ### Description:
 
@@ -706,7 +706,7 @@ Verified By cube on:
 
 ### Acceptance Criteria:
 
-Verified By cube on:
+Verified By cube on: 9/2/25
 
 <br>
 
