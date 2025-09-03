@@ -1,12 +1,16 @@
 import { ApiLogger } from '$lib/logging/api-logger';
-import { rentalFromDbList } from '$lib/rental/model/rental';
+import { rentalExchangeFromDbList } from '$lib/rental/model/rental';
 import { badRequest, forbidden, notFound, ok, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const logger = new ApiLogger('Rentals [id] API');
+const logger = new ApiLogger('Rentals [id] Exchange API');
 
-export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+export const GET: RequestHandler = async ({
+	params,
+	fetch,
+	locals: { supabase, safeGetSession }
+}) => {
 	logger.setRequestType('GET');
 
 	const { user } = await safeGetSession();
@@ -19,9 +23,9 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return badRequest(`Error, id null.`);
 	}
 
-	logger.debug(`Attempting to get rental w/id: ${id}...`);
+	logger.debug(`Attempting to get rental exchange for rental w/id: ${id}...`);
 
-	const { data, error } = await supabase.from('user_rentals').select().eq('id', id);
+	const { data, error } = await supabase.from('rental_exchange').select().eq('id', id);
 
 	if (error) {
 		logger.error(`Error occurred: ${prettyJson(error)}`);
@@ -32,9 +36,9 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return notFound();
 	}
 
-	logger.debug(`Successfully fetched rental w/id: ${id}`);
+	logger.debug(`Successfully fetched rental exchange for rental w/id: ${id}!`);
 
-	const rental = rentalFromDbList(data)[0];
+	const rentalExchange = rentalExchangeFromDbList(data)[0];
 
-	return ok(rental);
+	return ok(rentalExchange);
 };

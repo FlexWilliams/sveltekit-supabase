@@ -43,6 +43,32 @@ export interface MyRentalFromDb {
 	user_stuff?: Partial<StuffFromDb>;
 }
 
+export interface RentalExchange {
+	id?: number;
+	createdOn?: string;
+	pickupKey?: string;
+	returnKey?: string;
+	pickedUp: boolean;
+	returned: boolean;
+}
+
+export interface RentalExchangeFromDb {
+	id?: number;
+	created_on?: string;
+	pickup_key?: string;
+	return_key?: string;
+	picked_up: boolean;
+	returned: boolean;
+}
+
+export interface RentalExchangeDropOff {
+	pickupKey?: string;
+}
+
+export interface RentalExchangeReturn {
+	returnKey?: string;
+}
+
 export function rentalFromDb(m: MyRentalFromDb): MyRental {
 	return {
 		id: m.id,
@@ -86,6 +112,36 @@ export function rentalToDb(m: MyRental): MyRentalFromDb {
 
 export function rentalToDbList(list: MyRental[]): MyRentalFromDb[] {
 	return list.map(rentalToDb);
+}
+
+export function rentalExchangeToDb(m: RentalExchange): RentalExchangeFromDb {
+	return {
+		id: m.id,
+		created_on: m.createdOn,
+		pickup_key: m.pickupKey,
+		return_key: m.returnKey,
+		picked_up: m.pickedUp,
+		returned: m.returned
+	};
+}
+
+export function rentalExchangeToDbList(list: RentalExchange[]): RentalExchangeFromDb[] {
+	return list.map(rentalExchangeToDb);
+}
+
+export function rentalExchangeFromDbList(list: RentalExchangeFromDb[]): RentalExchange[] {
+	return list.map(rentalExchangeFromDb);
+}
+
+export function rentalExchangeFromDb(m: RentalExchangeFromDb): RentalExchange {
+	return {
+		id: m.id,
+		createdOn: m.created_on,
+		pickupKey: m.pickup_key,
+		returnKey: m.return_key,
+		pickedUp: m.picked_up,
+		returned: m.returned
+	};
 }
 
 export function createMyRentalForReservation(stuff: Stuff, userId: string): MyRental {
