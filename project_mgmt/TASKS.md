@@ -721,3 +721,20 @@ Verified By cube on:
 Verified By cube on:
 
 <br>
+
+## VOUCH-045 - Add override for rental return for renter
+
+### Description:
+
+^^
+See: `src\routes\api\rentals\[id]\exchange\accept\+server.ts`:L45
+
+in the event an error occurs during the normal exchange flow,
+allow renter to override and accept the rental return
+and effectively close the loop in the rental process.
+
+### Acceptance Criteria:
+
+Verified By cube on:
+
+<br>
