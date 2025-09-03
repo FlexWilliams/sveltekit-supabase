@@ -6,7 +6,7 @@
 	import * as qrcodegen from '$lib/vendor/qrcodegen.js';
 	import { onMount, untrack } from 'svelte';
 
-	let { stuff, loading, pickupKey, returnKey, handleGenerateQr, handleScanQr } = $props();
+	let { stuff, rental, loading, pickupKey, returnKey, handleGenerateQr, handleScanQr } = $props();
 
 	let userId: string | null = $derived(userState.id);
 
@@ -30,7 +30,7 @@
 		const qr = qrcodegen.default.QrCode as any;
 
 		const canvasElement = document.getElementById('qr-code-canvas') as HTMLCanvasElement;
-		const url = `${PUBLIC_EXCHANGE_URL}/friend-stuff/87/exchange?pickupKey=${key}`;
+		const url = `${PUBLIC_EXCHANGE_URL}/friend-stuff/${rental?.itemId}/exchange?${isRenter ? 'pickupKey' : 'returnKey'}=${key}`;
 
 		Logger.debug(`QR Code url: ${url}`);
 
@@ -78,8 +78,10 @@
 		</div>
 
 		<div class="help">
-			{#if pickupKey}
+			{#if pickupKey && isRenter}
 				<p>Please have your rentee scan this QR code to complete the exchange!</p>
+			{:else if returnKey && !isRenter}
+				<p>Please have the owner scan this QR code to complete the exchange!</p>
 			{/if}
 		</div>
 

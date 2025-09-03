@@ -6,11 +6,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger('Rentals [id] Exchange API');
 
-export const GET: RequestHandler = async ({
-	params,
-	fetch,
-	locals: { supabase, safeGetSession }
-}) => {
+export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
 	logger.setRequestType('GET');
 
 	const { user } = await safeGetSession();

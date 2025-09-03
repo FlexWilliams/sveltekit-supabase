@@ -34,6 +34,7 @@
 				ToastrService.error(
 					`There was an error attempting to dropoff via the system. Try again or manually set in admin portal`
 				);
+				return;
 			}
 
 			let dropoff = (await response.json()) as RentalExchangeDropOff;
@@ -47,6 +48,7 @@
 				ToastrService.error(
 					`There was an error attempting to return via the system. Try asking the owner to update manually on their end.`
 				);
+				return;
 			}
 
 			let dropoff = (await response.json()) as RentalExchangeReturn;
@@ -67,11 +69,10 @@
 				ToastrService.error(
 					`There was an error trying to accept the item via the system.\nPlease try again or update yourself in the admin portal.`
 				);
+				return;
 			}
 
 			ToastrService.alert(`You successfully accepted the rental Return.\nHappy Sharing!`);
-
-			goto(`./${stuff?.id}`);
 		} else {
 			const response = await fetch(
 				`/api/rentals/${rental?.id}/exchange/pickup?pickupKey=${pickupKey}`
@@ -80,12 +81,13 @@
 				ToastrService.error(
 					`There was an error trying to return the item via the system.\nPlease try again or ask the owner to update themselves.`
 				);
+				return;
 			}
 
 			ToastrService.alert(`You successfully picked up your Rental.\nHappy Sharing!`);
-
-			goto(`./${stuff?.id}`);
 		}
+
+		goto(`/friend-stuff/${stuff?.id}`, { invalidateAll: true });
 	}
 
 	onMount(() => {
@@ -96,12 +98,22 @@
 			Logger.debug(prettyJson({ pickupKey: pickupKeyParam, returnKey: returnKeyParam }));
 
 			if (pickupKeyParam && !isRenter) {
-				handleScanQr();
+				pickupKey = pickupKeyParam;
+				await handleScanQr();
 			} else if (returnKeyParam && isRenter) {
-				handleScanQr();
+				returnKey = returnKeyParam;
+				await handleScanQr();
 			}
 		});
 	});
 </script>
 
-<RentalExchange {stuff} {loading} {handleGenerateQr} {handleScanQr} {pickupKey} {returnKey} />
+<RentalExchange
+	{stuff}
+	{rental}
+	{loading}
+	{handleGenerateQr}
+	{handleScanQr}
+	{pickupKey}
+	{returnKey}
+/>

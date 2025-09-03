@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({
 	}
 
 	const updatedRental = await supabase
-		.from('user_rental')
+		.from('user_rentals')
 		.update({ pickup_date: new Date().toISOString(), status: RentalStatus.Rented })
 		.eq('id', id);
 	if (updatedRental.error) {

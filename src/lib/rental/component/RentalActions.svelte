@@ -68,7 +68,7 @@
 			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to exchange?</button>
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>You are currently renting this item.</p>
-			<button>Ready to return?</button>
+			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to return?</button>
 		{/if}
 
 		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}

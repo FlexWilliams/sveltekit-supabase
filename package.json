@@ -6,8 +6,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build --mode staging",
-		"build-prod": "npm run build",
-		"deploy": "wrangler deploy",
+		"build-prod": "vite build --mode staging",
+		"deploy": "npm run build-prod && wrangler deploy",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

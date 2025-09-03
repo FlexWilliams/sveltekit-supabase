@@ -1,5 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
-import { RentalStatus, type RentalExchange } from '$lib/rental/model/rental';
+import { RentalStatus, rentalFromDb, type RentalExchange } from '$lib/rental/model/rental';
+import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
@@ -59,15 +60,29 @@ export const GET: RequestHandler = async ({
 	}
 
 	const updatedRental = await supabase
-		.from('user_rental')
+		.from('user_rentals')
 		.update({ return_date: new Date().toISOString(), status: RentalStatus.Returned })
-		.eq('id', id);
+		.eq('id', id)
+		.select();
 	if (updatedRental.error) {
 		logger.error(
 			`Unable to update rental w/id ${id} to RETURNED status:\n${prettyJson(updatedRental.error)}`
 		);
 		logger.error(`Data cleanup required for rental exchange w/id ${id}...`);
 		return unknown();
+	}
+
+	const rental = rentalFromDb(updatedRental?.data[0]);
+
+	const supabaseElevated = getSupabaseServerClient();
+
+	const friendStuffResponse = await supabaseElevated
+		.from('user_stuff')
+		.update({ rental_id: null })
+		.eq('id', rental?.itemId);
+
+	if (friendStuffResponse.error) {
+		logger.error(`Error removing reservation hold on user_stuff item with id: ${rental?.itemId}`);
 	}
 
 	logger.debug(`${user?.id} successfully accepted return for rental w/id ${id}...`);
