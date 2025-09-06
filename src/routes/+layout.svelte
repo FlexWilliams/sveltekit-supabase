@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, invalidate } from '$app/navigation';
+	import FormLoader from '$lib/form/component/FormLoader.svelte';
 
 	import Footer from '$lib/layout/components/Footer.svelte';
 	import Header from '$lib/layout/components/Header.svelte';
@@ -77,6 +78,8 @@
 <Header {user} {profilePic} />
 <main>
 	{@render children?.()}
+
+	<FormLoader />
 </main>
 <Footer />
 <Toastr />
@@ -89,5 +92,6 @@
 		width: calc(100% - 4rem);
 		padding: 0 1rem;
 		margin: 0 1rem;
+		position: relative;
 	}
 </style>

@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 	const {
 		data: { signedUrl },
 		error
-	} = await supabase.storage.from('user-meta').createSignedUrl(`${user?.id}/profile_pic.img`, 60);
+	} = await supabase.storage.from('user-meta').createSignedUrl(`${user?.id}/profile_pic.img`, 3600);
 
 	if (error) {
 		logger.error(`Unable to get the user profile pic, not found.\n${prettyJson(error)}`);

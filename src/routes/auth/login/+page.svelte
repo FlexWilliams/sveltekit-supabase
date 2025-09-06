@@ -1,14 +1,24 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { afterNavigate } from '$app/navigation';
+	import { useEnhanceFormSubmission } from '$lib/form/form.js';
+	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
+	import { onMount } from 'svelte';
+
 	let { form } = $props();
 
-	let email: string | null = $state(null);
-
-	let password: string | null = $state(null);
+	onMount(() => {
+		afterNavigate((e) => {
+			if (e.from?.route?.id === '/auth/logout') {
+				ToastrService.alert(`Signed out!`);
+			}
+		});
+	});
 </script>
 
 <h2>Login</h2>
 
-<form method="POST" action="?/login">
+<form method="POST" action="?/login" use:enhance={useEnhanceFormSubmission}>
 	<div>
 		<div class="form-errors">
 			<p>
@@ -20,23 +30,18 @@
 		<div class="form-field">
 			<label>
 				Email:
-				<input name="email" type="email" autocomplete="username" bind:value={email} />
+				<input name="email" type="email" autocomplete="username" required />
 			</label>
 		</div>
 		<div class="form-field">
 			<label>
 				Password:
-				<input
-					name="password"
-					type="password"
-					autocomplete="current-password"
-					bind:value={password}
-				/>
+				<input name="password" type="password" autocomplete="current-password" required />
 			</label>
 		</div>
 	</div>
 	<div class="form-actions">
-		<button type="submit" class="submit" disabled={!email || !password}>Login</button>
+		<button type="submit" class="submit">Login</button>
 	</div>
 </form>
 
@@ -55,6 +60,14 @@
 		justify-content: space-around;
 		padding-top: 0;
 		height: initial;
+
+		&:invalid {
+			div.form-actions {
+				button {
+					background-color: #8080804a;
+				}
+			}
+		}
 	}
 
 	.form-errors {
@@ -87,10 +100,6 @@
 
 		button.submit {
 			background-color: #cddc39;
-
-			&:disabled {
-				background-color: #8080804a;
-			}
 		}
 	}
 

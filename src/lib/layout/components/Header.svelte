@@ -68,7 +68,7 @@
 				{#if !onLoginPage}
 					<li style="flex: 1"></li>
 					<li>
-						<a href="/auth">Login</a>
+						<a href="/auth/login">Login</a>
 					</li>
 				{/if}
 			{:else}
@@ -76,7 +76,7 @@
 				<li><a href="/my-rentals" class:active={route === '/my-rentals'}>Rentals</a></li>
 				<li><a href="/my-stuff" class:active={route === '/my-stuff'}>My Stuff</a></li>
 				<li>
-					<a href="/auth/logout">Logout</a>
+					<a href="/auth/logout" data-sveltekit-preload-data="false">Logout</a>
 				</li>
 			{/if}
 		</ul>

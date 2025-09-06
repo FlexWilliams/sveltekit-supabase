@@ -1,0 +1,3 @@
+<section>
+	{@render children()}
+</section>

@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({
 		error
 	} = await supabase.storage.from(`stuff`).createSignedUrl(
 		filePath,
-		60,
+		3600,
 		dimensions
 			? {
 					transform: {
