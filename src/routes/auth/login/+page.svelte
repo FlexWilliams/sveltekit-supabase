@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, invalidateAll } from '$app/navigation';
 	import { useEnhanceFormSubmission } from '$lib/form/form.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 	import { onMount } from 'svelte';
@@ -8,8 +8,9 @@
 	let { form } = $props();
 
 	onMount(() => {
-		afterNavigate((e) => {
-			if (e.from?.route?.id === '/auth/logout') {
+		afterNavigate(async (e) => {
+			if (e.to?.route?.id === '/auth/login' && e.from?.route?.id === '/') {
+				await invalidateAll();
 				ToastrService.alert(`Signed out!`);
 			}
 		});
