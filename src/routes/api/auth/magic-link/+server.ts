@@ -1,5 +1,5 @@
 import { ApiLogger } from '$lib/logging/api-logger';
-import { badRequest, noContent, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, noContent, ok, unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import { type RequestHandler } from '@sveltejs/kit';
 

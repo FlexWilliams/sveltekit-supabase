@@ -1,5 +1,5 @@
 import { Logger } from '$lib/logging/logger';
-import { unknown } from '$lib/web/http/error-response';
+import { unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';

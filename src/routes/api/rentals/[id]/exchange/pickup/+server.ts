@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import { RentalStatus, type RentalExchange } from '$lib/rental/model/rental';
-import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 

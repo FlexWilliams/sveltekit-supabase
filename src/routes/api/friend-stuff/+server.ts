@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import { stuffFromDbList } from '$lib/stuff/model/stuff';
-import { forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { forbidden, ok, unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 

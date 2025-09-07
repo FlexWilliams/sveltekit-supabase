@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import type { Stuff } from '../model/stuff';
 
@@ -21,7 +20,9 @@
 		<span> {stuff?.name}</span>
 	</h3>
 
-	<button onclick={() => goto(`/friend-stuff/${stuff?.id}`)} class="rent">Rent</button>
+	<a href={`/friend-stuff/${stuff?.id}`} class="rent" aria-label={`Rent this ${stuff?.name}?`}
+		>Rent</a
+	>
 
 	<section class="photo">
 		<StuffPhoto
@@ -57,8 +58,12 @@
 		}
 
 		section.photo {
-			max-width: 4rem;
-			max-height: 4rem;
+			width: 6rem;
+			height: 6rem;
+			max-width: 6rem;
+			max-height: 6rem;
+			min-width: 6rem;
+			min-height: 6rem;
 			position: absolute;
 			bottom: 1rem;
 			left: 1rem;
@@ -76,7 +81,8 @@
 			z-index: 1;
 		}
 
-		button.rent {
+		a.rent {
+			// TODO: make link button style
 			position: absolute;
 			bottom: 1rem;
 			right: 1rem;
@@ -85,7 +91,12 @@
 			height: 2rem;
 			border: none;
 			border-radius: 0.25rem;
+			color: black;
 			background-color: #cddc39;
+			text-decoration: none;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	}
 </style>

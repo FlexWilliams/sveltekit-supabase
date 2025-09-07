@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import type { UserMetaFromDb } from '$lib/user/model/user-meta';
-import { badRequest, forbidden, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, unknown } from '$lib/web/http/http-responses';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger('Profile API');

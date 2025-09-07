@@ -1,6 +1,6 @@
 import { chatGroupFromDbList, type ChatGroupFromDb } from '$lib/chat/model/chat';
 import { ApiLogger } from '$lib/logging/api-logger';
-import { badRequest, forbidden, notFound, ok } from '$lib/web/http/error-response';
+import { badRequest, forbidden, notFound, ok } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 

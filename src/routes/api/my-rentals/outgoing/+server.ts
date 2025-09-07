@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import { rentalFromDbList } from '$lib/rental/model/rental';
-import { forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { forbidden, ok, unknown } from '$lib/web/http/http-responses';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger(`My Rentals [Outgoing] API`);

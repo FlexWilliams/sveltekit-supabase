@@ -57,6 +57,16 @@ export const ok = (data?: any, logMessage?: string): Response => {
 	});
 };
 
+export const blob = (data?: Blob, logMessage?: string): Response => {
+	if (logMessage) {
+		Logger.debug(`${logMessage}`);
+	}
+
+	return new Response(data, {
+		status: 200
+	});
+};
+
 export const noContent = (logMessage?: string): Response => {
 	if (logMessage) {
 		Logger.debug(`${logMessage}`);

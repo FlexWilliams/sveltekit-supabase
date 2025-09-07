@@ -6,7 +6,7 @@ import {
 	type RentalExchange,
 	type RentalExchangeDropOff
 } from '$lib/rental/model/rental';
-import { badRequest, forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, ok, unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 

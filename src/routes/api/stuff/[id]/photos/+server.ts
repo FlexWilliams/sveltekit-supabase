@@ -9,7 +9,7 @@ import {
 	ok,
 	requiredFieldsMissing,
 	unknown
-} from '$lib/web/http/error-response';
+} from '$lib/web/http/http-responses';
 import { prettyJson, type PhotoNamesResponse } from '$lib/web/http/response';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from '@sveltejs/kit';

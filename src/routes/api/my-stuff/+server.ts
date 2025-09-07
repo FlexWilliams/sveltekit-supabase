@@ -6,7 +6,7 @@ import {
 	type Stuff,
 	type StuffFromDb
 } from '$lib/stuff/model/stuff';
-import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/error-response';
+import { forbidden, requiredFieldsMissing, unknown } from '$lib/web/http/http-responses';
 import type { PhotoNamesResponse } from '$lib/web/http/response';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';

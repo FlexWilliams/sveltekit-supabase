@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_EXCHANGE_URL } from '$env/static/public';
 	import { Logger } from '$lib/logging/logger';
 	import { myRentalsState } from '$lib/state/my-rentals-state.svelte';
 	import { onMount } from 'svelte';
@@ -12,11 +13,15 @@
 
 	let { cacheKey, fetchUrl, imageUrl, photoName }: PhotoProps = $props();
 
+	let fetchUrlFullyQualified = $derived(
+		fetchUrl ? `${PUBLIC_EXCHANGE_URL}${fetchUrl}?asBlob=true` : null
+	);
+
 	let rentalPhotos = $derived(myRentalsState.rentalPhotos);
 
 	let photo: string | null = $state(imageUrl || null);
 
-	let fetchingImage = $state(true);
+	let fetchingImage = $state(false);
 
 	async function fetchImage(): Promise<void> {
 		if (imageUrl) {
@@ -39,7 +44,7 @@
 		} else {
 			fetchingImage = true;
 
-			const response = await fetch(fetchUrl);
+			const response = await fetch(`${fetchUrl}`);
 
 			if (response.ok) {
 				const photoUrl = await response.text();
@@ -75,9 +80,9 @@
 <section>
 	{#if fetchingImage}
 		<p class="loading">Loading...</p>
-	{:else}
-		<img src={photo} alt={`Item ${photoName}`} onerror={handlePhotoError} />
 	{/if}
+
+	<img src={photo || fetchUrlFullyQualified} alt={`Item ${photoName}`} onerror={handlePhotoError} />
 </section>
 
 <style lang="scss">
@@ -95,6 +100,10 @@
 	}
 
 	img {
+		height: 100%;
+		width: 100%;
+		min-height: 100%;
+		min-width: 100%;
 		max-height: 100%;
 		max-width: 100%;
 		border-radius: 0.25rem;

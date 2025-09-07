@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import { PHOTO_SIZES } from '$lib/photo/model/photo';
-import { badRequest, forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, ok, unknown } from '$lib/web/http/http-responses';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger('Stuff [id] Photo Names API');

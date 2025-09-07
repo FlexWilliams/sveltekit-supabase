@@ -1,6 +1,6 @@
 import type { Chat } from '$lib/chat/model/chat';
 import { Logger } from '$lib/logging/logger';
-import { unknown } from '$lib/web/http/error-response';
+import { unknown } from '$lib/web/http/http-responses';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({

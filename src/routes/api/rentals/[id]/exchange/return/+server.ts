@@ -5,7 +5,7 @@ import {
 	type RentalExchange,
 	type RentalExchangeReturn
 } from '$lib/rental/model/rental';
-import { badRequest, forbidden, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, ok, unknown } from '$lib/web/http/http-responses';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger('Rentals [id] Exchange [Return] API');

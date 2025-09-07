@@ -1,6 +1,6 @@
 import { Logger } from '$lib/logging/logger';
 import type { MyRental } from '$lib/rental/model/rental';
-import { unknown } from '$lib/web/http/error-response';
+import { unknown } from '$lib/web/http/http-responses';
 import type { PageLoad } from './$types';
 
 const loader = `[My Rentals Layout Load]`;

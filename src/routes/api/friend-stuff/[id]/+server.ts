@@ -1,6 +1,6 @@
 import { ApiLogger } from '$lib/logging/api-logger';
 import { type Stuff } from '$lib/stuff/model/stuff';
-import { badRequest, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, ok, unknown } from '$lib/web/http/http-responses';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger(`Friend Stuff [id] API`);

@@ -11,11 +11,13 @@
 	const searchText$$ = new Subject<string>();
 	const searchText$ = searchText$$.asObservable();
 
+	let { data } = $props();
+
 	let searchText = $state('*');
 
 	let loading = $state(false);
 
-	let stuff: Stuff[] = $state([]);
+	let stuff: Stuff[] = $state(data?.stuff || []);
 
 	let socials: StuffSocial[] = $state(mockSocials);
 

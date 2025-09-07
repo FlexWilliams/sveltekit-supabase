@@ -8,7 +8,7 @@ import {
 import { ApiLogger } from '$lib/logging/api-logger';
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import type { Stuff } from '$lib/stuff/model/stuff';
-import { badRequest, forbidden, notFound, ok, unknown } from '$lib/web/http/error-response';
+import { badRequest, forbidden, notFound, ok, unknown } from '$lib/web/http/http-responses';
 import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
