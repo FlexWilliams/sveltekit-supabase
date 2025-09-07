@@ -42,6 +42,7 @@
 
 <style lang="scss">
 	@use '../../../../lib/styles/overlay/overlay.scss';
+	@use '../../../../lib/styles/responsive.scss';
 
 	header {
 		@include overlay.overlay_header;
@@ -90,6 +91,15 @@
 
 		a.close {
 			@include overlay.overlay_close_button;
+		}
+	}
+
+	@media screen and (max-width: responsive.$mini-width) {
+		header {
+			h2 {
+				font-size: 1rem;
+				justify-content: center;
+			}
 		}
 	}
 </style>

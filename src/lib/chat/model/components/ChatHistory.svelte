@@ -271,6 +271,7 @@
 
 			textarea {
 				@include forms.form_field_text_area;
+				min-height: 5rem;
 			}
 
 			button {
@@ -300,8 +301,14 @@
 
 			form {
 				@include forms.form;
-				height: calc(40% - 2rem);
-				max-height: calc(40% - 2rem);
+				height: calc(35% - 2rem);
+				max-height: calc(35% - 2rem);
+
+				textarea {
+					@include forms.form_field_text_area;
+					min-height: 3rem;
+					max-height: 3rem;
+				}
 			}
 		}
 	}

@@ -58,6 +58,15 @@
 
 	section.chat {
 		@include overlay.overlay;
+		width: calc(100% - 2rem);
+		border-radius: 0.5rem;
+		margin: 0 1rem;
+
+		header {
+			h2 {
+				font-size: 0.75rem;
+			}
+		}
 	}
 
 	section.chat-body {
