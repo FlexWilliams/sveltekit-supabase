@@ -151,13 +151,6 @@
 		await sendChat();
 	}
 
-	function resetForm(): void {
-		const form = document.getElementById('chat-form') as HTMLFormElement;
-		if (form) {
-			form.reset();
-		}
-	}
-
 	onMount(async () => {
 		if (!isRenter) {
 			await fetchChats();

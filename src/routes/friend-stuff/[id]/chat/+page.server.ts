@@ -54,7 +54,9 @@ export const actions = {
 
 		let chats: Chat[] = [];
 
-		const chatsResponse = await fetch(`/api/stuff/${id}/chats`);
+		const chatsResponse = await fetch(
+			`/api/stuff/${id}/chats?activeConversation=${activeConversation}`
+		);
 		if (chatsResponse.ok) {
 			chats = (await chatsResponse.json()) as Chat[];
 		}
