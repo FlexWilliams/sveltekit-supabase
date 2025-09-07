@@ -25,6 +25,7 @@ export interface Stuff extends StuffEdit {
 	imageUrl?: string;
 	userMeta?: UserMeta;
 	rentalId?: string;
+	userIsOwner: boolean;
 }
 
 export interface StuffFromDb {
@@ -50,7 +51,7 @@ export interface StuffSocial {
 	image?: string;
 }
 
-export function stuffFromDb(s: StuffFromDb): Stuff {
+export function stuffFromDb(s: StuffFromDb, userId: string): Stuff {
 	return {
 		id: s.id,
 		userId: s.user_id,
@@ -62,12 +63,13 @@ export function stuffFromDb(s: StuffFromDb): Stuff {
 		description: s.description,
 		imageUrl: s.image_url,
 		userMeta: s.user_meta ? userMetaFromDb(s.user_meta) : undefined,
-		rentalId: s.rental_id
+		rentalId: s.rental_id,
+		userIsOwner: s.user_id === userId
 	};
 }
 
-export function stuffFromDbList(list: StuffFromDb[]): Stuff[] {
-	return list.map(stuffFromDb);
+export function stuffFromDbList(list: StuffFromDb[], userId: string): Stuff[] {
+	return list.map((l) => stuffFromDb(l, userId));
 }
 
 export function stuffToDb(s: Stuff): StuffFromDb {

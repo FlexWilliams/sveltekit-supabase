@@ -1,20 +1,24 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 	import { interval, Subscription, take, tap, timer } from 'rxjs';
 	import { onDestroy, onMount, untrack } from 'svelte';
+	import type { ActionData } from '../../../../routes/friend-stuff/[id]/chat/$types';
 	import type { Chat } from '../chat';
 	import ChatMessage from './ChatMessage.svelte';
 
 	interface ChatHistoryProps {
 		stuff: Stuff | null;
+		chats: Chat[];
+		form: ActionData | null;
 		activeConversation: string | null;
 	}
 
-	let intialChatFetch = $state(false);
+	let intialChatFetch = $state(true);
 
-	let { stuff, activeConversation }: ChatHistoryProps = $props();
+	let { stuff, chats, form, activeConversation }: ChatHistoryProps = $props();
 
 	let userId: string | null = $derived(userState.id);
 
@@ -24,7 +28,7 @@
 
 	let message: string | null = $state(null);
 
-	let chats: Partial<Chat>[] = $state([]);
+	let _chats: Partial<Chat>[] = $derived(form?.chats || chats || []);
 
 	const subscriptions: Subscription[] = [];
 
@@ -70,7 +74,7 @@
 			message: messageCopy,
 			senderId: userId || ''
 		};
-		chats.push(tempChat);
+		_chats.push(tempChat);
 
 		scrollChat(`${tempChat.id}`);
 
@@ -147,17 +151,6 @@
 		}
 	}
 
-	async function handleSendChat(event: Event): Promise<void> {
-		event.preventDefault(); // TODO: remove and use:enhance!
-
-		if (!stuff?.id) {
-			return;
-		}
-
-		await sendChat();
-		resetForm();
-	}
-
 	onMount(async () => {
 		if (!isRenter) {
 			await fetchChats();
@@ -182,7 +175,7 @@
 
 <section class="chat-history">
 	<ol id="chat-log">
-		{#each chats as chat (chat.id)}
+		{#each _chats as chat (chat.id)}
 			<li id={`${chat.id}`}>
 				<ChatMessage {chat} />
 			</li>
@@ -197,13 +190,33 @@
 		{/each}
 	</ol>
 
-	<form name="chat" id="chat-form">
+	{#if form?.error}
+		<p>Error occurred</p>
+	{/if}
+
+	<form
+		method="POST"
+		action="?/sendChat"
+		name="chat"
+		id="chat-form"
+		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+			cancel();
+			return async ({ result, update }) => {
+				// `result` is an `ActionResult` object
+				// `update` is a function which triggers the default logic that would be triggered if this callback wasn't set
+
+				await sendChat();
+				update();
+			};
+		}}
+	>
 		<label class="form-field">
 			Message:
-			<textarea bind:value={message}></textarea>
+			<textarea name="message" required bind:value={message}></textarea>
 		</label>
+		<input type="hidden" name="activeConversation" value={activeConversation} />
 
-		<button type="submit" onclick={handleSendChat} disabled={sendingChat}>Send</button>
+		<button type="submit" disabled={sendingChat}>Send</button>
 	</form>
 </section>
 
@@ -268,6 +281,12 @@
 				border: none;
 				border-radius: 0.25rem;
 				background-color: #cddc39;
+			}
+
+			&:invalid {
+				button {
+					background-color: gray;
+				}
 			}
 		}
 	}

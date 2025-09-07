@@ -6,9 +6,7 @@
 
 	let { data } = $props();
 
-	let incomingRentals: MyRental[] = $derived(data.incomingRentals || []);
-
-	let outgoingRentals: MyRental[] = $derived(data.outgoingRentals || []);
+	let rentals: MyRental[] = $derived(data.rentals || []);
 
 	let activeTab: string = $state('incoming');
 
@@ -54,25 +52,6 @@
 			callback();
 		}
 	}
-
-	async function fetchIncomingRentals(): Promise<void> {
-		const response = await fetch(`/api/my-rentals/incoming`);
-
-		if (!response.ok) {
-			Logger.error(`Error fetching my rentals!`);
-		} else {
-			incomingRentals = (await response.json()) as MyRental[];
-		}
-	}
-
-	async function fetchOutGoingRentals(): Promise<void> {
-		const response = await fetch(`/api/my-rentals/outgoing`);
-		if (!response.ok) {
-			Logger.error(`Error fetching my outgoing rentals!`);
-		} else {
-			outgoingRentals = (await response.json()) as MyRental[];
-		}
-	}
 </script>
 
 <section>
@@ -80,54 +59,42 @@
 
 	<menu>
 		<li>
-			<button class:active={activeTab !== 'outgoing'} onclick={() => (activeTab = 'incoming')}>
+			<a
+				href="/my-rentals?outgoing=false"
+				class:active={activeTab !== 'outgoing'}
+				onclick={() => (activeTab = 'incoming')}
+			>
 				<span>Incoming</span>
-			</button>
+			</a>
 		</li>
 		<li>
-			<button class:active={activeTab === 'outgoing'} onclick={() => (activeTab = 'outgoing')}>
+			<a
+				href="/my-rentals?outgoing=true"
+				class:active={activeTab === 'outgoing'}
+				onclick={() => (activeTab = 'outgoing')}
+			>
 				<span>Outgoing</span>
-			</button>
+			</a>
 		</li>
 	</menu>
 
-	{#if activeTab === 'incoming'}
-		<ul>
-			{#each incomingRentals as rental (rental?.id)}
-				<li>
-					<MyRentalCard
-						{rental}
-						{handleCancelReservation}
-						handleRejectReservation={() => {}}
-						handleApproveReservation={() => {}}
-					/>
-				</li>
-			{:else}
-				<li>
-					<p>You don't have any active rentals</p>
-					<a href="/search">Search for things to rent here</a>
-				</li>
-			{/each}
-		</ul>
-	{:else}
-		<ul>
-			{#each outgoingRentals as rental (rental?.id)}
-				<li>
-					<MyRentalCard
-						{rental}
-						outgoing={true}
-						handleCancelReservation={() => {}}
-						{handleRejectReservation}
-						{handleApproveReservation}
-					/>
-				</li>
-			{:else}
-				<li>
-					<p>You don't have any outoging rentals</p>
-				</li>
-			{/each}
-		</ul>
-	{/if}
+	<ul>
+		{#each rentals as rental (rental?.id)}
+			<li>
+				<MyRentalCard
+					{rental}
+					{handleCancelReservation}
+					{handleRejectReservation}
+					{handleApproveReservation}
+				/>
+			</li>
+		{:else}
+			<li>
+				<p>You don't have any active rentals</p>
+				<a href="/search">Search for things to rent here</a>
+			</li>
+		{/each}
+	</ul>
 </section>
 
 <style lang="scss">
@@ -159,22 +126,22 @@
 				border-radius: 0.25rem;
 				min-height: 3rem;
 
-				button {
+				a {
 					background-color: gray;
 					color: white;
 					padding: 1rem;
 					border: none;
 					border-radius: 0.25rem;
 					font-size: 1rem;
-					height: 100%;
 					width: 100%;
 
 					span {
 						padding: 0 0.5rem;
+						text-decoration: none;
 					}
 				}
 
-				button.active {
+				a.active {
 					background-color: rebeccapurple;
 
 					span {

@@ -51,5 +51,5 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 
 	logger.debug(`Successfully found ${data?.length} items for query: ${searchText}`);
 
-	return ok(stuffFromDbList(data));
+	return ok(stuffFromDbList(data, user?.id));
 };

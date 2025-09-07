@@ -5,7 +5,6 @@
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import RentalActions from '$lib/rental/component/RentalActions.svelte';
 	import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
-	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 
@@ -24,8 +23,6 @@
 	let approving: boolean = $state(false);
 
 	let rejecting: boolean = $state(false);
-
-	let userId: string | null = $derived(userState.id);
 
 	async function handleRentClick(): Promise<void> {
 		renting = true;
@@ -106,7 +103,7 @@
 <section>
 	{#if stuff}
 		<h3>
-			{#if stuff?.userId === userId}
+			{#if stuff?.userIsOwner}
 				<span>Your</span>
 			{:else}
 				<span>{stuff?.userMeta ? `${stuff?.userMeta?.userName}'s` : ''} </span>
@@ -142,7 +139,7 @@
 		<a href="/search">Back to Search</a>
 	{/if}
 
-	{#if stuff?.userId !== userId || (chatGroups && chatGroups?.length > 0)}
+	{#if !stuff?.userIsOwner || (chatGroups && chatGroups?.length > 0)}
 		<div class="chat">
 			{#if chatGroups && chatGroups?.length > 0}
 				<div class="chat-group-count">{chatGroups?.length}</div>

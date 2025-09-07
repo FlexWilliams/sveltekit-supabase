@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 
 	logger.debug(`Successfully fetched stuff w/id: ${id}...`);
 
-	let stuff = stuffFromDbList(data as StuffFromDb[])[0];
+	let stuff = stuffFromDbList(data as StuffFromDb[], user?.id)[0];
 
 	return ok(stuff);
 };

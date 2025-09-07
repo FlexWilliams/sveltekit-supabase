@@ -32,7 +32,7 @@
 
 	let userId: string | null = $derived(userState.id);
 
-	let isRenter: boolean = $derived(userId === stuff?.userId);
+	let isRenter: boolean = $derived(stuff?.userIsOwner || false);
 
 	function closePopover(id: string): void {
 		const popover = document.getElementById(id) as HTMLDialogElement;

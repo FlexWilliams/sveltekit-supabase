@@ -6,6 +6,8 @@ export interface Chat {
 	receiverId: string;
 	stuffId: number;
 	sent: boolean;
+	sentByUser: boolean;
+	dateFormatted: string;
 }
 
 export interface ChatFromDb {
@@ -41,7 +43,7 @@ export function chatGroupFromDbList(list: ChatGroupFromDb[]): ChatGroup[] {
 	return list.map(chatGroupFromDb);
 }
 
-export function chatFromDb(c: ChatFromDb): Chat {
+export function chatFromDb(c: ChatFromDb, userId: string): Chat {
 	return {
 		id: c.id,
 		createdOn: c.created_on,
@@ -49,7 +51,9 @@ export function chatFromDb(c: ChatFromDb): Chat {
 		senderId: c.sender_id,
 		receiverId: c.receiver_id,
 		stuffId: c.stuff_id,
-		sent: true
+		sent: true,
+		sentByUser: c.sender_id === userId,
+		dateFormatted: `${new Date(c?.created_on).toLocaleDateString()} @ ${new Date(c?.created_on).toLocaleTimeString()}`
 	};
 }
 
@@ -64,8 +68,8 @@ export function chatToDb(c: Chat): ChatFromDb {
 	};
 }
 
-export function chatsFromDbList(list: ChatFromDb[]): Chat[] {
-	return list.map(chatFromDb);
+export function chatsFromDbList(list: ChatFromDb[], userId: string): Chat[] {
+	return list.map((l) => chatFromDb(l, userId));
 }
 
 export function createNewChat(

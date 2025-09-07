@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { userState } from '$lib/state/user-state.svelte';
 	import type { Chat } from '../chat';
 
 	interface ChatProps {
@@ -7,17 +6,9 @@
 	}
 
 	let { chat }: ChatProps = $props();
-
-	let date = $derived.by(() => {
-		return chat?.createdOn
-			? `${new Date(chat?.createdOn).toLocaleDateString()} @ ${new Date(chat?.createdOn).toLocaleTimeString()}`
-			: 'Just Now';
-	});
-
-	let userId = $derived(userState.id);
 </script>
 
-<article class:sender={chat?.senderId === userId} class:receiver={chat?.senderId !== userId}>
+<article class:sender={chat?.sentByUser} class:receiver={!chat?.sentByUser}>
 	<p class="message">{chat?.message}</p>
 	<footer>
 		<p>
@@ -25,7 +16,7 @@
 				<span>Sending...</span>
 			{/if}
 		</p>
-		<p>{date}</p>
+		<p>{chat?.dateFormatted || 'Just Now'}</p>
 	</footer>
 </article>
 

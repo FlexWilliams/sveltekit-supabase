@@ -21,6 +21,11 @@
 		/>
 	</section>
 </button>
+<a
+	href={`/friend-stuff/${stuff?.id}`}
+	aria-label={`View Posting of ${stuff?.name}`}
+	class="view-posting">View Posting</a
+>
 <a href={`/my-stuff/${stuff?.id}`} aria-label={`Edit ${stuff?.name}`} class="edit-item">Edit</a>
 
 <style lang="scss">
@@ -59,6 +64,17 @@
 		top: auto;
 		bottom: 1rem;
 		right: 1rem;
+	}
+
+	a.view-posting {
+		@include panel.panel_close_button_link;
+		top: auto;
+		bottom: 1rem;
+		right: auto;
+		left: 1rem;
+		width: 10rem;
+		background-color: transparent;
+		text-decoration: underline;
 	}
 
 	@media screen and (max-width: responsive.$mini-width) {

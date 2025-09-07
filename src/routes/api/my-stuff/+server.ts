@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({
 		return unknown('Error occurred at the DB level');
 	}
 
-	let newStuffFromDb = stuffFromDbList(data as StuffFromDb[])[0];
+	let newStuffFromDb = stuffFromDbList(data as StuffFromDb[], user?.id)[0];
 
 	const uploadPhotos = await fetch(`/api/stuff/${newStuffFromDb?.id}/photos`, {
 		method: 'POST',

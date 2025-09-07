@@ -21,7 +21,7 @@ const fetchItems = async (
 	if (error) {
 		Logger.debug(error?.message ? error?.message : 'Error fetching user inventory items!');
 	} else {
-		stuff = stuffFromDbList(data as StuffFromDb[]);
+		stuff = stuffFromDbList(data as StuffFromDb[], userId);
 		Logger.debug(`Fetched ${stuff?.length} items.`);
 	}
 

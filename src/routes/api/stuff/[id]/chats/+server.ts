@@ -45,6 +45,7 @@ export const GET: RequestHandler = async ({
 	}
 
 	logger.debug(`Fetching chat messages for stuff w/id: ${id}...`);
+	logger.debug(`\n\n\n\n${activeConversation}...`);
 
 	const columns = `id,
                     created_on,
@@ -69,7 +70,7 @@ export const GET: RequestHandler = async ({
 
 	logger.debug(`Successfully fetched ${data.length} chat messages stuff w/id: ${id}...`);
 
-	let chats = chatsFromDbList(data as ChatFromDb[]);
+	let chats = chatsFromDbList(data as ChatFromDb[], user?.id);
 
 	return ok(chats);
 };

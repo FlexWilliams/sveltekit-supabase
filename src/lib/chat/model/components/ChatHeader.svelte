@@ -2,12 +2,12 @@
 	import type { ChatGroup } from '../chat';
 
 	interface ChatHeaderProps {
-		currentChatFriend: string | null;
 		chatGroups: ChatGroup[] | null;
+		activeConversation: string | null;
 		handleConversationChange(event: Event): void;
 	}
 
-	let { currentChatFriend, chatGroups, handleConversationChange }: ChatHeaderProps = $props();
+	let { activeConversation, chatGroups, handleConversationChange }: ChatHeaderProps = $props();
 </script>
 
 <header>
@@ -15,19 +15,28 @@
 		<a href="./" class="close" aria-label="Close">X</a>
 
 		{#if chatGroups && chatGroups?.length > 0}
-			<label>
-				Select Conversation
-				<select bind:value={currentChatFriend} onchange={handleConversationChange}>
-					{#each chatGroups as group (group.renteeId)}
-						<option>{group.renteeId}</option>
-					{/each}
-				</select>
-			</label>
+			<form name="chat-conversations" method="POST" action="?/conversation">
+				<label>
+					Select Conversation
+					<select
+						name="activeConversation"
+						bind:value={activeConversation}
+						onchange={handleConversationChange}
+					>
+						{#each chatGroups as group (group.renteeId)}
+							<option value={group.renteeId} selected={activeConversation === group?.renteeId}
+								>{group.renteeId}</option
+							>
+						{/each}
+					</select>
+					<button type="submit">Refresh Messages</button>
+				</label>
+			</form>
 		{/if}
 	</div>
 	<h2>
 		<span>Chat Messages</span>
-		<span>Between you & {currentChatFriend}</span>
+		<span>Between you & {activeConversation}</span>
 	</h2>
 </header>
 
