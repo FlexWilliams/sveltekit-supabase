@@ -24,6 +24,7 @@ export interface MyRental {
 	returnMethod?: string;
 	status: RentalStatus;
 	imageUrl?: string;
+	isOwner: boolean;
 }
 
 export interface MyRentalFromDb {
@@ -69,7 +70,7 @@ export interface RentalExchangeReturn {
 	returnKey?: string;
 }
 
-export function rentalFromDb(m: MyRentalFromDb): MyRental {
+export function rentalFromDb(m: MyRentalFromDb, userId: string): MyRental {
 	return {
 		id: m.id,
 		createdOn: m.created_on,
@@ -84,12 +85,13 @@ export function rentalFromDb(m: MyRentalFromDb): MyRental {
 		pickupMethod: m.pickup_method,
 		returnMethod: m.return_method,
 		status: m.status,
-		imageUrl: m?.user_stuff?.image_url
+		imageUrl: m?.user_stuff?.image_url,
+		isOwner: m?.renter_id === userId
 	};
 }
 
-export function rentalFromDbList(list: MyRentalFromDb[]): MyRental[] {
-	return list.map(rentalFromDb);
+export function rentalFromDbList(list: MyRentalFromDb[], userId: string): MyRental[] {
+	return list.map((l) => rentalFromDb(l, userId));
 }
 
 export function rentalToDb(m: MyRental): MyRentalFromDb {

@@ -44,5 +44,5 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 
 	logger.debug(`Successfully fetched ${data?.length} incoming rentals...`);
 
-	return ok(rentalFromDbList(data));
+	return ok(rentalFromDbList(data, user?.id));
 };

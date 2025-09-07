@@ -59,7 +59,6 @@
 		const response = await fetch(`/api/my-rentals/${activeTab}`);
 		if (response.ok) {
 			rentals = (await response.json()) as MyRental[];
-			debugger;
 		}
 	}
 

@@ -4,7 +4,6 @@
 
 	interface MyRentalCardProps {
 		rental: MyRental;
-		outgoing?: boolean;
 		handleCancelReservation: (id?: number, callback?: () => void) => void;
 		handleRejectReservation: (id?: number, callback?: () => void) => void;
 		handleApproveReservation: (id?: number, callback?: () => void) => void;
@@ -12,7 +11,6 @@
 
 	let {
 		rental,
-		outgoing,
 		handleCancelReservation,
 		handleRejectReservation,
 		handleApproveReservation
@@ -46,11 +44,11 @@
 		</section>
 	</header>
 
-	{#if outgoing}
+	{#if rental.isOwner}
 		{#if rental?.status === RentalStatus.Reserved}
 			<p>Status: <span>Awaiting Your Approval</span></p>
 		{:else if rental?.status === RentalStatus.Cancelled}
-			<p>Status: <span>Request was Cancelled</span></p>
+			<p>Status: <span>Request was Cancelled by Rentee</span></p>
 		{:else if rental?.status === RentalStatus.Rejected}
 			<p>Status: <span>You Rejected the Request</span></p>
 		{:else if rental?.status === RentalStatus.Approved}
@@ -74,7 +72,7 @@
 		<p>Status: <span>You previously rented this item</span></p>
 	{/if}
 
-	{#if outgoing}
+	{#if rental?.isOwner}
 		{#if rental?.status === RentalStatus.Reserved}
 			<button
 				class="approve"
