@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
+	import RentForm from '../form/RentForm.svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface RentalActionsProps {
@@ -81,9 +82,10 @@
 	{:else if rental?.status === RentalStatus.Rented}
 		<p>This item is currently being rented by another person.</p>
 	{:else if !rental?.renteeId}
-		<button onclick={handleRentClick} disabled={renting || rental !== null} class="primary"
-			>Rent</button
-		>
+		<!-- <button onclick={handleRentClick} disabled={renting || rental !== null} class="primary"
+			>Rent</button> -->
+
+		<RentForm handleSubmit={handleRentClick} stuffId={stuff?.id || ''} />
 	{/if}
 </div>
 

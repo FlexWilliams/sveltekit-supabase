@@ -53,7 +53,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 			return { session: null, user: null };
 		}
 
-		Logger.debug(`safeGetSession: Session AND User`);
+		// Logger.debug(`safeGetSession: Session AND User`);
 		return { session, user };
 	};
 

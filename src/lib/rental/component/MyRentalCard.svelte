@@ -1,5 +1,6 @@
 <script lang="ts">
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
+	import CancelForm from '../form/CancelForm.svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface MyRentalCardProps {
@@ -25,6 +26,17 @@
 		if (popover) {
 			popover.hidePopover();
 		}
+	}
+
+	function showPopover(id: string): void {
+		const popover = document.getElementById(id) as HTMLDialogElement;
+		if (popover) {
+			popover.showPopover();
+		}
+	}
+
+	function handleConfirmCancel(id: string): void {
+		showPopover(id);
 	}
 </script>
 
@@ -92,11 +104,13 @@
 			>
 		{/if}
 	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
-		<button
+		<!-- <button
 			class="cancel"
 			popovertarget={`confirm-cancellation-${rental?.id}`}
 			disabled={cancelling}>Cancel Reservation</button
-		>
+		> -->
+
+		<CancelForm {rental} handleSubmit={handleConfirmCancel} />
 	{/if}
 
 	<a
@@ -106,7 +120,7 @@
 	></a>
 </article>
 
-<dialog id={`confirm-cancellation-${rental?.id}`} popover="auto">
+<!-- <dialog id={`confirm-cancellation-${rental?.id}`} popover="auto">
 	<h3>
 		<span>Are you sure you want to cancel your Reservation of:</span>
 		<span>{rental?.itemName}?</span>
@@ -127,7 +141,7 @@
 			}}>Yes</button
 		>
 	</div>
-</dialog>
+</dialog> -->
 
 <dialog id={`confirm-rejection-${rental?.id}`} popover="auto">
 	<h3>

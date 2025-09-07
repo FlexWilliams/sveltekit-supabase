@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({
 		return unknown(`Error occurred at the DB level`, 'Error occurred at the DB level');
 	}
 
-	const rental = rentalFromDb(data[0]);
+	const rental = rentalFromDb(data[0], user?.id);
 
 	const supabaseElevated = getSupabaseServerClient();
 
