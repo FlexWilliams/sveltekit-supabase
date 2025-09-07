@@ -1,6 +1,3 @@
-import { Logger } from '$lib/logging/logger';
-import { prettyJson } from '$lib/web/http/response';
-
 export const useEnhanceFormSubmission = ({ formElement, formData, action, cancel, submitter }) => {
 	// `formElement` is this `<form>` element
 	// `formData` is its `FormData` object that's about to be submitted
@@ -11,8 +8,6 @@ export const useEnhanceFormSubmission = ({ formElement, formData, action, cancel
 	if (formLoader) {
 		formLoader.showModal();
 	}
-
-	Logger.debug(prettyJson({ formElement, formData, action, cancel, submitter }));
 
 	return async ({ result, update }) => {
 		// `result` is an `ActionResult` object

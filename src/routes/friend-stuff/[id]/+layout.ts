@@ -61,11 +61,5 @@ export const load: LayoutLoad = async ({ data, fetch, params }) => {
 		}
 	}
 
-	Logger.debug(`
-        ${loader}: Successfully fetched stuff (${stuff?.id || null}), 
-        rental (${rental?.id || null}), 
-        and chat groups (${chatGroups ? chatGroups?.length : null}) for stuff w/id: ${id}
-    `);
-
 	return { stuff, rental, chatGroups };
 };
