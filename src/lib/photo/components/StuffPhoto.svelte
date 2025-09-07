@@ -96,7 +96,9 @@
 	}
 
 	p.loading {
+		position: absolute;
 		font-size: 0.75rem;
+		margin: auto;
 	}
 
 	img {
@@ -107,5 +109,6 @@
 		max-height: 100%;
 		max-width: 100%;
 		border-radius: 0.25rem;
+		text-align: center;
 	}
 </style>

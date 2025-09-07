@@ -6,11 +6,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger(`My Rentals [id] API`);
 
-export const GET: RequestHandler = async ({
-	params,
-	url,
-	locals: { supabase, safeGetSession }
-}) => {
+export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
 	logger.setRequestType('GET');
 
 	const { user } = await safeGetSession();
@@ -23,13 +19,7 @@ export const GET: RequestHandler = async ({
 		return badRequest(`Error, id null`);
 	}
 
-	const outgoing = url.searchParams.get('outgoing')?.toLowerCase() == 'true';
-
-	const { data, error } = await supabase
-		.from('user_rentals')
-		.select()
-		.eq('id', id)
-		.eq(outgoing ? 'renter_id' : 'rentee_id', user?.id);
+	const { data, error } = await supabase.from('user_rentals').select().eq('id', id);
 
 	if (error) {
 		logger.error(`Error fetching my rental w/id: ${id}: ${prettyJson(error)}`);

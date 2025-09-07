@@ -3,6 +3,8 @@
 	import MyRentalCard from '$lib/rental/component/MyRentalCard.svelte';
 	import type { MyRental } from '$lib/rental/model/rental';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
+	import { extractSearchParamValue } from '$lib/web/http/search.js';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
@@ -16,7 +18,7 @@
 		});
 
 		if (response.ok) {
-			await fetchIncomingRentals();
+			await fetchRentals();
 			ToastrService.alert(`Your reservation was\nCancelled!`);
 		} else {
 			Logger.error(`There was an error deleting My Rental w/id ${id}`);
@@ -29,7 +31,7 @@
 		});
 
 		if (response.ok) {
-			await fetchOutGoingRentals();
+			await fetchRentals();
 			ToastrService.alert(`Your reservation request was\nRejected!`);
 		} else {
 			Logger.error(`There was an error rejecting the reservation for My Rental w/id ${id}`);
@@ -42,7 +44,7 @@
 		});
 
 		if (response.ok) {
-			await fetchOutGoingRentals();
+			await fetchRentals();
 			ToastrService.alert(`You approved the rental request!\nArrange for a time to exchange.`);
 		} else {
 			ToastrService.error(`There was an error approving the rental request.`);
@@ -52,6 +54,21 @@
 			callback();
 		}
 	}
+
+	async function fetchRentals(): Promise<void> {
+		const response = await fetch(`/api/my-rentals/${activeTab}`);
+		if (response.ok) {
+			rentals = (await response.json()) as MyRental[];
+			debugger;
+		}
+	}
+
+	onMount(async () => {
+		const outgoing = extractSearchParamValue('outgoing')?.toLocaleLowerCase() === 'true';
+		if (outgoing) {
+			activeTab = 'outgoing';
+		}
+	});
 </script>
 
 <section>

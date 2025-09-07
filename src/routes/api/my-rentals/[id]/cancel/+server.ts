@@ -2,12 +2,14 @@ import { ApiLogger } from '$lib/logging/api-logger';
 import { RentalStatus, type MyRental } from '$lib/rental/model/rental';
 import { getSupabaseServerClient } from '$lib/server/supabase/supabase';
 import { badRequest, forbidden, noContent, unknown } from '$lib/web/http/http-responses';
+import { prettyJson } from '$lib/web/http/response';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const logger = new ApiLogger(`My Rentals [id] Cancel API`);
 
 export const POST: RequestHandler = async ({
 	params,
+	url,
 	fetch,
 	locals: { supabase, safeGetSession }
 }) => {
@@ -50,6 +52,11 @@ export const POST: RequestHandler = async ({
 		})
 		.eq('id', parseInt(id))
 		.eq('rentee_id', user?.id);
+
+	if (response?.error) {
+		logger.error(`Error occurred:\n${prettyJson(response?.error)}`);
+		return unknown();
+	}
 
 	if (response?.status !== 204) {
 		return unknown();

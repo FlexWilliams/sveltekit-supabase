@@ -3,7 +3,6 @@
 	import { type Chat, type ChatGroup } from '$lib/chat/model/chat';
 	import ChatHeader from '$lib/chat/model/components/ChatHeader.svelte';
 	import ChatHistory from '$lib/chat/model/components/ChatHistory.svelte';
-	import { userState } from '$lib/state/user-state.svelte.js';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { extractSearchParamValue } from '$lib/web/http/search.js';
 	import { onMount } from 'svelte';
@@ -16,16 +15,14 @@
 
 	let chatGroups: ChatGroup[] | null = $derived(data.chatGroups);
 
-	let userId: string | null = $derived(userState.id);
-
-	let isRenter = $derived(userId === stuff?.userId);
-
 	let activeConversation: string | null = $state(
 		form?.activeConversation
 			? form.activeConversation
 			: data?.chatGroups && data?.chatGroups.length > 0
 				? data?.chatGroups[0].renteeId
-				: null
+				: data?.stuff?.userIsOwner
+					? null
+					: data?.stuff?.userId || null
 	);
 
 	function handleConversationChange(event: Event): void {
