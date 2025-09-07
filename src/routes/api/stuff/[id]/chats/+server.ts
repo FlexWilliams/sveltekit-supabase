@@ -146,7 +146,7 @@ export const POST: RequestHandler = async ({
 		`Successfully sent chat message for stuff w/id: ${id} between sender (${user?.id}) and receiver (${stuff.userId})`
 	);
 
-	let chat = chatsFromDbList(data as ChatFromDb[])[0];
+	let chat = chatsFromDbList(data as ChatFromDb[], user?.id)[0];
 
 	return ok(chat);
 };

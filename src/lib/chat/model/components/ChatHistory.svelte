@@ -28,15 +28,15 @@
 
 	let message: string | null = $state(null);
 
-	let _chats: Partial<Chat>[] = $derived(form?.chats || chats || []);
+	let latestChats: Partial<Chat>[] = $state(form?.chats || chats || []);
 
 	const subscriptions: Subscription[] = [];
 
 	$effect(() => {
 		if (activeConversation) {
 			untrack(async () => {
-				if (chats.length > 0) {
-					chats.length = 0;
+				if (latestChats.length > 0) {
+					latestChats.length = 0;
 				}
 
 				intialChatFetch = false;
@@ -72,9 +72,10 @@
 		let tempChat: Partial<Chat> | undefined = {
 			id: time,
 			message: messageCopy,
-			senderId: userId || ''
+			senderId: userId || '',
+			sentByUser: true
 		};
-		_chats.push(tempChat);
+		latestChats.push(tempChat as Chat);
 
 		scrollChat(`${tempChat.id}`);
 
@@ -92,9 +93,9 @@
 			ToastrService.error(`Unable to send chat message.\nPlease try again.`);
 		} else {
 			const newChat = (await response.json()) as Chat;
-			let tempChatIndex = chats.findIndex((c) => c.id === time);
+			let tempChatIndex = latestChats.findIndex((c) => c.id === time);
 			if (tempChatIndex > -1) {
-				chats[tempChatIndex] = newChat;
+				latestChats[tempChatIndex] = newChat;
 			}
 		}
 
@@ -130,18 +131,24 @@
 				}
 			}
 
-			const chatDiff = chats?.length !== chatHistory?.length && chatHistory?.length > 0;
+			const chatDiff = latestChats?.length !== chatHistory?.length && chatHistory?.length > 0;
 
 			if (chatDiff) {
 				// TODO: it may be better to never overwrite and just push, overwrite selectively...
 				// also won't work once paging impld
-				chats = chatHistory;
+				latestChats = chatHistory;
 
-				if (chats.length > 0) {
-					scrollChat(`${chats[chats.length - 1]?.id}`);
+				if (latestChats.length > 0) {
+					scrollChat(`${latestChats[latestChats.length - 1]?.id}`);
 				}
 			}
 		}
+	}
+
+	async function handleSendChatClick(event: Event): Promise<void> {
+		event.preventDefault();
+
+		await sendChat();
 	}
 
 	function resetForm(): void {
@@ -175,7 +182,7 @@
 
 <section class="chat-history">
 	<ol id="chat-log">
-		{#each _chats as chat (chat.id)}
+		{#each latestChats as chat (chat.id)}
 			<li id={`${chat.id}`}>
 				<ChatMessage {chat} />
 			</li>
@@ -216,7 +223,7 @@
 		</label>
 		<input type="hidden" name="activeConversation" value={activeConversation} />
 
-		<button type="submit" disabled={sendingChat}>Send</button>
+		<button type="submit" disabled={sendingChat} onclick={handleSendChatClick}>Send</button>
 	</form>
 </section>
 
