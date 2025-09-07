@@ -19,8 +19,8 @@
 
 @mixin panel_close_button {
 	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
+	top: 1rem;
+	right: 1rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -29,6 +29,16 @@
 	border-radius: 3rem;
 	border: none;
 	background-color: #cddc39;
+	color: black;
 	font-weight: bold;
 	@include shadows.boxShadow;
+	text-decoration: none;
+}
+
+@mixin panel_close_button_link {
+	@include panel_close_button;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
 }

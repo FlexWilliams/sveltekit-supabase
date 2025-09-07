@@ -5,10 +5,9 @@
 	interface StuffCardProps {
 		stuff: Stuff;
 		handleClick: (evt: Event) => void;
-		handleEdit: (id: string) => void;
 	}
 
-	let { stuff, handleClick, handleEdit }: StuffCardProps = $props();
+	let { stuff, handleClick }: StuffCardProps = $props();
 </script>
 
 <button class="card" onclick={handleClick}>
@@ -22,17 +21,13 @@
 		/>
 	</section>
 </button>
-<button
-	type="button"
-	aria-label={`Edit ${stuff?.name}`}
-	class="edit-item"
-	onclick={() => handleEdit(stuff.id)}>Edit</button
->
+<a href={`/my-stuff/${stuff?.id}`} aria-label={`Edit ${stuff?.name}`} class="edit-item">Edit</a>
 
 <style lang="scss">
 	@use '../../styles/variables.scss';
 	@use '../../styles/responsive.scss';
 	@use '../../styles/overlay/shadows.scss';
+	@use '../../styles/layout/panel.scss';
 
 	button.card {
 		display: flex;
@@ -59,16 +54,11 @@
 		}
 	}
 
-	button.edit-item {
-		position: absolute;
+	a.edit-item {
+		@include panel.panel_close_button_link;
+		top: auto;
 		bottom: 1rem;
 		right: 1rem;
-		width: 3rem;
-		height: 3rem;
-		border-radius: 3rem;
-		border: none;
-		background-color: #cddc39;
-		@include shadows.boxShadow;
 	}
 
 	@media screen and (max-width: responsive.$mini-width) {
@@ -85,7 +75,7 @@
 			}
 		}
 
-		button.edit-item {
+		a.edit-item {
 			bottom: 0.5rem;
 			right: 0.5rem;
 		}
@@ -98,7 +88,7 @@
 			}
 		}
 
-		button.edit-item {
+		a.edit-item {
 			width: 5rem;
 			height: 5rem;
 			font-size: 1.5rem;

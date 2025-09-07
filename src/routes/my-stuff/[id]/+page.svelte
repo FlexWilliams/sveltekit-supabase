@@ -130,12 +130,7 @@
 		<button onclick={handleRemovePhotoYes}>Yes</button>
 	</dialog>
 
-	<button
-		type="button"
-		aria-label="Back to My Stuff page"
-		class="close"
-		onclick={() => window.history.back()}>X</button
-	>
+	<a href="/my-stuff" aria-label="Back to My Stuff page" class="close">X</a>
 </section>
 
 <style lang="scss">
@@ -154,8 +149,8 @@
 			@include forms.form_header;
 		}
 
-		button.close {
-			@include panel.panel_close_button;
+		a.close {
+			@include panel.panel_close_button_link;
 		}
 	}
 
@@ -165,7 +160,7 @@
 				font-size: 2.5rem;
 				margin-top: 2rem;
 			}
-			button.close {
+			a.close {
 				width: 5rem;
 				height: 5rem;
 				font-size: 1rem;

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
@@ -102,12 +101,11 @@
 		>
 	{/if}
 
-	<button
-		type="button"
+	<a
+		href={`/friend-stuff/${rental?.itemId}`}
 		aria-label={`Navigate to ${rental?.itemName} detail page`}
 		class="item-details"
-		onclick={() => goto(`/friend-stuff/${rental?.itemId}`)}
-	></button>
+	></a>
 </article>
 
 <dialog id={`confirm-cancellation-${rental?.id}`} popover="auto">
@@ -206,7 +204,7 @@
 			padding: 0 0.5rem;
 		}
 
-		button.item-details {
+		a.item-details {
 			position: absolute;
 			top: 0;
 			left: 0;

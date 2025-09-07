@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { Logger } from '$lib/logging/logger.js';
 	import StuffCard from '$lib/stuff/components/StuffCard.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff.js';
@@ -56,10 +55,6 @@
 		searchText$$.next(input.value);
 	}
 
-	function handleEdit(itemId: string): void {
-		goto(`/my-stuff/${itemId}`);
-	}
-
 	async function filterItems(evt: Event) {
 		evt.preventDefault();
 	}
@@ -86,7 +81,7 @@
 <ul>
 	{#each stuff as s (s?.id)}
 		<li>
-			<StuffCard stuff={s} handleClick={handleStuffCardClick} {handleEdit} />
+			<StuffCard stuff={s} handleClick={handleStuffCardClick} />
 		</li>
 	{:else}
 		<li class="no-items">
