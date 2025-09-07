@@ -3,9 +3,9 @@
 	import { userState } from '$lib/state/user-state.svelte';
 	import { onMount } from 'svelte';
 
-	let { children } = $props();
+	let { data, children } = $props();
 
-	let userId: string | null = $derived(userState.id);
+	let userId: string | null = $derived(data?.user?.id || userState.id);
 
 	let route: string | null = $state(null);
 
@@ -20,20 +20,18 @@
 	});
 </script>
 
-{#if userId}
-	<section class="panel">
-		<h2>
-			{#if route === '/profile'}
-				My Profile
-			{:else if route === '/profile/update'}
-				Update Profile
-			{:else if route === '/profile/invite'}
-				Invite Friend
-			{/if}
-		</h2>
-		{@render children()}
-	</section>
-{/if}
+<section class="panel">
+	<h2>
+		{#if route === '/profile'}
+			My Profile
+		{:else if route === '/profile/update'}
+			Update Profile
+		{:else if route === '/profile/invite'}
+			Invite Friend
+		{/if}
+	</h2>
+	{@render children()}
+</section>
 
 <style lang="scss">
 	@use '../../lib/styles/layout/panel.scss';

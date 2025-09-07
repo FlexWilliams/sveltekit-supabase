@@ -5,7 +5,7 @@ export interface ProfileState {
 
 const initialProfileState: ProfileState = {
 	profilePic: null,
-	profilePicLoading: true
+	profilePicLoading: false
 };
 
 export const profileState = $state(initialProfileState);
