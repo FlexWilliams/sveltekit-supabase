@@ -110,6 +110,7 @@
 	@use '../../../lib/styles/responsive.scss';
 	@use '../../../lib/styles/dialog/dialog.scss';
 	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/button/button.scss';
 
 	div.rental-actions {
 		height: calc(25% - 2rem);
@@ -127,7 +128,7 @@
 		}
 
 		a {
-			@include forms.rental_form_button_link;
+			@include button.button_link;
 		}
 	}
 

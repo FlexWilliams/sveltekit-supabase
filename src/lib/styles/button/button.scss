@@ -1,0 +1,33 @@
+@mixin button {
+	min-height: 3rem;
+	height: 3rem;
+	border: none;
+	border-radius: 0.25rem;
+	box-shadow:
+		rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+		rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+
+	&:disabled {
+		background-color: gray;
+	}
+}
+
+@mixin primary_button {
+	@include button;
+	background-color: #cddc39;
+}
+
+@mixin secondary_button {
+	@include button;
+	background-color: #ccc;
+}
+
+@mixin button_link {
+	@include primary_button;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	color: black;
+	font-size: 0.85rem;
+}

@@ -2,6 +2,8 @@
 	import { Logger } from '$lib/logging/logger';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
 
+	let { form } = $props();
+
 	let email: string | null = $state(null);
 
 	let sendingInvite: boolean = $state(false);
@@ -43,18 +45,37 @@
 	}
 </script>
 
-<form id="invite-friend" name="invite-friend">
+{#if form?.success}
+	<p class="form-success">Invite sent to {form?.email}!</p>
+{:else if form?.error}
+	<p class="form-error">There was an error sending an invite to {form?.email}.</p>
+	<p class="form-error">Please try again</p>
+{/if}
+
+<form id="invite-friend" name="invite" method="POST" action="?/invite">
 	<div class="form-field">
 		<label for="email">Email:</label>
-		<input id="email" type="email" autocomplete="email" bind:value={email} />
+		<input id="email" type="email" name="email" autocomplete="email" bind:value={email} required />
 	</div>
 
-	<button type="button" class="cancel" onclick={() => window.history.back()}>Cancel</button>
-	<button type="submit" onclick={sendInvite} disabled={!email || sendingInvite}>Send Invite</button>
+	<div class="form_action_button_container">
+		<button type="submit" onclick={sendInvite} disabled={sendingInvite}>Send Invite</button>
+		<a href="/profile">Cancel</a>
+	</div>
 </form>
 
 <style lang="scss">
 	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/button/button.scss';
+
+	.form-success {
+		margin: 0 1rem;
+	}
+
+	.form-error {
+		margin: 0 1rem;
+		color: red;
+	}
 
 	form {
 		@include forms.form;
@@ -77,29 +98,13 @@
 			}
 		}
 
-		button {
-			// TODO: standardize save buttons
-			margin-top: 1rem;
-			min-height: 2rem;
-			height: 2rem;
-			background-color: rebeccapurple;
-			color: white;
-			border: none;
-			border-radius: 0.25rem;
+		.form_action_button_container {
+			@include forms.form_action_button_container;
 
-			&:disabled {
-				// TODO: standardize save buttons
-				background-color: gray;
+			a {
+				@include button.button_link;
+				background-color: #ccc;
 			}
-
-			box-shadow:
-				rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
-				rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-		}
-
-		button.cancel {
-			color: black;
-			background-color: #cddc39;
 		}
 	}
 </style>
