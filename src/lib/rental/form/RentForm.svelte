@@ -13,11 +13,9 @@
 </form>
 
 <style lang="scss">
+	@use '../../styles/forms/forms.scss';
+
 	button {
-		width: 100%;
-		height: 3rem;
-		border: none;
-		border-radius: 0.25rem;
-		background-color: #cddc39;
+		@include forms.rental_form_primary_action_button;
 	}
 </style>

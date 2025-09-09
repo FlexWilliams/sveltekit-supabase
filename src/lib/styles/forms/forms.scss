@@ -81,3 +81,22 @@
 		margin: 0;
 	}
 }
+
+@mixin rental_form_action_button {
+	width: 100%;
+	height: 3rem;
+	border: none;
+	border-radius: 0.25rem;
+	position: relative;
+	z-index: 2;
+}
+
+@mixin rental_form_primary_action_button {
+	@include rental_form_action_button;
+	background-color: #cddc39;
+}
+
+@mixin rental_form_secondary_action_button {
+	@include rental_form_action_button;
+	background-color: rgb(204, 204, 204);
+}

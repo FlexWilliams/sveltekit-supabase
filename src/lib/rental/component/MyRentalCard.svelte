@@ -1,13 +1,16 @@
 <script lang="ts">
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
+	import ApprovalForm from '../form/ApprovalForm.svelte';
 	import CancelForm from '../form/CancelForm.svelte';
+	import RejectForm from '../form/RejectForm.svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
+	import MyRentalStatus from './MyRentalStatus.svelte';
 
 	interface MyRentalCardProps {
 		rental: MyRental;
-		handleCancelReservation: (id?: number, callback?: () => void) => void;
-		handleRejectReservation: (id?: number, callback?: () => void) => void;
-		handleApproveReservation: (id?: number, callback?: () => void) => void;
+		handleCancelReservation: (id?: number, callback?: () => void) => Promise<void>;
+		handleRejectReservation: (id?: number, callback?: () => void) => Promise<void>;
+		handleApproveReservation: (id?: number, callback?: () => void) => Promise<void>;
 	}
 
 	let {
@@ -28,22 +31,41 @@
 		}
 	}
 
-	function showPopover(id: string): void {
-		const popover = document.getElementById(id) as HTMLDialogElement;
-		if (popover) {
-			popover.showPopover();
-		}
+	async function handleConfirmCancel(id: number, popoverId: string): Promise<void> {
+		cancelling = true;
+
+		await handleCancelReservation(id, () => {
+			cancelling = false;
+			closePopover(popoverId);
+		});
 	}
 
-	function handleConfirmCancel(id: string): void {
-		showPopover(id);
+	async function handleConfirmReject(id: number, popoverId: string): Promise<void> {
+		rejecting = true;
+
+		await handleRejectReservation(id, () => {
+			rejecting = false;
+			closePopover(popoverId);
+		});
+	}
+
+	async function handleConfirmApproval(id: number): Promise<void> {
+		approving = true;
+		debugger;
+		await handleApproveReservation(id, () => {
+			approving = false;
+		});
 	}
 </script>
 
 <article>
 	<header>
 		<h3>
-			<span>{rental?.renterName}'s</span>
+			{#if rental?.isOwner}
+				<span>Your</span>
+			{:else}
+				<span>{rental?.renterName}'s</span>
+			{/if}
 			<span>{rental?.itemName}</span>
 		</h3>
 
@@ -56,61 +78,18 @@
 		</section>
 	</header>
 
-	{#if rental.isOwner}
-		{#if rental?.status === RentalStatus.Reserved}
-			<p>Status: <span>Awaiting Your Approval</span></p>
-		{:else if rental?.status === RentalStatus.Cancelled}
-			<p>Status: <span>Request was Cancelled by Rentee</span></p>
-		{:else if rental?.status === RentalStatus.Rejected}
-			<p>Status: <span>You Rejected the Request</span></p>
-		{:else if rental?.status === RentalStatus.Approved}
-			<p>Status: <span>You Approved the request, awaiting item exchange</span></p>
-		{:else if rental?.status === RentalStatus.Rented}
-			<p>Status: <span>This item is currently being rented out</span></p>
-		{:else if rental?.status === RentalStatus.Returned}
-			<p>Status: <span>You previously rented out this item</span></p>
-		{/if}
-	{:else if rental?.status === RentalStatus.Reserved}
-		<p>Status: <span>Pending Approval</span></p>
-	{:else if rental?.status === RentalStatus.Cancelled}
-		<p>Status: <span>You Cancelled the Reservation</span></p>
-	{:else if rental?.status === RentalStatus.Rejected}
-		<p>Status: <span>Owner Rejected the Request</span></p>
-	{:else if rental?.status === RentalStatus.Approved}
-		<p>Status: <span>Owner Approved, arrange time for an Exchange!</span></p>
-	{:else if rental?.status === RentalStatus.Rented}
-		<p>Status: <span>You are currently renting this!</span></p>
-	{:else if rental?.status === RentalStatus.Returned}
-		<p>Status: <span>You previously rented this item</span></p>
-	{/if}
+	<MyRentalStatus {rental} />
 
 	{#if rental?.isOwner}
-		{#if rental?.status === RentalStatus.Reserved}
-			<button
-				class="approve"
-				onclick={() => {
-					approving = true;
-
-					handleApproveReservation(rental?.id, () => {
-						approving = false;
-					});
-				}}
-				disabled={approving}>Approve</button
-			>
-		{/if}
 		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
-			<button class="cancel" popovertarget={`confirm-rejection-${rental?.id}`} disabled={rejecting}
-				>Reject</button
-			>
+			<div class="rental-action-buttons">
+				<ApprovalForm {rental} handleSubmit={handleConfirmApproval} {approving} />
+
+				<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
+			</div>
 		{/if}
 	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
-		<!-- <button
-			class="cancel"
-			popovertarget={`confirm-cancellation-${rental?.id}`}
-			disabled={cancelling}>Cancel Reservation</button
-		> -->
-
-		<CancelForm {rental} handleSubmit={handleConfirmCancel} />
+		<CancelForm {rental} handleSubmit={handleConfirmCancel} {cancelling} />
 	{/if}
 
 	<a
@@ -119,51 +98,6 @@
 		class="item-details"
 	></a>
 </article>
-
-<!-- <dialog id={`confirm-cancellation-${rental?.id}`} popover="auto">
-	<h3>
-		<span>Are you sure you want to cancel your Reservation of:</span>
-		<span>{rental?.itemName}?</span>
-	</h3>
-	<div class="actions">
-		<button type="button" onclick={() => closePopover(`confirm-cancellation-${rental?.id}`)}
-			>No</button
-		>
-		<button
-			type="button"
-			class="confirm"
-			onclick={() => {
-				closePopover(`confirm-cancellation-${rental?.id}`);
-				cancelling = true;
-				handleCancelReservation(rental?.id, () => {
-					cancelling = false;
-				});
-			}}>Yes</button
-		>
-	</div>
-</dialog> -->
-
-<dialog id={`confirm-rejection-${rental?.id}`} popover="auto">
-	<h3>
-		<span>Are you sure you want to reject the Reservation of your:</span>
-		<span>{rental?.itemName}?</span>
-	</h3>
-	<div class="actions">
-		<button type="button" onclick={() => closePopover(`confirm-rejection-${rental?.id}`)}>No</button
-		>
-		<button
-			type="button"
-			class="confirm"
-			onclick={() => {
-				closePopover(`confirm-rejection-${rental?.id}`);
-				rejecting = true;
-				handleRejectReservation(rental?.id, () => {
-					rejecting = false;
-				});
-			}}>Yes</button
-		>
-	</div>
-</dialog>
 
 <style lang="scss">
 	@use '../../styles/dialog/dialog.scss';
@@ -196,24 +130,10 @@
 			}
 		}
 
-		button.approve {
-			position: relative;
-			z-index: 2;
-			height: 2rem;
-			border: none;
-			border-radius: 0.25rem;
-			background-color: #cddc39;
-			padding: 0 0.5rem;
-		}
-
-		button.cancel {
-			position: relative;
-			z-index: 2;
-			height: 2rem;
-			border: none;
-			border-radius: 0.25rem;
-			background-color: #cddc39;
-			padding: 0 0.5rem;
+		div.rental-action-buttons {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
 		}
 
 		a.item-details {
@@ -225,9 +145,5 @@
 			height: 100%;
 			width: 100%;
 		}
-	}
-
-	dialog {
-		@include dialog.dialog;
 	}
 </style>

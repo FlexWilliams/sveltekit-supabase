@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { rental, handleSubmit } = $props();
+	let { rental, handleSubmit, cancelling } = $props();
 
-	async function handleSubmitClick(event: Event, id: string): Promise<void> {
+	async function handleSubmitClick(event: Event, id: number, popoverId: string): Promise<void> {
 		event.preventDefault();
-		handleSubmit(id);
+		handleSubmit(id, popoverId);
 	}
 </script>
 
@@ -23,13 +23,15 @@
 		>
 		<button
 			type="submit"
-			onclick={(e) => handleSubmitClick(e, `confirm-cancellation-${rental?.id}`)}
-			>Yes, Cancel</button
+			onclick={(e) => handleSubmitClick(e, rental?.id, `confirm-cancellation-${rental?.id}`)}
+			disabled={cancelling}>Yes, Cancel</button
 		>
 	</form>
 </dialog>
 
 <style lang="scss">
+	@use '../../../lib/styles/dialog/dialog.scss';
+
 	button.cancel {
 		width: 100%;
 		height: 3rem;
@@ -38,5 +40,9 @@
 		background-color: #cddc39;
 		position: relative;
 		z-index: 2;
+	}
+
+	dialog {
+		@include dialog.dialog;
 	}
 </style>

@@ -39,6 +39,7 @@
 	}
 
 	async function handleApproveReservation(id?: number, callback?: Function): Promise<void> {
+		debugger;
 		const response = await fetch(`/api/my-rentals/${id}/approve`, {
 			method: 'POST'
 		});
