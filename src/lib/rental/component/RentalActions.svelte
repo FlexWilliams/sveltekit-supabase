@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import ApprovalForm from '../form/ApprovalForm.svelte';
 	import CancelForm from '../form/CancelForm.svelte';
@@ -8,6 +7,7 @@
 	import { RentalStatus, type MyRental } from '../model/rental';
 
 	interface RentalActionsProps {
+		userId: string | null;
 		stuff: Stuff | null;
 		rental: MyRental | null;
 		renting: boolean;
@@ -21,6 +21,7 @@
 	}
 
 	let {
+		userId,
 		stuff,
 		rental,
 		renting,
@@ -32,8 +33,6 @@
 		handleRejectReservation,
 		handleCancelReservation
 	}: RentalActionsProps = $props();
-
-	let userId: string | null = $derived(userState.id);
 
 	let isRenter: boolean = $derived(stuff?.userIsOwner || false);
 

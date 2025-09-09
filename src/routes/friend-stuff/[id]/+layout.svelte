@@ -10,6 +10,8 @@
 
 	let { children, data } = $props();
 
+	let userId = $derived(data?.user?.id || null);
+
 	let stuff: Stuff | null = $derived(data.stuff);
 
 	let rental: MyRental | null = $derived(data.rental);
@@ -124,6 +126,7 @@
 
 		<RentalActions
 			{stuff}
+			{userId}
 			{rental}
 			{cancelling}
 			{renting}
