@@ -52,12 +52,14 @@
 
 <style lang="scss">
 	@use '../../../../lib/styles/overlay/overlay.scss';
+	@use '../../../../lib/styles/overlay/z-index.scss';
 
 	section.chat {
 		@include overlay.overlay;
 		width: calc(100% - 2rem);
 		border-radius: 0.5rem;
 		margin: 0 1rem;
+		z-index: z-index.$chat-overlay-z-index;
 	}
 
 	section.chat-body {

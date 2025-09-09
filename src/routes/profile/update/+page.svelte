@@ -5,7 +5,8 @@
 	import { profileState, profileState$$setProfilePic } from '$lib/state/profile-state.svelte.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 	import { fade } from 'svelte/transition';
-	let { data } = $props();
+
+	let { data, form } = $props();
 
 	let profilePic: string | null = $derived(profileState.profilePic);
 
@@ -85,7 +86,16 @@
 	}
 </script>
 
-<form name="user-profile">
+<h2>Update Profile</h2>
+
+{#if form?.success}
+	<p class="form-success">Profile updated!</p>
+{:else if form?.error}
+	<p class="form-error">There was an error updating your profile.</p>
+	<p class="form-error">Please try again</p>
+{/if}
+
+<form name="user-profile" method="POST" action="?/profile" enctype="multipart/form-data">
 	<div class="form-controls">
 		<div class="profile-pic">
 			{#if profilePicLoading}
@@ -104,7 +114,7 @@
 
 		<div class="form-field">
 			<label for="username">Username:</label>
-			<input id="username" name="username" bind:value={newUserName} autocomplete="off" />
+			<input id="username" name="username" bind:value={newUserName} autocomplete="off" required />
 		</div>
 		<div class="form-field row">
 			<div>
@@ -131,23 +141,35 @@
 		</div>
 	</div>
 
-	<div class="form-actions">
-		<button type="button" class="cancel" disabled={saving} onclick={() => window.history.back()}
-			>Cancel</button
-		>
+	<div class="form_action_button_container">
 		<button type="submit" class="save" disabled={!newUserName || saving} onclick={handleSaveClick}
 			>Save</button
 		>
+		<a href="/profile">Cancel</a>
 	</div>
 </form>
 
 <style lang="scss">
 	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/button/button.scss';
 	@use '../../../lib/styles/animations/spin.scss';
+
+	h2 {
+		text-align: center;
+	}
+
+	.form-success {
+		@include forms.form_status_text;
+	}
+
+	.form-error {
+		@include forms.form_status_error_text;
+	}
 
 	form {
 		@include forms.form;
 		padding-top: 0;
+		overflow-y: auto;
 	}
 
 	.form-field {
@@ -219,27 +241,12 @@
 		}
 	}
 
-	div.form-actions {
-		@include forms.form_actions;
+	.form_action_button_container {
+		@include forms.form_action_button_container;
 
-		button {
-			margin: 0;
-			padding: 0.5rem 1rem;
-			border: none;
-			border-radius: 0.25rem;
-
-			&:disabled {
-				background-color: #8080804a;
-			}
-		}
-
-		button.save {
-			background-color: rebeccapurple;
-			color: white;
-
-			&:disabled {
-				background-color: #8080804a;
-			}
+		a {
+			@include button.button_link;
+			background-color: #ccc;
 		}
 	}
 </style>

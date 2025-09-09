@@ -39,4 +39,4 @@ export const actions: Actions = {
 
 		return { success: true, email };
 	}
-};
+} satisfies Actions;

@@ -1,18 +1,15 @@
 <script lang="ts">
 	import StuffForm from '$lib/stuff/components/StuffForm.svelte';
+
+	let { form } = $props();
 </script>
 
 <section>
 	<h2>Add Stuff</h2>
 
-	<StuffForm />
+	<StuffForm photos={[]} {form} />
 
-	<button
-		type="button"
-		aria-label="Back to My Stuff page"
-		class="close"
-		onclick={() => window.history.back()}>X</button
-	>
+	<a href="/my-stuff" aria-label="Back to My Stuff page" class="close">X</a>
 </section>
 
 <style lang="scss">
@@ -31,8 +28,8 @@
 			@include forms.form_header;
 		}
 
-		button.close {
-			@include panel.panel_close_button;
+		a.close {
+			@include panel.panel_close_button_link;
 		}
 	}
 
@@ -43,7 +40,7 @@
 				margin-top: 2rem;
 			}
 
-			button.close {
+			a.close {
 				width: 5rem;
 				height: 5rem;
 				font-size: 1.5rem;

@@ -21,15 +21,6 @@
 </script>
 
 <section class="panel">
-	<h2>
-		{#if route === '/profile'}
-			My Profile
-		{:else if route === '/profile/update'}
-			Update Profile
-		{:else if route === '/profile/invite'}
-			Invite Friend
-		{/if}
-	</h2>
 	{@render children()}
 </section>
 
@@ -38,9 +29,5 @@
 
 	section {
 		@include panel.panel;
-	}
-
-	h2 {
-		text-align: center;
 	}
 </style>

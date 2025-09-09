@@ -94,9 +94,13 @@
 	{/each}
 </ul>
 
+<a aria-label="Add item to your Stuff" class="add-item" href="/my-stuff/new">+</a>
+
 <style lang="scss">
 	@use '../../lib/styles/forms/forms.scss';
 	@use '../../lib/styles/responsive.scss';
+	@use '../../lib/styles/button/button.scss';
+	@use '../../lib/styles/overlay/shadows.scss';
 
 	h2 {
 		@include forms.form_header;
@@ -105,6 +109,17 @@
 	form {
 		@include forms.form;
 		height: initial;
+	}
+
+	a.add-item {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		@include button.button_link;
+		@include shadows.boxShadow;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 3rem;
 	}
 
 	.form-field {
@@ -169,6 +184,12 @@
 				height: 3rem;
 				font-size: 1.25rem;
 			}
+		}
+
+		a.add-item {
+			width: 5rem;
+			height: 5rem;
+			font-size: 1.5rem;
 		}
 	}
 </style>

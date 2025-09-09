@@ -1,5 +1,7 @@
 import { Logger } from '$lib/logging/logger';
 import { userMetaFromDbList } from '$lib/user/model/user-meta';
+import { prettyJson } from '$lib/web/http/response';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGetSession } }) => {
@@ -19,9 +21,14 @@ export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGe
 	return { userMeta: meta };
 };
 
+const loggerName = '[Profile Update Form Actions]';
+
 export const actions = {
-	updateProfile: async ({ request, locals: { supabase, safeGetSession } }) => {
+	profile: async ({ request, locals: { supabase, safeGetSession } }) => {
 		const { user } = await safeGetSession();
+		if (!user) {
+			redirect(303, '/auth/login');
+		}
 
 		const formData = await request.formData();
 		const userName = formData.get('username') as string;
@@ -35,9 +42,7 @@ export const actions = {
 		}
 
 		Logger.debug(`[Page][updateProfile] - updating user profile...`);
-		Logger.debug(`${userName}`);
-		Logger.debug(`${profilePic?.name}`);
-		Logger.debug(`${profilePic?.size}`);
+		Logger.debug(`${loggerName}: Attempting to update the user profile...`);
 
 		const userNameChangeResponse = await supabase
 			.from('user_meta')
@@ -47,23 +52,25 @@ export const actions = {
 			.eq('id', user?.id);
 
 		if (userNameChangeResponse.error) {
-			Logger.error(
-				`Error updating the username for user id ${user?.id}: ${userNameChangeResponse?.error?.message}`
-			);
+			const errorMessage = prettyJson(userNameChangeResponse?.error);
+			const msg = `${loggerName}: Error updating the username for user id ${user?.id}: ${errorMessage}`;
+			Logger.error(msg);
 		} else {
-			Logger.debug(`Success updating username!`);
+			Logger.debug(`${loggerName}: Success updating username to ${userName}!`);
 		}
 
 		let profilePicData: ArrayBuffer = new ArrayBuffer(0);
 		if (profilePic) {
 			const { data, error } = await supabase.storage
-				.from(`user-meta`)
-				.upload(`${user?.id}/profile_pic.jpg`, profilePic, { upsert: true }); // TODO: set correct mime type, don't hardcode jpg
+				.from(`user-meta`) // TODO: set correct mime type, don't hardcode jpg
+				.upload(`${user?.id}/profile_pic.jpg`, profilePic, { upsert: true });
 
 			if (error) {
-				Logger.error(`Error uploading new profile pic: ${error?.message}`);
+				Logger.error(
+					`${loggerName}: Error uploading new profile pic: ${prettyJson(error?.message)}`
+				);
 			} else if (data) {
-				Logger.debug(`Success uploading new profile pic!`);
+				Logger.debug(`${loggerName}: Success uploading new profile pic!`);
 				profilePicData = await profilePic.arrayBuffer();
 			}
 		}

@@ -1,4 +1,4 @@
-<script lang="ts"></script>
+<h2>My Profile</h2>
 
 <menu>
 	<ul>
@@ -16,6 +16,11 @@
 
 <style lang="scss">
 	@use '../../lib/styles/responsive.scss';
+	@use '../../lib/styles/button/button.scss';
+
+	h2 {
+		text-align: center;
+	}
 
 	menu {
 		margin: 0;
@@ -31,21 +36,17 @@
 			padding: 0;
 
 			li {
-				width: 60%;
-				min-height: 3rem;
-				background-color: #cddc39;
-				border-radius: 0.5rem;
-				padding: 1rem 3rem;
+				width: 90%;
 				display: flex;
 				justify-content: center;
 				align-items: center;
 
 				a {
-					height: 100%;
+					@include button.button_link;
 					width: 100%;
-					text-decoration: none;
-					text-align: center;
-					color: black;
+					&:hover {
+						text-decoration: underline;
+					}
 				}
 			}
 		}

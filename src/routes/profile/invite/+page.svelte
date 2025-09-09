@@ -45,6 +45,8 @@
 	}
 </script>
 
+<h2>Invite Friend</h2>
+
 {#if form?.success}
 	<p class="form-success">Invite sent to {form?.email}!</p>
 {:else if form?.error}
@@ -68,13 +70,16 @@
 	@use '../../../lib/styles/forms/forms.scss';
 	@use '../../../lib/styles/button/button.scss';
 
+	h2 {
+		text-align: center;
+	}
+
 	.form-success {
-		margin: 0 1rem;
+		@include forms.form_status_text;
 	}
 
 	.form-error {
-		margin: 0 1rem;
-		color: red;
+		@include forms.form_status_error_text;
 	}
 
 	form {

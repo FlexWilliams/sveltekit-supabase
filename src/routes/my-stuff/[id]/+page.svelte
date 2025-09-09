@@ -1,34 +1,42 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { PUBLIC_EXCHANGE_URL } from '$env/static/public';
 	import { Logger } from '$lib/logging/logger.js';
 	import type { PhotoNameAndUrl } from '$lib/photo/model/photo.js';
 	import StuffForm from '$lib/stuff/components/StuffForm.svelte';
-	import type { Stuff } from '$lib/stuff/model/stuff.js';
 	import { ToastrService } from '$lib/toastr/services/ToastrService.js';
 	import type { PhotoNamesResponse } from '$lib/web/http/response.js';
 	import { onMount } from 'svelte';
 
-	let { data } = $props();
+	let { data, form } = $props();
 
-	let photos: PhotoNameAndUrl[] = $state([]);
+	let stuff = $derived(data.stuff || undefined);
+
+	let fetchUrl = $derived(`/api/stuff/${stuff?.id}/photo/`);
+
+	let photoFetchUrls = $derived.by(() =>
+		data.photos
+			? data.photos.map(
+					(d) =>
+						({
+							photoName: d,
+							photoUrl: `${PUBLIC_EXCHANGE_URL}${fetchUrl}${d}?asBlob=true`
+						}) as PhotoNameAndUrl
+				)
+			: null
+	);
+
+	let photos: PhotoNameAndUrl[] = $derived(photoFetchUrls || []);
 
 	let photoToRemove: string | null = $state(null);
-
-	let stuff = $derived.by(() => (data.stuff.length > 0 ? data.stuff[0] : ({} as Stuff)));
-
-	function showPopover(): void {
-		document.getElementById(`remove-stuff-confirmation`)?.showPopover();
-	}
 
 	function closePopover(id: string): void {
 		document.getElementById(id)?.hidePopover();
 	}
 
-	function handleRemoveStuffNo(): void {
-		closePopover(`remove-stuff-confirmation`);
-	}
+	async function handleRemoveStuffYes(event: Event): Promise<void> {
+		event.preventDefault();
 
-	async function handleRemoveStuffYes(): Promise<void> {
 		const params = window.location.pathname.split('/');
 		const stuffId = params[params.length - 1];
 
@@ -103,7 +111,9 @@
 	}
 
 	onMount(async () => {
-		await fetchImages();
+		if (photos.length === 0) {
+			await fetchImages();
+		}
 	});
 </script>
 
@@ -111,18 +121,13 @@
 	<h2>{stuff?.name}</h2>
 
 	<StuffForm
+		{form}
 		{stuff}
 		{photos}
-		handleRemove={showPopover}
+		handleRemove={handleRemoveStuffYes}
 		{handleUpdate}
 		removePhoto={confirmRemovePhoto}
 	/>
-
-	<dialog id="remove-stuff-confirmation" popover="auto">
-		<h3>Are you sure you want to delete this item?</h3>
-		<button onclick={handleRemoveStuffNo}>Cancel</button>
-		<button onclick={handleRemoveStuffYes}>Yes</button>
-	</dialog>
 
 	<dialog id="remove-photo-confirmation" popover="auto">
 		<h3>Are you sure you want to delete this photo?</h3>

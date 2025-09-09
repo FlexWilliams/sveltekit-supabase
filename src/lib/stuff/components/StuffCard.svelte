@@ -64,10 +64,11 @@
 		top: auto;
 		bottom: 1rem;
 		right: 1rem;
+		font-size: 0.85rem;
 	}
 
 	a.view-posting {
-		@include panel.panel_close_button_link;
+		position: absolute;
 		top: auto;
 		bottom: 1rem;
 		right: auto;
@@ -75,6 +76,7 @@
 		width: 10rem;
 		background-color: transparent;
 		text-decoration: underline;
+		color: black;
 	}
 
 	@media screen and (max-width: responsive.$mini-width) {

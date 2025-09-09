@@ -1,5 +1,6 @@
 @use '../layout/panel.scss';
 @use '../button/button.scss';
+@use '../overlay/z-index.scss';
 
 @mixin form {
 	display: flex;
@@ -100,11 +101,21 @@
 	}
 }
 
+@mixin form_status_text {
+	margin: 0 1rem;
+	text-align: center;
+}
+
+@mixin form_status_error_text {
+	@include form_status_text;
+	color: red;
+}
+
 @mixin rental_form_action_button {
 	@include button.button;
 	width: 100%;
 	position: relative;
-	z-index: 2;
+	z-index: z-index.$inventory-item-rent-button-z-index;
 }
 
 @mixin rental_form_primary_action_button {

@@ -30,7 +30,6 @@
 	border: none;
 	background-color: #cddc39;
 	color: black;
-	font-weight: bold;
 	@include shadows.boxShadow;
 	text-decoration: none;
 }
@@ -41,4 +40,5 @@
 	justify-content: center;
 	align-items: center;
 	text-decoration: none;
+	font-size: 0.85rem;
 }

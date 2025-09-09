@@ -5,11 +5,13 @@
 	import NewStuffPhotoCarousel from '$lib/stuff/components/NewStuffPhotoCarousel.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
 	import { ToastrService } from '$lib/toastr/services/ToastrService';
+	import type { ActionData } from '../../../routes/my-stuff/[id]/$types';
 
 	interface StuffFormProps {
+		form?: ActionData; // TODO: this could potentially be two different types, wiill require import aliasing
 		stuff?: Stuff;
 		photos: PhotoNameAndUrl[];
-		handleRemove?: () => void;
+		handleRemove?(event: Event): Promise<void>;
 		handleUpdate?: () => void;
 		handleSaveStart?: () => void;
 		handleSaveFinish?: () => void;
@@ -23,7 +25,8 @@
 		handleUpdate,
 		handleSaveStart,
 		handleSaveFinish,
-		removePhoto
+		removePhoto,
+		form
 	}: StuffFormProps = $props();
 
 	let saving = $state(false);
@@ -36,15 +39,17 @@
 
 	let description: string | null = $state(stuff?.description || null);
 
-	let saveButtonDisabled: boolean = $derived.by(() => {
-		return (
-			!name ||
-			((!photos || photos.length === 0) && newPhotos.length === 0) ||
-			trustLevel < 1 ||
-			trustLevel > 10 ||
-			saving
-		);
-	});
+	let removing = $state(false);
+
+	// let saveButtonDisabled: boolean = $derived.by(() => { // TODO: set onMount for better UX (i.e., js support!)
+	// 	return (
+	// 		!name ||
+	// 		((!photos || photos.length === 0) && newPhotos.length === 0) ||
+	// 		trustLevel < 1 ||
+	// 		trustLevel > 10 ||
+	// 		saving
+	// 	);
+	// });
 
 	async function handleAddResponse(this: XMLHttpRequest): Promise<void> {
 		if (this.status === 201 && this.response) {
@@ -189,7 +194,25 @@
 	}
 </script>
 
-<form name="add-new-stuff">
+{#if form?.success}
+	<p class="form-success">Stuff Updated!</p>
+{:else if form?.error}
+	{#if form?.invalid}
+		<p class="form-error">Required fields missing!</p>
+	{:else}
+		<p class="form-error">There was an error saving your stuff</p>
+		<p class="form-error">Please try again</p>
+	{/if}
+{/if}
+
+<form
+	name="add-new-stuff"
+	method="POST"
+	action={stuff?.id ? '?/update' : '?/add'}
+	enctype="multipart/form-data"
+>
+	<input type="hidden" name="stuff-id" value={stuff?.id} />
+
 	<div class="form-field">
 		<label>
 			<span>Name*:</span>
@@ -226,16 +249,37 @@
 		</label>
 	</div>
 
-	<button type="submit" onclick={handleFormSubmission} disabled={saveButtonDisabled}>Save</button>
+	<button type="submit" onclick={handleFormSubmission}>Save</button>
 	{#if stuff?.id}
-		<button type="button" class="remove" onclick={handleRemove} disabled={saving}>Remove?</button>
+		<button type="button" class="remove" popovertarget="confirm-remove-stuff">Remove?</button>
 	{/if}
 </form>
+
+<dialog id="confirm-remove-stuff" popover="auto">
+	<h3>
+		<span>Are you sure you want to remove this item from your Stuff?</span>
+	</h3>
+	<form name="remove-stuff" method="POST" action="?/remove">
+		<input type="hidden" name="stuff-id" value={stuff?.id} />
+		<button type="button" popovertarget="confirm-remove-stuff">No, Keep</button>
+		<button type="submit" onclick={handleRemove} disabled={removing}>Yes, Remove</button>
+	</form>
+</dialog>
 
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
 	@use '../../../lib/styles/forms/forms.scss';
+	@use '../../../lib/styles/button/button.scss';
+	@use '../../../lib/styles/dialog/dialog.scss';
 	@use '../../../lib/styles/responsive.scss';
+
+	.form-success {
+		@include forms.form_status_text;
+	}
+
+	.form-error {
+		@include forms.form_status_error_text;
+	}
 
 	form {
 		@include forms.form;
@@ -265,34 +309,17 @@
 		}
 
 		button {
-			// TODO: standardize save buttons
-			margin-top: 1rem;
-			min-height: 2rem;
-			height: 2rem;
-			background-color: rebeccapurple;
-			color: white;
-			border: none;
-			border-radius: 0.25rem;
-
-			&:disabled {
-				// TODO: standardize save buttons
-				background-color: #8080804a;
-			}
-
-			box-shadow:
-				rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
-				rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+			@include button.secondary_button;
+			margin-bottom: 1rem;
 		}
 
-		button.remove {
-			color: black;
-			background-color: #cddc39;
-
-			&:disabled {
-				// TODO: standardize save buttons
-				background-color: #8080804a;
-			}
+		button[type='submit'] {
+			@include button.primary_button;
 		}
+	}
+
+	dialog {
+		@include dialog.dialog;
 	}
 
 	@media screen and (min-width: responsive.$tablet-width) {

@@ -37,6 +37,7 @@
 
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
+	@use '../../../lib/styles/overlay/z-index.scss';
 
 	article {
 		padding: 0 1rem;
@@ -86,7 +87,7 @@
 			position: absolute;
 			bottom: 1rem;
 			right: 1rem;
-			z-index: 2;
+			z-index: z-index.$inventory-item-rent-button-z-index;
 			width: 6rem;
 			height: 2rem;
 			border: none;

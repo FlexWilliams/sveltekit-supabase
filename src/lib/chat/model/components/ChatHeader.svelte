@@ -100,6 +100,23 @@
 				font-size: 1rem;
 				justify-content: center;
 			}
+
+			div {
+				label {
+					display: flex;
+
+					select {
+						min-width: 2rem;
+					}
+				}
+			}
+
+			a.close {
+				min-height: 2rem;
+				height: 2rem;
+				width: 2rem;
+				min-width: 2rem;
+			}
 		}
 	}
 </style>

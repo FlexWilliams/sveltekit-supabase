@@ -157,6 +157,7 @@
 <style lang="scss">
 	@use '../../../lib/styles/layout/panel.scss';
 	@use '../../../lib/styles/responsive.scss';
+	@use '../../../lib/styles/overlay/z-index.scss';
 
 	section {
 		@include panel.panel;
@@ -203,7 +204,7 @@
 			position: absolute;
 			right: 1rem;
 			bottom: 0.5rem;
-			z-index: 5;
+			z-index: z-index.$chat-button-z-index;
 			height: 5rem;
 			width: 5rem;
 			display: flex;
