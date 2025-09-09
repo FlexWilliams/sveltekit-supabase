@@ -51,7 +51,6 @@
 
 	async function handleConfirmApproval(id: number): Promise<void> {
 		approving = true;
-		debugger;
 		await handleApproveReservation(id, () => {
 			approving = false;
 		});
@@ -81,13 +80,14 @@
 	<MyRentalStatus {rental} />
 
 	{#if rental?.isOwner}
-		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
-			<div class="rental-action-buttons">
+		<div class="rental-action-buttons">
+			{#if rental?.status === RentalStatus.Reserved}
 				<ApprovalForm {rental} handleSubmit={handleConfirmApproval} {approving} />
-
+			{/if}
+			{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
 				<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
-			</div>
-		{/if}
+			{/if}
+		</div>
 	{:else if rental.status === RentalStatus.Reserved || rental.status === RentalStatus.Approved}
 		<CancelForm {rental} handleSubmit={handleConfirmCancel} {cancelling} />
 	{/if}
