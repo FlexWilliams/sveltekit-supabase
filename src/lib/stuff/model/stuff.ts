@@ -98,7 +98,8 @@ export const mockStuff: Stuff = {
 	name: 'BBQ Grill',
 	trustLevel: 5,
 	available: true,
-	description: 'Great for BBQs and grilling'
+	description: 'Great for BBQs and grilling',
+	userIsOwner: false
 };
 
 export const mockSocials: StuffSocial[] = [

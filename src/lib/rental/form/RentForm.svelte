@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { stuffId, handleSubmit } = $props();
+	let { stuffId, handleSubmit, renting } = $props();
 
 	async function handleSubmitClick(event: Event): Promise<void> {
 		event.preventDefault();
@@ -9,7 +9,7 @@
 
 <form name="rent" method="POST" action="?/rent">
 	<input type="hidden" name="stuff-id" value={stuffId} />
-	<button type="submit" onclick={handleSubmitClick}>Rent</button>
+	<button type="submit" onclick={handleSubmitClick} disabled={renting}>Rent</button>
 </form>
 
 <style lang="scss">

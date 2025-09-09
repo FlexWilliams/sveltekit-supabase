@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { userState } from '$lib/state/user-state.svelte';
 	import type { Stuff } from '$lib/stuff/model/stuff';
+	import ApprovalForm from '../form/ApprovalForm.svelte';
+	import CancelForm from '../form/CancelForm.svelte';
+	import RejectForm from '../form/RejectForm.svelte';
 	import RentForm from '../form/RentForm.svelte';
 	import { RentalStatus, type MyRental } from '../model/rental';
 
@@ -13,9 +15,9 @@
 		rejecting: boolean;
 		cancelling: boolean;
 		handleRentClick: () => void;
-		handleCancelReservation: () => void;
-		handleApproveRentalRequest: () => void;
-		handleRejectRentalRequest: () => void;
+		handleCancelReservation: (id?: number, callback?: () => void) => Promise<void>;
+		handleRejectReservation: (id?: number, callback?: () => void) => Promise<void>;
+		handleApproveReservation: (id?: number, callback?: () => void) => Promise<void>;
 	}
 
 	let {
@@ -26,8 +28,8 @@
 		cancelling,
 		rejecting,
 		handleRentClick,
-		handleApproveRentalRequest,
-		handleRejectRentalRequest,
+		handleApproveReservation,
+		handleRejectReservation,
 		handleCancelReservation
 	}: RentalActionsProps = $props();
 
@@ -41,22 +43,43 @@
 			popover.hidePopover();
 		}
 	}
+
+	async function handleConfirmCancel(id: number, popoverId: string): Promise<void> {
+		cancelling = true;
+
+		await handleCancelReservation(id, () => {
+			cancelling = false;
+			closePopover(popoverId);
+		});
+	}
+
+	async function handleConfirmReject(id: number, popoverId: string): Promise<void> {
+		rejecting = true;
+
+		await handleRejectReservation(id, () => {
+			rejecting = false;
+			closePopover(popoverId);
+		});
+	}
+
+	async function handleConfirmApproval(id: number): Promise<void> {
+		approving = true;
+		await handleApproveReservation(id, () => {
+			approving = false;
+		});
+	}
 </script>
 
 <div class="rental-actions">
-	<!-- TODO: make into component -->
 	{#if isRenter}
 		{#if rental?.status === RentalStatus.Reserved}
 			<p>A friend is requesting to rent this item!</p>
-			<button onclick={handleApproveRentalRequest} disabled={approving} class="primary"
-				>Approve</button
-			>
+			<ApprovalForm {rental} handleSubmit={handleConfirmApproval} {approving} />
+			<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>You approved this item's rental reservation request!</p>
-			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to exchange?</button>
-			<button type="button" popovertarget="confirm-rejection" disabled={rejecting} class="primary"
-				>Reject</button
-			>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to exchange?</a>
+			<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>This item is currently being rented by: {rental?.renteeId}</p>
 		{/if}
@@ -66,70 +89,28 @@
 			<p>Waiting for approval from owner.</p>
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>Your rental reservation has been approved by the owner!</p>
-			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to exchange?</button>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to exchange?</a>
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>You are currently renting this item.</p>
-			<button onclick={() => goto(`./${stuff?.id}/exchange`)}>Ready to return?</button>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to return?</a>
 		{/if}
 
 		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
-			<button popovertarget="confirm-cancellation" disabled={cancelling} class="primary"
-				>Cancel Reservation</button
-			>
+			<CancelForm {rental} handleSubmit={handleConfirmCancel} {cancelling} />
 		{/if}
 	{:else if rental?.status === RentalStatus.Reserved}
 		<p>This item is currently reserved by another person.</p>
 	{:else if rental?.status === RentalStatus.Rented}
 		<p>This item is currently being rented by another person.</p>
-	{:else if !rental?.renteeId}
-		<!-- <button onclick={handleRentClick} disabled={renting || rental !== null} class="primary"
-			>Rent</button> -->
-
-		<RentForm handleSubmit={handleRentClick} stuffId={stuff?.id || ''} />
+	{:else if !stuff?.rentalId}
+		<RentForm handleSubmit={handleRentClick} stuffId={stuff?.id || ''} {renting} />
 	{/if}
 </div>
-
-{#if rental}
-	<dialog id="confirm-cancellation" popover="auto">
-		<h3>
-			<span>Are you sure you want to cancel your Reservation of:</span>
-			<span>{rental?.itemName}?</span>
-		</h3>
-		<div class="actions">
-			<button type="button" onclick={() => closePopover('confirm-cancellation')}>No</button>
-			<button
-				type="button"
-				class="confirm"
-				onclick={() => {
-					closePopover('confirm-cancellation');
-					handleCancelReservation();
-				}}>Yes</button
-			>
-		</div>
-	</dialog>
-{/if}
-
-<dialog id="confirm-rejection" popover="auto">
-	<h3>
-		<span>Are you sure you want to reject the rental request for:</span>
-		<span>{rental?.itemName}?</span>
-	</h3>
-	<div class="actions">
-		<button type="button" onclick={() => closePopover('confirm-rejection')}>No</button>
-		<button
-			type="button"
-			class="confirm"
-			onclick={() => {
-				closePopover('confirm-rejection');
-				handleRejectRentalRequest();
-			}}>Yes</button
-		>
-	</div>
-</dialog>
 
 <style lang="scss">
 	@use '../../../lib/styles/responsive.scss';
 	@use '../../../lib/styles/dialog/dialog.scss';
+	@use '../../../lib/styles/forms/forms.scss';
 
 	div.rental-actions {
 		height: calc(25% - 2rem);
@@ -146,30 +127,14 @@
 			margin: 0;
 		}
 
-		button {
-			width: 100%;
-			height: 3rem;
-			min-height: 3rem;
-			border: none;
-			border-radius: 0.25rem;
+		a {
+			@include forms.rental_form_button_link;
 		}
-	}
-
-	button.primary {
-		width: 90%;
-		height: 3rem;
-		border: none;
-		border-radius: 0.25rem;
-		background-color: #cddc39;
-	}
-
-	dialog {
-		@include dialog.dialog;
 	}
 
 	@media screen and (min-width: responsive.$tablet-width) {
 		div.rental-actions {
-			button {
+			a {
 				font-size: 1.25rem;
 				margin-bottom: 1rem;
 			}

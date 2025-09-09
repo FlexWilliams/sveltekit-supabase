@@ -84,6 +84,7 @@
 
 @mixin rental_form_action_button {
 	width: 100%;
+	min-height: 3rem;
 	height: 3rem;
 	border: none;
 	border-radius: 0.25rem;
@@ -99,4 +100,15 @@
 @mixin rental_form_secondary_action_button {
 	@include rental_form_action_button;
 	background-color: rgb(204, 204, 204);
+}
+
+@mixin rental_form_button_link {
+	@include rental_form_action_button;
+	background-color: #cddc39;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	color: black;
+	font-size: 0.85rem;
 }

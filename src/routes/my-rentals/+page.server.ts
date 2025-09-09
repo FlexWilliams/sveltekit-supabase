@@ -40,6 +40,7 @@ export const actions: Actions = {
 
 		return { success: true };
 	},
+
 	reject: async ({ request, fetch }) => {
 		const formData = await request.formData();
 		const rentalId = formData.get('rental-id') as string;
@@ -63,6 +64,7 @@ export const actions: Actions = {
 
 		return { success: true };
 	},
+
 	approve: async ({ request, fetch }) => {
 		const formData = await request.formData();
 		const rentalId = formData.get('rental-id') as string;

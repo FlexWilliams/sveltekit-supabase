@@ -63,7 +63,7 @@
 		cancelling = false;
 	}
 
-	async function handleApproveRentalRequest(): Promise<void> {
+	async function handleApproveReservation(): Promise<void> {
 		approving = true;
 
 		const response = await fetch(`/api/my-rentals/${rental?.id}/approve`, {
@@ -82,7 +82,7 @@
 		approving = false;
 	}
 
-	async function handleRejectRentalRequest(): Promise<void> {
+	async function handleRejectReservation(): Promise<void> {
 		rejecting = true;
 
 		const response = await fetch(`/api/my-rentals/${rental?.id}/reject`, {
@@ -130,8 +130,8 @@
 			{approving}
 			{rejecting}
 			{handleRentClick}
-			{handleApproveRentalRequest}
-			{handleRejectRentalRequest}
+			{handleApproveReservation}
+			{handleRejectReservation}
 			{handleCancelReservation}
 		/>
 	{:else}
@@ -200,6 +200,7 @@
 			position: absolute;
 			right: 1rem;
 			bottom: 0.5rem;
+			z-index: 5;
 			height: 5rem;
 			width: 5rem;
 			display: flex;
