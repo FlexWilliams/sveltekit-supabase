@@ -41,6 +41,7 @@
 
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	article {
 		position: relative;
@@ -87,6 +88,19 @@
 			width: 100%;
 			border: none;
 			background-color: white;
+		}
+	}
+
+	@media screen and (max-width: responsive.$mini-width) {
+		article {
+			section.photo {
+				width: 4rem;
+				height: 4rem;
+				max-width: 4rem;
+				max-height: 4rem;
+				min-width: 4rem;
+				min-height: 4rem;
+			}
 		}
 	}
 </style>

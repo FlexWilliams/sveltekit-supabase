@@ -38,6 +38,7 @@
 <style lang="scss">
 	@use '../../../lib/styles/overlay/shadows.scss';
 	@use '../../../lib/styles/overlay/z-index.scss';
+	@use '../../../lib/styles/responsive.scss';
 
 	article {
 		padding: 0 1rem;
@@ -98,6 +99,19 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
+		}
+	}
+
+	@media screen and (max-width: responsive.$mini-width) {
+		article {
+			section.photo {
+				width: 4rem;
+				height: 4rem;
+				max-width: 4rem;
+				max-height: 4rem;
+				min-width: 4rem;
+				min-height: 4rem;
+			}
 		}
 	}
 </style>
