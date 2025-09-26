@@ -102,6 +102,7 @@
 
 	section {
 		@include overlay.overlay_section;
+		z-index: 4;
 
 		header {
 			div {
@@ -125,7 +126,8 @@
 		max-width: calc(100% - 5rem);
 		align-items: center;
 		justify-content: center;
-
+		overflow-y: auto;
+		
 		div.canvas-container {
 			width: calc(16rem + 2rem);
 			height: calc(16rem + 2rem);

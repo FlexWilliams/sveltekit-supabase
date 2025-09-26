@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import type { ChatGroup } from '$lib/chat/model/chat';
 	import { Logger } from '$lib/logging/logger';
 	import StuffPhoto from '$lib/photo/components/StuffPhoto.svelte';
@@ -74,7 +74,9 @@
 
 		if (response.ok) {
 			if (rental) {
-				rental.status = RentalStatus.Approved;
+				rental = { ...rental, status: RentalStatus.Approved };
+
+				invalidate('friend:stuff');
 			}
 			ToastrService.alert(`The rental request was\nApproved!`);
 		} else {

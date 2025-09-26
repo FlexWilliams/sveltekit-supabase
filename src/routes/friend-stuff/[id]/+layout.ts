@@ -8,7 +8,7 @@ import type { LayoutLoad } from './$types';
 
 const loader = `[Friend Stuff Layout Load]`;
 
-export const load: LayoutLoad = async ({ data, fetch, params }) => {
+export const load: LayoutLoad = async ({ data, fetch, params, depends }) => {
 	const supabase = isBrowser()
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: {
@@ -60,6 +60,8 @@ export const load: LayoutLoad = async ({ data, fetch, params }) => {
 			chatGroups = (await chatGroupResponse.json()) as ChatGroup[];
 		}
 	}
+
+	depends('friend:stuff');
 
 	return { stuff, rental, chatGroups };
 };

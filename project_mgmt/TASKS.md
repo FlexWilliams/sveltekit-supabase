@@ -738,18 +738,3 @@ and effectively close the loop in the rental process.
 Verified By cube on:
 
 <br>
-
-## VOUCH-046 - Bug Bash
-
-### Description:
-
-^^
-9/25/25
-
-- Approving an item in JS mode leaves button as Approve upon successful approval, should go to a `ready to exchange` button
-
-### Acceptance Criteria:
-
-Verified By cube on:
-
-<br>
