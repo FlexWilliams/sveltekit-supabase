@@ -32,6 +32,7 @@
 <style lang="scss">
 	@use '../../styles/dialog/dialog.scss';
 	@use '../../styles/forms/forms.scss';
+	@use '../../styles/responsive.scss';
 
 	button.reject {
 		@include forms.rental_form_secondary_action_button;
@@ -39,5 +40,11 @@
 
 	dialog {
 		@include dialog.dialog;
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		button.reject {
+			@include forms.rental_form_action_button_tablet;
+		}
 	}
 </style>

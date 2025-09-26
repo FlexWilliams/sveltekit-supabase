@@ -14,8 +14,15 @@
 
 <style lang="scss">
 	@use '../../styles/forms/forms.scss';
+	@use '../../styles/responsive.scss';
 
 	button {
 		@include forms.rental_form_primary_action_button;
+	}
+
+	@media screen and (min-width: responsive.$tablet-width) {
+		button {
+			@include forms.rental_form_action_button_tablet;
+		}
 	}
 </style>

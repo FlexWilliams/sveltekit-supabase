@@ -127,3 +127,7 @@
 	@include rental_form_action_button;
 	background-color: #ccc;
 }
+
+@mixin rental_form_action_button_tablet {
+	font-size: 1.25rem;
+}

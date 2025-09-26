@@ -77,7 +77,7 @@
 			<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>You approved this item's rental reservation request!</p>
-			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to exchange?</a>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`}>Ready to exchange?</a>
 			<RejectForm {rental} handleSubmit={handleConfirmReject} {rejecting} />
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>This item is currently being rented by: {rental?.renteeId}</p>
@@ -88,10 +88,10 @@
 			<p>Waiting for approval from owner.</p>
 		{:else if rental?.status === RentalStatus.Approved}
 			<p>Your rental reservation has been approved by the owner!</p>
-			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to exchange?</a>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`}>Ready to exchange?</a>
 		{:else if rental?.status === RentalStatus.Rented}
 			<p>You are currently renting this item.</p>
-			<a href={`/friend-stuff/${stuff?.id}/exchange`} class="button-link">Ready to return?</a>
+			<a href={`/friend-stuff/${stuff?.id}/exchange`}>Ready to return?</a>
 		{/if}
 
 		{#if rental?.status === RentalStatus.Reserved || rental?.status === RentalStatus.Approved}
@@ -135,7 +135,7 @@
 	@media screen and (min-width: responsive.$tablet-width) {
 		div.rental-actions {
 			a {
-				font-size: 1.25rem;
+				@include forms.rental_form_action_button_tablet;
 				margin-bottom: 1rem;
 			}
 		}

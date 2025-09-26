@@ -3,7 +3,7 @@
 	"account_id": "5969a20403bb03809d0d92eebe5fda6d",
 	"main": "./.cloudflare/worker.js",
 	"build": {
-		"command": "npm run build"
+		"command": "npm run build-prod"
 	},
 	"assets": {
 		"directory": "./public/",
